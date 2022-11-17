@@ -163,11 +163,11 @@ def audio_to_midi_melodia(infile, smooth=0.25, minduration=0.1,
         for file in files:
             current += 1
             if(file.endswith('.mp3')):
-                print(u'***processing:'+(root+'\\'+file))
-                print(u'***progress:'+str(current)+'/'+str(total)+' '+ str(current/total*100)+'%')
+                print(u'***처리중: '+(root+'\\'+file))
+                print(u'***작업률: '+str(current)+'/'+str(total)+' '+ str(current/total*100)+'%')
                 # load audio using librosa
                 print("Loading audio...")
-                data, sr = librosa.load((root+'\\'+file))
+                data, sr = librosa.load(root+'\\'+file)
 
                 tempo = int(librosa.beat.beat_track(y=data, sr=sr)[0])
                 print("Estimated tempo: %d" % tempo)
@@ -218,9 +218,6 @@ def audio_to_midi_melodia(infile, smooth=0.25, minduration=0.1,
 
 
 import sys
-# sys.setdefaultencoding() does not exist, here!
-reload(sys)  # Reload does the trick!
-sys.setdefaultencoding('EUC-JP')
 
 def commandline_arg(bytestring):
     unicode_string = bytestring.decode(sys.getfilesystemencoding())

@@ -208,9 +208,6 @@ def audio_to_midi_melodia(infile, outfile, smooth=0.25, minduration=0.1,
 
 
 import sys
-# sys.setdefaultencoding() does not exist, here!
-reload(sys)  # Reload does the trick!
-sys.setdefaultencoding('UTF8')
 
 def commandline_arg(bytestring):
     unicode_string = bytestring.decode(sys.getfilesystemencoding())
