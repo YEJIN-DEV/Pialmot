@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # CREATED: 11/9/15 3:57 PM by Justin Salamon <justin.salamon@nyu.edu>
 
 import librosa
@@ -79,8 +79,8 @@ def save_midi(outfile, notes, tempo):
     volume = 100
 
     for note in notes:
-        onset = note[0] * (tempo/60.)
-        duration = note[1] * (tempo/60.)
+        onset = note[0] * (tempo / 60.)
+        duration = note[1] * (tempo / 60.)
         # duration = 1
         pitch = note[2]
         midifile.addNote(track, channel, pitch, onset, duration, volume)
@@ -141,7 +141,7 @@ def hz2midi(hz):
     hz_nonneg = hz.copy()
     idx = hz_nonneg <= 0
     hz_nonneg[idx] = 1
-    midi = 69 + 12*np.log2(hz_nonneg/440.)
+    midi = 69 + 12 * np.log2(hz_nonneg / 440.)
     midi[idx] = 0
 
     # round
@@ -157,21 +157,23 @@ def audio_to_midi_melodia(infile, smooth=0.25, minduration=0.1,
     fs = 44100
     hop = 128
 
-    total = 764 # total number of frames in the audio file
+    total = 764  # total number of frames in the audio file
     current = 0
     for (root, dirs, files) in os.walk(infile):
         for file in files:
             current += 1
             if(file.endswith('.mp3')):
-                print(u'***처리중: '+(root+'\\'+file))
-                print(u'***작업률: '+str(current)+'/'+str(total)+' '+ str(current/total*100)+'%')
+                print(
+                    (u'***processing: ' + (root + u'\\' + file)).encode('shift-jis'))
+                print(u'***progress: ' + str(current) + '/' +
+                      str(total) + ' ' + str(current / total * 100) + '%')
                 # load audio using librosa
                 print("Loading audio...")
-                data, sr = librosa.load(root+'\\'+file)
+                data, sr = librosa.load((root + '\\' + file).encode('mbcs'))
 
                 tempo = int(librosa.beat.beat_track(y=data, sr=sr)[0])
                 print("Estimated tempo: %d" % tempo)
-                
+
                 # mixdown to mono if needed
                 if len(data.shape) > 1 and data.shape[1] > 1:
                     data = data.mean(axis=1)
@@ -183,13 +185,13 @@ def audio_to_midi_melodia(infile, smooth=0.25, minduration=0.1,
                 # extract melody using melodia vamp plugin
                 print("Extracting melody f0 with MELODIA...")
                 melody = vamp.collect(data, sr, "mtg-melodia:melodia",
-                                    parameters={"voicing": 0.2})
+                                      parameters={"voicing": 0.2})
 
                 # hop = melody['vector'][0]
                 pitch = melody['vector'][1]
 
                 # impute missing 0's to compensate for starting timestamp
-                pitch = np.insert(pitch, 0, [0]*8)
+                pitch = np.insert(pitch, 0, [0] * 8)
 
                 # debug
                 # np.asarray(pitch).dump('f0.npy')
@@ -204,20 +206,23 @@ def audio_to_midi_melodia(infile, smooth=0.25, minduration=0.1,
 
                 # save note sequence to a midi file
                 print("Saving MIDI to disk...")
-                if not os.path.exists('output'+(root+'\\')[5:]):
-                    os.makedirs('output'+(root+'\\')[5:])
-                save_midi('output'+(root+'\\'+file)[5:-3]+'mid', notes, tempo)
+                if not os.path.exists('output' + (root + '\\')[5:]):
+                    os.makedirs('output' + (root + '\\')[5:])
+                save_midi(
+                    ('output' + (root + '\\' + file)[5:-3] + 'mid').encode('mbcs'), notes, tempo)
 
                 if savejams:
                     print("Saving JAMS to disk...")
-                    jamsfile = 'output'+(root+'\\'+file)[5:-3] + ".jams"
+                    jamsfile = 'output' + (root + '\\' + file)[5:-3] + ".jams"
                     track_duration = len(data) / float(fs)
-                    save_jams(jamsfile, notes, track_duration, os.path.basename(infile))
+                    save_jams(
+                        jamsfile, notes, track_duration, os.path.basename(infile))
 
                 print("Conversion complete.")
 
 
 import sys
+
 
 def commandline_arg(bytestring):
     unicode_string = bytestring.decode(sys.getfilesystemencoding())
@@ -226,7 +231,8 @@ def commandline_arg(bytestring):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("infile", type=commandline_arg, help="Path to input audio file.")
+    parser.add_argument(
+        "infile", type=commandline_arg, help="Path to input audio file.")
     parser.add_argument("--smooth", type=float, default=0.25,
                         help="Smooth the pitch sequence with a median filter "
                              "of the provided duration (in seconds).")
