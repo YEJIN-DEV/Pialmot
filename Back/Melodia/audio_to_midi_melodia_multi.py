@@ -157,12 +157,18 @@ def audio_to_midi_melodia(infile, smooth=0.25, minduration=0.1,
     fs = 44100
     hop = 128
 
-    total = 764  # total number of frames in the audio file
+    total = 606  # total number of frames in the audio file
     current = 0
     for (root, dirs, files) in os.walk(infile):
         for file in files:
             current += 1
-            if(file.endswith('.mp3')):
+            if(os.path.exists(('output' + (root + '\\' + file)[5:-3] + 'mid').encode('mbcs'))):
+                print(
+                    (u'***重複: ' + (root + u'\\' + file)).encode('shift-jis'))
+                print(u'***作業率: ' + str(current) + '/' +
+                      str(total) + ' ' + str(current / total * 100) + '%')
+                continue
+            elif(file.endswith('.mp3')):
                 print(
                     (u'***処理中: ' + (root + u'\\' + file)).encode('shift-jis'))
                 print(u'***作業率: ' + str(current) + '/' +
