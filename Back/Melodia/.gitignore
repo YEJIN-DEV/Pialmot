@@ -14,3 +14,4 @@ __init__.pyc
 audio_to_midi_melodia.pyc
 music
 output
+error.txt

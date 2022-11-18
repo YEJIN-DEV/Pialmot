@@ -164,13 +164,20 @@ def audio_to_midi_melodia(infile, smooth=0.25, minduration=0.1,
             current += 1
             if(file.endswith('.mp3')):
                 print(
-                    (u'***processing: ' + (root + u'\\' + file)).encode('shift-jis'))
-                print(u'***progress: ' + str(current) + '/' +
+                    (u'***処理中: ' + (root + u'\\' + file)).encode('shift-jis'))
+                print(u'***作業率: ' + str(current) + '/' +
                       str(total) + ' ' + str(current / total * 100) + '%')
                 # load audio using librosa
                 print("Loading audio...")
-                data, sr = librosa.load((root + '\\' + file).encode('mbcs'))
-
+                try:
+                    data, sr = librosa.load(
+                        (root + '\\' + file).encode('mbcs'))
+                except:
+                    print('Error: could not load audio file')
+                    with open("error.txt", "a") as myfile:
+                        myfile.write(
+                            (root + u'\\' + file).encode('utf8') + '\n')
+                    continue
                 tempo = int(librosa.beat.beat_track(y=data, sr=sr)[0])
                 print("Estimated tempo: %d" % tempo)
 

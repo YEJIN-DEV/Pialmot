@@ -79,8 +79,8 @@ def save_midi(outfile, notes, tempo):
     volume = 100
 
     for note in notes:
-        onset = note[0] * (tempo/60.)
-        duration = note[1] * (tempo/60.)
+        onset = note[0] * (tempo / 60.)
+        duration = note[1] * (tempo / 60.)
         # duration = 1
         pitch = note[2]
         midifile.addNote(track, channel, pitch, onset, duration, volume)
@@ -141,7 +141,7 @@ def hz2midi(hz):
     hz_nonneg = hz.copy()
     idx = hz_nonneg <= 0
     hz_nonneg[idx] = 1
-    midi = 69 + 12*np.log2(hz_nonneg/440.)
+    midi = 69 + 12 * np.log2(hz_nonneg / 440.)
     midi[idx] = 0
 
     # round
@@ -163,7 +163,7 @@ def audio_to_midi_melodia(infile, outfile, smooth=0.25, minduration=0.1,
 
     tempo = int(librosa.beat.beat_track(y=data, sr=sr)[0])
     print("Estimated tempo: %d" % tempo)
-    
+
     # mixdown to mono if needed
     if len(data.shape) > 1 and data.shape[1] > 1:
         data = data.mean(axis=1)
@@ -181,7 +181,7 @@ def audio_to_midi_melodia(infile, outfile, smooth=0.25, minduration=0.1,
     pitch = melody['vector'][1]
 
     # impute missing 0's to compensate for starting timestamp
-    pitch = np.insert(pitch, 0, [0]*8)
+    pitch = np.insert(pitch, 0, [0] * 8)
 
     # debug
     # np.asarray(pitch).dump('f0.npy')
@@ -209,14 +209,21 @@ def audio_to_midi_melodia(infile, outfile, smooth=0.25, minduration=0.1,
 
 import sys
 
+
 def commandline_arg(bytestring):
     unicode_string = bytestring.decode(sys.getfilesystemencoding())
     return unicode_string
 
 
 if __name__ == "__main__":
+    try:
+        os.remove('error.txt')
+    except OSError:
+        pass
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("infile", type=commandline_arg, help="Path to input audio file.")
+    parser.add_argument(
+        "infile", type=commandline_arg, help="Path to input audio file.")
     parser.add_argument("outfile", help="Path for saving output MIDI file.")
     parser.add_argument("--smooth", type=float, default=0.25,
                         help="Smooth the pitch sequence with a median filter "
