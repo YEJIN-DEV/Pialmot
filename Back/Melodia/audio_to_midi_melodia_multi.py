@@ -164,13 +164,13 @@ def audio_to_midi_melodia(infile, smooth=0.25, minduration=0.1,
             current += 1
             if(os.path.exists(('output' + (root + '\\' + file)[5:-3] + 'mid').encode('mbcs'))):
                 print(
-                    (u'***重複: ' + (root + u'\\' + file)).encode('shift-jis'))
+                    (u'***重複: ' + (root + u'\\' + file)).encode('utf8'))
                 print(u'***作業率: ' + str(current) + '/' +
                       str(total) + ' ' + str(current / total * 100) + '%')
                 continue
             elif(file.endswith('.mp3')):
                 print(
-                    (u'***処理中: ' + (root + u'\\' + file)).encode('shift-jis'))
+                    (u'***処理中: ' + (root + u'\\' + file)).encode('utf8'))
                 print(u'***作業率: ' + str(current) + '/' +
                       str(total) + ' ' + str(current / total * 100) + '%')
                 # load audio using librosa
