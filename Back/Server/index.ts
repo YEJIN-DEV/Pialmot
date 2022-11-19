@@ -139,12 +139,12 @@ app.get('/music/:group', function (req, res) {
       )
       if (kindPath !== undefined) {
         let temp = randomMusic(groupPath, kindPath).musicFile
+        temp = temp.substring(0, temp.length - 4).substring(4)
+
         if (result.questions.findIndex(e => e == temp) == -1)
-          result.questions.push(temp.substring(0, temp.length - 4).substring(4))
+          result.questions.push(temp)
         else i--
-      } else {
-        i--
-      }
+      } else i--
     }
   }
 
