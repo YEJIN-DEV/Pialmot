@@ -5,11 +5,11 @@ function getRandMusic(group){
     fetch('http://112.164.62.41:8000/music/'+group+'?kind=anime&original')
     .then((response) => response.json())
     .then((data) => {
-        MIDI.Player.loadFile("data:audio/midi;base64,"+data[0].music.midi_buffer, function() {
-            document.getElementById('current_music').innerText = data[0].music.name;
+        MIDI.Player.loadFile("data:audio/midi;base64,"+data.midi_buffer, function() {
+            document.getElementById('current_music').innerText = data.name;
             MIDI.Player.start();
             before = new Date();
-            snd.src = "data:audio/mp3;base64," +data[0].music.mp3_buffer;
+            snd.src = "data:audio/mp3;base64,"+data.mp3_buffer;
             snd.volume = 0.05;
             snd.load();
         });

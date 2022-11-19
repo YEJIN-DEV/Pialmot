@@ -89,62 +89,65 @@ app.get('/music/:group', function (req, res) {
     }
   }
 
-  const result: {
-    music: Array<{
-      name: string
-      group: groups
-      album: string
-      kind: musicKind
-      midi_buffer: string
-      mp3_buffer?: string
-    }>
+  let result: {
+    name: string
+    group: groups
+    album: string
+    kind: musicKind
     questions: string[]
-  } = {
-    music: [],
+    midi_buffer: string
+    mp3_buffer?: string
+  } = undefined as any
+
+  const kindPath = kindPaths[getRandomInt(0, kindPaths.length)]
+  const { musicFile, dir } = randomMusic(groupPath, kindPath.path)
+
+  result = {
+    name: musicFile.substring(0, musicFile.length - 4),
+    album: dir,
+    group: group,
+    kind: kindPath.kind,
+    midi_buffer: fs.readFileSync(
+      path1.join(midiPath, groupPath, kindPath.path, dir, musicFile),
+      {
+        encoding: 'base64'
+      }
+    ),
+    mp3_buffer:
+      req.query.original != undefined
+        ? fs.readFileSync(
+            path1.join(
+              mp3Path,
+              groupPath,
+              kindPath.path,
+              dir,
+              musicFile.substring(0, musicFile.length - 3) + 'mp3'
+            ),
+            {
+              encoding: 'base64'
+            }
+          )
+        : undefined,
     questions: []
   }
 
-  for (const kindPath of kindPaths) {
-    const { musicFile, dir } = randomMusic(groupPath, kindPath.path)
-    result.music.push({
-      name: musicFile.substring(0, musicFile.length - 4),
-      album: dir,
-      group: group,
-      kind: kindPath.kind,
-      midi_buffer: fs.readFileSync(
-        path1.join(midiPath, groupPath, kindPath.path, dir, musicFile),
-        {
-          encoding: 'base64'
-        }
-      ),
-      mp3_buffer:
-        req.query.original != undefined
-          ? fs.readFileSync(
-              path1.join(
-                mp3Path,
-                groupPath,
-                kindPath.path,
-                dir,
-                musicFile.substring(0, musicFile.length - 3) + 'mp3'
-              ),
-              {
-                encoding: 'base64'
-              }
-            )
-          : undefined
-    })
-  }
-
+  let answerIndex = getRandomInt(0, 4)
   for (let i = 0; i < 5; i++) {
-    const kindPath = kindToFolder(
-      getRandomInt(musicKind.anime, musicKind.album),
-      group
-    )
-    if (kindPath !== undefined) {
-      let temp = randomMusic(groupPath, kindPath).musicFile
-      result.questions.push(temp.substring(0, temp.length - 4))
+    if (i == answerIndex) {
+      result.questions.push(result.name.substring(4))
     } else {
-      i--
+      const kindPath = kindToFolder(
+        getRandomInt(musicKind.anime, musicKind.album),
+        group
+      )
+      if (kindPath !== undefined) {
+        let temp = randomMusic(groupPath, kindPath).musicFile
+        if (result.questions.findIndex(e => e == temp) == -1)
+          result.questions.push(temp.substring(0, temp.length - 4).substring(4))
+        else i--
+      } else {
+        i--
+      }
     }
   }
 
