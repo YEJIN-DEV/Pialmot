@@ -1,0 +1,3 @@
+function getRandMusic(){
+    fetch('/music')
+}
