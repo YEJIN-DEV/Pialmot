@@ -38,6 +38,7 @@ enum groups {
   liella
 }
 const app = express()
+app.use(express.text())
 const server = http.createServer(app)
 
 /*
@@ -154,10 +155,10 @@ let rank: { [key: string]: { [key: string]: number[] } } = JSON.parse(
   fs.readFileSync('rank.json', 'utf8')
 )
 
-app.post('/rank/:group/:music/:time', function (req, res) {
+app.post('/rank/:group/:music', function (req, res) {
   const group = groups[req.params.group as keyof typeof groups]
   const music = req.params.music
-  const time = req.params.time
+  const time: number = Number(req.body)
 
   if (rank[group] == undefined) {
     rank[group] = {}
@@ -167,17 +168,16 @@ app.post('/rank/:group/:music/:time', function (req, res) {
     rank[group][music] = []
   }
 
-  rank[group][music].push(Number(time))
+  rank[group][music].push(time)
   rank[group][music].sort((a, b) => a - b)
 
   res.status(200).send({
-    rank: rank[group][music].indexOf(Number(time)) + 1,
+    rank: rank[group][music].indexOf(time) + 1,
     best: rank[group][music][0],
     average:
       rank[group][music].reduce((a, b) => a + b) / rank[group][music].length,
     count: rank[group][music].length,
-    pertange:
-      rank[group][music].indexOf(Number(time)) / rank[group][music].length
+    pertange: rank[group][music].indexOf(time) / rank[group][music].length
   })
 
   fs.writeFileSync('rank.json', JSON.stringify(rank))
