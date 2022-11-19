@@ -40,10 +40,6 @@ enum groups {
 const app = express()
 const server = http.createServer(app)
 
-app.get('/', function (req, res) {
-  res.send('Hello /')
-})
-
 /*
 오류:
 니지동: 싱글
