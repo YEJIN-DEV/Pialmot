@@ -12,5 +12,19 @@
             "../Server/tsconfig.json"
         ]
     },
-    "rules": {}
+    "rules": {
+        "@typescript-eslint/member-delimiter-style": [
+            "error",
+            {
+                "multiline": {
+                    "delimiter": "none",
+                    "requireLast": true
+                },
+                "singleline": {
+                    "delimiter": "comma",
+                    "requireLast": false
+                }
+            }
+        ],
+    }
 }
