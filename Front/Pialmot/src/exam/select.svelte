@@ -1,7 +1,16 @@
 <script>
     let before = 0;
     let snd = new Audio();
-    export let musicdata = { answer: "None" };
+    export let musicdata = {
+        answer: "None",
+        questions: [
+            { name: "", data: "" },
+            { name: "", data: "" },
+            { name: "", data: "" },
+            { name: "", data: "" },
+            { name: "", data: "" },
+        ],
+    };
     let player_seek = 0;
     export let albumArt = "";
 
@@ -26,18 +35,6 @@
                 albumArt = "data:image/jpeg;base64," + data.album.data;
                 before = new Date();
 
-                let selectbox = document.getElementById("questions");
-                while (selectbox.options.length > 0) {
-                    selectbox.remove(0);
-                }
-
-                for (let option of data.questions) {
-                    let opt = document.createElement("option");
-                    opt.value = option.name;
-                    opt.innerText = option.name;
-                    selectbox.appendChild(opt);
-                }
-
                 musicdata = data;
             });
     }
@@ -51,21 +48,13 @@
         }
     }
 
-    export function changeArt() {
-        let selectbox = document.getElementById("questions");
-        let selected = selectbox.options[selectbox.selectedIndex].value;
-        albumArt =
-            "data:image/jpeg;base64," +
-            musicdata.questions.find((x) => x.name == selected).data;
-    }
-
-    export function Answer() {
-        let selectbox = document.getElementById("questions");
-        let selected = selectbox.options[selectbox.selectedIndex].value;
+    export function Answer(index) {
+        let selected = musicdata.questions[index].name;
         let answer = musicdata.name.substring(4);
         if (selected == answer) {
             let after = new Date();
             let time = after - before;
+            playOriginal();
             alert("정답입니다! 당신의 시간은 " + time / 1000 + "초 입니다.");
 
             fetch(
@@ -78,36 +67,97 @@
                 .then((response) => response.json())
                 .then((data) => {
                     alert(
-                        `[${data.rank}위]\n최고:${data.best}ms\n평균:${data.average}ms\n상위:${data.pertange}%`
+                        `[${data.rank}위/${data.count}명]\n최고:${
+                            data.best
+                        }ms\n평균:${data.average}ms\n상위:${
+                            data.pertange * 100
+                        }%`
                     );
                 });
-            getRandMusic(groups[musicdata.group]);
         } else {
             alert("오답입니다!");
         }
+
+        getRandMusic(groups[musicdata.group]);
     }
+
+    function onKeyDown(e) {
+        switch (e.key) {
+            case "1":
+                Answer(0);
+                break;
+            case "2":
+                Answer(1);
+                break;
+            case "3":
+                Answer(2);
+                break;
+            case "4":
+                Answer(3);
+                break;
+            case "5":
+                Answer(4);
+                break;
+        }
+    }
+    setTimeout(() => {
+        getRandMusic("liella");
+    }, 1000);
 </script>
 
 <svelte:head>
     <script type="text/javascript" src="//www.midijs.net/lib/midi.js"></script>
+    <meta name="viewport" content="width=device-width" />
 </svelte:head>
+<svelte:window on:keydown|preventDefault={onKeyDown} />
 
 <body>
-    <div class="texts">
-        <img
-            on:click={() => Answer()}
-            src={albumArt}
-            alt="album Art"
-            height="700px"
-            width="700px"
-        />
-        <img
-            on:click={() => Answer()}
-            src={albumArt}
-            alt="album Art"
-            height="700px"
-            width="700px"
-        />
+    <div class="images">
+        <div class="container">
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <img
+                on:click={() => Answer(0)}
+                src={"data:image/jpeg;base64," + musicdata.questions[0].data}
+                alt={musicdata.questions[0].name}
+            />
+            <h2 style="text-align: center">{musicdata.questions[0].name}</h2>
+        </div>
+        <div class="container">
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <img
+                on:click={() => Answer(1)}
+                src={"data:image/jpeg;base64," + musicdata.questions[1].data}
+                alt={musicdata.questions[1].name}
+            />
+            <h2>{musicdata.questions[1].name}</h2>
+        </div>
+        <div class="container">
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <img
+                on:click={() => Answer(2)}
+                src={"data:image/jpeg;base64," + musicdata.questions[2].data}
+                alt={musicdata.questions[2].name}
+            />
+            <h2>{musicdata.questions[2].name}</h2>
+        </div>
+        <div class="container">
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <img
+                on:click={() => Answer(3)}
+                src={"data:image/jpeg;base64," + musicdata.questions[3].data}
+                alt={musicdata.questions[3].name}
+            />
+            <h2>{musicdata.questions[3].name}</h2>
+        </div>
+        <div class="container">
+            <!-- svelte-ignore a11y-click-events-have-key-events -->
+            <img
+                on:click={() => Answer(4)}
+                src={"data:image/jpeg;base64," + musicdata.questions[4].data}
+                alt={musicdata.questions[4].name}
+            />
+            <h2>{musicdata.questions[4].name}</h2>
+        </div>
     </div>
 </body>
 
@@ -118,29 +168,29 @@
         background-color: #f0eeec;
     }
 
-    img {
-        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    }
-
-    p {
-        font-family: "Inter";
-        font-style: normal;
-        font-weight: bold;
-        font-size: 30px;
-    }
-
-    .texts {
+    .images {
         display: flex;
-        padding: 10rem 0 0 10rem;
-        height: 300px;
+        height: 100vh;
     }
 
-    .btns {
-        flex: none;
-        padding: 0rem 0 0 2rem;
-        height: 300px;
+    .container {
+        position: relative;
     }
 
+    img {
+        box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+        width: 20vw;
+        height: 100vh;
+        object-fit: cover;
+    }
+
+    h2 {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        color: rgb(34, 34, 34);
+    }
     @media (min-width: 640px) {
         body {
             max-width: none;
