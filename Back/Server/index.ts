@@ -89,9 +89,9 @@ app.get('/music/:group', function (req, res) {
   let result: {
     name: string
     group: groups
-    album: string
+    album: { name: string; data: string }
     kind: musicKind
-    questions: string[]
+    questions: { name: string; data: string }[]
     midi_buffer: string
     mp3_buffer?: string
   } = undefined as any
@@ -101,7 +101,13 @@ app.get('/music/:group', function (req, res) {
 
   result = {
     name: musicFile.substring(0, musicFile.length - 4),
-    album: dir,
+    album: {
+      name: dir,
+      data: getCover(
+        path1.join(mp3Path, groupPath, kindPath.path, dir),
+        musicFile
+      )
+    },
     group: group,
     kind: kindPath.kind,
     midi_buffer: fs.readFileSync(
@@ -131,18 +137,27 @@ app.get('/music/:group', function (req, res) {
   let answerIndex = getRandomInt(0, 4)
   for (let i = 0; i < 5; i++) {
     if (i == answerIndex) {
-      result.questions.push(result.name.substring(4))
+      result.questions.push({
+        name: result.name.substring(4),
+        data: result.album.data
+      })
     } else {
       const kindPath = kindToFolder(
         getRandomInt(musicKind.anime, musicKind.album),
         group
       )
       if (kindPath !== undefined) {
-        let temp = randomMusic(groupPath, kindPath).musicFile
-        temp = temp.substring(0, temp.length - 4).substring(4)
+        let { musicFile, dir } = randomMusic(groupPath, kindPath)
+        musicFile = musicFile.substring(0, musicFile.length - 4).substring(4)
 
-        if (result.questions.findIndex(e => e == temp) == -1)
-          result.questions.push(temp)
+        if (result.questions.findIndex(e => e.name == musicFile) == -1)
+          result.questions.push({
+            name: musicFile,
+            data: getCover(
+              path1.join(mp3Path, groupPath, kindPath, dir),
+              musicFile
+            )
+          })
         else i--
       } else i--
     }
@@ -292,4 +307,21 @@ function randomMusic (
   const files = getFiles(path1.join(midiPath, groupPath, kindPath, dir))
   const musicFile = files[getRandomInt(0, files.length)]
   return { musicFile, dir }
+}
+
+function getCover (albumPath: string, musicName: string): string {
+  if (fs.existsSync(path1.join(albumPath, 'cover.jpg'))) {
+    albumPath = path1.join(albumPath, 'cover.jpg')
+  } else {
+    let trackNum = musicName.substring(0, 2)
+    if (fs.existsSync(path1.join(albumPath, `Cover_${trackNum}.jpg`))) {
+      albumPath = path1.join(albumPath, `Cover_${trackNum}.jpg`)
+    } else {
+      //흰색 1x1 jpg
+      return '/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAABAAEDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9/KKKKAP/2Q=='
+    }
+  }
+  return fs.readFileSync(albumPath, {
+    encoding: 'base64'
+  })
 }
