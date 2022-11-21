@@ -123,18 +123,21 @@
         }
     }
     setTimeout(() => {
-        getRandMusic("nijigasaki");
+        getRandMusic("liella");
     }, 1000);
 </script>
 
 <svelte:head>
     <script type="text/javascript" src="//www.midijs.net/lib/midi.js"></script>
     <meta name="viewport" content="width=device-width" />
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
+    </style>
 </svelte:head>
 <svelte:window on:keydown|preventDefault={onKeyDown} />
 
 <body>
-    {#if inquestion}
+    {#if !inquestion}
         <div class="images">
             <div class="container">
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -284,7 +287,7 @@
             <h1 style="font-size:64px;">
                 {`#${rank.rank}`}
             </h1>
-            <h3 style="font-size:24px;margin-bottom:2rem">
+            <h3 style="font-size:24px;font-weight:400;margin-bottom:2rem">
                 {`/${rank.count}`}
             </h3>
             <img
@@ -294,9 +297,8 @@
                 src={"data:image/jpeg;base64," + musicdata.album.data}
                 alt=""
             />
-            <h1>{musicdata.name}</h1>
-            <h4>{musicdata.album.name}</h4>
-            <button on:click={playOriginal}>재생</button>
+            <h1 style="font-weight:400;">{musicdata.name}</h1>
+            <h4 style="font-weight:400;">{musicdata.album.name}</h4>
         </div>
     {/if}
 </body>
@@ -339,13 +341,10 @@
         color: rgb(34, 34, 34);
     }
 
-    h1 h2 h3 {
-        font-family: "Inter", sans-serif;
-    }
-
     * {
         padding: 0;
         margin: 0;
+        font-family: "Inter", sans-serif;
     }
     @media (min-width: 640px) {
         body {
