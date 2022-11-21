@@ -45,7 +45,7 @@ const server = http.createServer(app)
 오류:
 니지동: 싱글
 리에라: 유닛
-
+아쿠아: 오리지널, 싱글
 정상:
 니지동: anime, original, unit, special, album
 리에라: anime, original, single, special, album
@@ -59,7 +59,7 @@ app.get('/music/:group', function (req, res) {
       groupPath = '' // TODO: 폴더명
       break
     case groups.aqours:
-      groupPath = '' // TODO: 폴더명
+      groupPath = 'Aqours' // TODO: 폴더명
       break
     case groups.nijigasaki:
       groupPath = 'Nijigasaki Gakuen School Idol Doukoukai'
@@ -184,19 +184,19 @@ app.get('/music/:group', function (req, res) {
   res.json(result)
 })
 
-app.get('/list/:group', function (req, res){
-    let result: {
-      songs: { name: string; group: groups; kind: musicKind }[]
-    } = undefined as any
-  
-    let kindPath: {
-      kind: musicKind
-      path: string
-    }
+app.get('/list/:group', function (req, res) {
+  let result: {
+    songs: { name: string; group: groups; kind: musicKind }[]
+  } = undefined as any
 
-    result = {
-      songs: []
-    }
+  let kindPath: {
+    kind: musicKind
+    path: string
+  }
+
+  result = {
+    songs: []
+  }
 })
 
 let rank: { [key: string]: { [key: string]: number[] } } = JSON.parse(
@@ -244,7 +244,7 @@ function kindToFolder (kind: musicKind, group: groups): string | undefined {
           path = '' // TODO: 폴더명
           break
         case groups.aqours:
-          path = '' // TODO: 폴더명
+          path = '[2016-2019] Anime' // TODO: 폴더명
           break
         case groups.nijigasaki:
           path = '[2020-2022] Anime'
@@ -259,8 +259,7 @@ function kindToFolder (kind: musicKind, group: groups): string | undefined {
           path = '' // TODO: 폴더명
           break
         case groups.aqours:
-          path = '' // TODO: 폴더명
-          break
+          return undefined
         case groups.nijigasaki:
           path = '[2020-2021] Original Song'
           break
@@ -274,8 +273,7 @@ function kindToFolder (kind: musicKind, group: groups): string | undefined {
           path = '' // TODO: 폴더명
           break
         case groups.aqours:
-          path = '' // TODO: 폴더명
-          break
+          return undefined
         case groups.nijigasaki:
           return undefined
         case groups.liella:
@@ -288,7 +286,7 @@ function kindToFolder (kind: musicKind, group: groups): string | undefined {
           path = '' // TODO: 폴더명
           break
         case groups.aqours:
-          path = '' // TODO: 폴더명
+          path = '[2016-2021] Units' // TODO: 폴더명
           break
         case groups.nijigasaki:
           path = '[2020-2022] Units/'
@@ -303,7 +301,7 @@ function kindToFolder (kind: musicKind, group: groups): string | undefined {
           path = '' // TODO: 폴더명
           break
         case groups.aqours:
-          path = '' // TODO: 폴더명
+          path = '[2016-2022] Special' // TODO: 폴더명
           break
         case groups.nijigasaki:
           path = '[2021-2021] Special'
@@ -318,7 +316,7 @@ function kindToFolder (kind: musicKind, group: groups): string | undefined {
           path = '' // TODO: 폴더명
           break
         case groups.aqours:
-          path = '' // TODO: 폴더명
+          path = '[2015-2021] Albums' // TODO: 폴더명
           break
         case groups.nijigasaki:
           path = '[2018-2021] Albums'
