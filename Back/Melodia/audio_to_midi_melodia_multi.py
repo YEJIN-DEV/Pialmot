@@ -161,78 +161,79 @@ def audio_to_midi_melodia(infile, smooth=0.25, minduration=0.1,
     current = 0
     for (root, dirs, files) in os.walk(infile):
         for file in files:
-            current += 1
-            if(os.path.exists(('output' + (root + '\\' + file)[5:-3] + 'mid').encode('mbcs'))):
-                print(
-                    (u'***重複: ' + (root + u'\\' + file)).encode('utf8'))
-                print(u'***作業率: ' + str(current) + '/' +
-                      str(total) + ' ' + str(current / total * 100) + '%')
-                continue
-            elif(file.endswith('.mp3')):
-                print(
-                    (u'***処理中: ' + (root + u'\\' + file)).encode('utf8'))
-                print(u'***作業率: ' + str(current) + '/' +
-                      str(total) + ' ' + str(current / total * 100) + '%')
-                # load audio using librosa
-                print("Loading audio...")
-                try:
+            try:
+                current += 1
+                if(os.path.exists(('output' + (root + '\\' + file)[5:-3] + 'mid').encode('mbcs'))):
+                    print(
+                        (u'***重複: ' + (root + u'\\' + file)).encode('utf8'))
+                    print(u'***作業率: ' + str(current) + '/' +
+                          str(total) + ' ' + str(current / total * 100) + '%')
+                    continue
+                elif(file.endswith('.mp3')):
+                    print(
+                        (u'***処理中: ' + (root + u'\\' + file)).encode('utf8'))
+                    print(u'***作業率: ' + str(current) + '/' +
+                          str(total) + ' ' + str(current / total * 100) + '%')
+                    # load audio using librosa
+                    print("Loading audio...")
                     data, sr = librosa.load(
                         (root + '\\' + file).encode('mbcs'))
-                except:
-                    print('Error: could not load audio file')
-                    with open("error.txt", "a") as myfile:
-                        myfile.write(
-                            (root + u'\\' + file).encode('utf8') + '\n')
-                    continue
-                tempo = int(librosa.beat.beat_track(y=data, sr=sr)[0])
-                print("Estimated tempo: %d" % tempo)
+                    tempo = int(librosa.beat.beat_track(y=data, sr=sr)[0])
+                    print("Estimated tempo: %d" % tempo)
 
-                # mixdown to mono if needed
-                if len(data.shape) > 1 and data.shape[1] > 1:
-                    data = data.mean(axis=1)
-                # resample to 44100 if needed
-                if sr != fs:
-                    data = resampy.resample(data, sr, fs)
-                    sr = fs
+                    # mixdown to mono if needed
+                    if len(data.shape) > 1 and data.shape[1] > 1:
+                        data = data.mean(axis=1)
+                    # resample to 44100 if needed
+                    if sr != fs:
+                        data = resampy.resample(data, sr, fs)
+                        sr = fs
 
-                # extract melody using melodia vamp plugin
-                print("Extracting melody f0 with MELODIA...")
-                melody = vamp.collect(data, sr, "mtg-melodia:melodia",
-                                      parameters={"voicing": 0.2})
+                    # extract melody using melodia vamp plugin
+                    print("Extracting melody f0 with MELODIA...")
+                    melody = vamp.collect(data, sr, "mtg-melodia:melodia",
+                                          parameters={"voicing": 0.2})
 
-                # hop = melody['vector'][0]
-                pitch = melody['vector'][1]
+                    # hop = melody['vector'][0]
+                    pitch = melody['vector'][1]
 
-                # impute missing 0's to compensate for starting timestamp
-                pitch = np.insert(pitch, 0, [0] * 8)
+                    # impute missing 0's to compensate for starting timestamp
+                    pitch = np.insert(pitch, 0, [0] * 8)
 
-                # debug
-                # np.asarray(pitch).dump('f0.npy')
-                # print(len(pitch))
+                    # debug
+                    # np.asarray(pitch).dump('f0.npy')
+                    # print(len(pitch))
 
-                # convert f0 to midi notes
-                print("Converting Hz to MIDI notes...")
-                midi_pitch = hz2midi(pitch)
+                    # convert f0 to midi notes
+                    print("Converting Hz to MIDI notes...")
+                    midi_pitch = hz2midi(pitch)
 
-                # segment sequence into individual midi notes
-                notes = midi_to_notes(midi_pitch, fs, hop, smooth, minduration)
+                    # segment sequence into individual midi notes
+                    notes = midi_to_notes(
+                        midi_pitch, fs, hop, smooth, minduration)
 
-                # save note sequence to a midi file
-                print("Saving MIDI to disk...")
-                if not os.path.exists('output' + (root + '\\')[5:]):
-                    os.makedirs('output' + (root + '\\')[5:])
-                save_midi(
-                    ('output' + (root + '\\' + file)[5:-3] + 'mid').encode('mbcs'), notes, tempo)
+                    # save note sequence to a midi file
+                    print("Saving MIDI to disk...")
+                    if not os.path.exists('output' + (root + '\\')[5:]):
+                        os.makedirs('output' + (root + '\\')[5:])
+                    save_midi(
+                        ('output' + (root + '\\' + file)[5:-3] + 'mid').encode('mbcs'), notes, tempo)
 
-                if savejams:
-                    print("Saving JAMS to disk...")
-                    jamsfile = 'output' + (root + '\\' + file)[5:-3] + ".jams"
-                    track_duration = len(data) / float(fs)
-                    save_jams(
-                        jamsfile, notes, track_duration, os.path.basename(infile))
+                    if savejams:
+                        print("Saving JAMS to disk...")
+                        jamsfile = 'output' + \
+                            (root + '\\' + file)[5:-3] + ".jams"
+                        track_duration = len(data) / float(fs)
+                        save_jams(
+                            jamsfile, notes, track_duration, os.path.basename(infile))
 
-                print("Conversion complete.")
-
+                    print("Conversion complete.")
+            except:
+                print('Error: could not load audio file')
+                with open("error.txt", "a") as myfile:
+                    myfile.write(
+                        (root + u'\\' + file).encode('utf8') + '\n')
+                continue
 
 import sys
 
