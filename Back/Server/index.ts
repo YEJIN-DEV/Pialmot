@@ -117,7 +117,7 @@ app.get('/music/:group', function (req, res) {
   }
 
   result = {
-    name: musicFile.substring(0, musicFile.length - 4),
+    name: musicFile.substring(4, musicFile.length - 4),
     album: {
       name: dir,
       data: getCover(
@@ -182,6 +182,21 @@ app.get('/music/:group', function (req, res) {
   }
 
   res.json(result)
+})
+
+app.get('/list/:group', function (req, res){
+    let result: {
+      songs: { name: string; group: groups; kind: musicKind }[]
+    } = undefined as any
+  
+    let kindPath: {
+      kind: musicKind
+      path: string
+    }
+
+    result = {
+      songs: []
+    }
 })
 
 let rank: { [key: string]: { [key: string]: number[] } } = JSON.parse(

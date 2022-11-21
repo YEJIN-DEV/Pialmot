@@ -65,7 +65,7 @@
     export function Answer(index) {
         if (inquestion) {
             let selected = musicdata.questions[index].name;
-            let answer = musicdata.name.substring(4);
+            let answer = musicdata.name;
             if (selected == answer) {
                 let after = new Date();
                 let time = after - before;
