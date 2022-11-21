@@ -96,8 +96,25 @@ app.get('/music/:group', function (req, res) {
     mp3_buffer?: string
   } = undefined as any
 
-  const kindPath = kindPaths[getRandomInt(0, kindPaths.length)]
-  const { musicFile, dir } = randomMusic(groupPath, kindPath.path)
+  let kindPath: {
+    kind: musicKind
+    path: string
+  }
+  let musicFile: string = ''
+  let dir: string = ''
+  while (true) {
+    kindPath = kindPaths[getRandomInt(0, kindPaths.length)]
+    let { musicFile: tmp_musicFile, dir: tmp_dir } = randomMusic(
+      groupPath,
+      kindPath.path
+    )
+
+    if (tmp_musicFile !== undefined) {
+      musicFile = tmp_musicFile
+      dir = tmp_dir
+      break
+    }
+  }
 
   result = {
     name: musicFile.substring(0, musicFile.length - 4),
@@ -133,7 +150,6 @@ app.get('/music/:group', function (req, res) {
         : undefined,
     questions: []
   }
-
   let answerIndex = getRandomInt(0, 4)
   for (let i = 0; i < 5; i++) {
     if (i == answerIndex) {
@@ -148,17 +164,19 @@ app.get('/music/:group', function (req, res) {
       )
       if (kindPath !== undefined) {
         let { musicFile, dir } = randomMusic(groupPath, kindPath)
-        musicFile = musicFile.substring(0, musicFile.length - 4).substring(4)
+        if (musicFile !== undefined) {
+          musicFile = musicFile.substring(0, musicFile.length - 4).substring(4)
 
-        if (result.questions.findIndex(e => e.name == musicFile) == -1)
-          result.questions.push({
-            name: musicFile,
-            data: getCover(
-              path1.join(mp3Path, groupPath, kindPath, dir),
-              musicFile
-            )
-          })
-        else i--
+          if (result.questions.findIndex(e => e.name == musicFile) == -1)
+            result.questions.push({
+              name: musicFile,
+              data: getCover(
+                path1.join(mp3Path, groupPath, kindPath, dir),
+                musicFile
+              )
+            })
+          else i--
+        } else i--
       } else i--
     }
   }
