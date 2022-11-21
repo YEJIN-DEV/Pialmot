@@ -13,6 +13,9 @@
     };
     let player_seek = 0;
     export let bright = [0.6, 0.6, 0.6, 0.6, 0.6];
+    export let blur = [1, 1, 1, 1, 1];
+    let player_onCursor = 0;
+    export let widthValue = [20, 20, 20, 20, 20];
 
     const groups = {
         0: "us",
@@ -116,9 +119,9 @@
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <img
                 on:click={() => Answer(0)}
-                on:mouseenter={() => (bright[0] = 1)}
-                on:mouseleave={() => (bright[0] = 0.6)}
-                style="filter: brightness({bright[0]});"
+                on:mouseenter={() => (bright[0] = 1, blur[0] = 0, player_onCursor = 1, widthValue = [24, 19, 19, 19, 19])}
+                on:mouseleave={() => (bright[0] = 0.6, blur[0] = 1, player_onCursor = 0, widthValue = [20, 20, 20, 20, 20])}
+                style="filter: brightness({player_onCursor == 0 ? 1 : bright[0]}) blur({player_onCursor == 0 ? 0 : blur[0]}px); width: {widthValue[0]}vw;"
                 src={"data:image/jpeg;base64," + musicdata.questions[0].data}
                 alt={musicdata.questions[0].name}
             />
@@ -128,9 +131,9 @@
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <img
                 on:click={() => Answer(1)}
-                on:mouseenter={() => (bright[1] = 1)}
-                on:mouseleave={() => (bright[1] = 0.6)}
-                style="filter: brightness({bright[1]});"
+                on:mouseenter={() => (bright[1] = 1, blur[1] = 0, player_onCursor = 1, widthValue = [19, 24, 19, 19, 19])}
+                on:mouseleave={() => (bright[1] = 0.6, blur[1] = 1, player_onCursor = 0, widthValue = [20, 20, 20, 20, 20])}
+                style="filter: brightness({player_onCursor == 0 ? 1 : bright[1]}) blur({player_onCursor == 0 ? 0 : blur[1]}px); width: {widthValue[1]}vw;"
                 src={"data:image/jpeg;base64," + musicdata.questions[1].data}
                 alt={musicdata.questions[1].name}
             />
@@ -140,9 +143,9 @@
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <img
                 on:click={() => Answer(2)}
-                on:mouseenter={() => (bright[2] = 1)}
-                on:mouseleave={() => (bright[2] = 0.6)}
-                style="filter: brightness({bright[2]});"
+                on:mouseenter={() => (bright[2] = 1, blur[2] = 0, player_onCursor = 1, widthValue = [19, 19, 24, 19, 19])}
+                on:mouseleave={() => (bright[2] = 0.6, blur[2] = 1, player_onCursor = 0, widthValue = [20, 20, 20, 20, 20])}
+                style="filter: brightness({player_onCursor == 0 ? 1 : bright[2]}) blur({player_onCursor == 0 ? 0 : blur[2]}px); width: {widthValue[2]}vw;"
                 src={"data:image/jpeg;base64," + musicdata.questions[2].data}
                 alt={musicdata.questions[2].name}
             />
@@ -152,9 +155,9 @@
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <img
                 on:click={() => Answer(3)}
-                on:mouseenter={() => (bright[3] = 1)}
-                on:mouseleave={() => (bright[3] = 0.6)}
-                style="filter: brightness({bright[3]});"
+                on:mouseenter={() => (bright[3] = 1, blur[3] = 0, player_onCursor = 1, widthValue = [19, 19, 19, 24, 19])}
+                on:mouseleave={() => (bright[3] = 0.6, blur[3] = 1, player_onCursor = 0, widthValue = [20, 20, 20, 20, 20])}
+                style="filter: brightness({player_onCursor == 0 ? 1 : bright[3]}) blur({player_onCursor == 0 ? 0 : blur[3]}px); width: {widthValue[3]}vw;"
                 src={"data:image/jpeg;base64," + musicdata.questions[3].data}
                 alt={musicdata.questions[3].name}
             />
@@ -164,9 +167,9 @@
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <img
                 on:click={() => Answer(4)}
-                on:mouseenter={() => (bright[4] = 1)}
-                on:mouseleave={() => (bright[4] = 0.6)}
-                style="filter: brightness({bright[4]});"
+                on:mouseenter={() => (bright[4] = 1, blur[4] = 0, player_onCursor = 1, widthValue = [19, 19, 19, 19, 24])}
+                on:mouseleave={() => (bright[4] = 0.6, blur[4] = 1, player_onCursor = 0, widthValue = [20, 20, 20, 20, 20])}
+                style="filter: brightness({player_onCursor == 0 ? 1 : bright[4]}) blur({player_onCursor == 0 ? 0 : blur[4]}px); width: {widthValue[4]}vw;"
                 src={"data:image/jpeg;base64," + musicdata.questions[4].data}
                 alt={musicdata.questions[4].name}
             />
