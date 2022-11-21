@@ -137,7 +137,7 @@
 <svelte:window on:keydown|preventDefault={onKeyDown} />
 
 <body>
-    {#if !inquestion}
+    {#if inquestion}
         <div class="images">
             <div class="container">
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
