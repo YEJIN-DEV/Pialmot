@@ -12,7 +12,7 @@
         ],
     };
     let player_seek = 0;
-    export let albumArt = "";
+    export let bright = [0.6, 0.6, 0.6, 0.6, 0.6];
 
     const groups = {
         0: "us",
@@ -32,7 +32,6 @@
                 snd.volume = 0.05;
                 snd.load();
 
-                albumArt = "data:image/jpeg;base64," + data.album.data;
                 before = new Date();
 
                 musicdata = data;
@@ -117,6 +116,9 @@
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <img
                 on:click={() => Answer(0)}
+                on:mouseenter={() => (bright[0] = 1)}
+                on:mouseleave={() => (bright[0] = 0.6)}
+                style="filter: brightness({bright[0]});"
                 src={"data:image/jpeg;base64," + musicdata.questions[0].data}
                 alt={musicdata.questions[0].name}
             />
@@ -126,6 +128,9 @@
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <img
                 on:click={() => Answer(1)}
+                on:mouseenter={() => (bright[1] = 1)}
+                on:mouseleave={() => (bright[1] = 0.6)}
+                style="filter: brightness({bright[1]});"
                 src={"data:image/jpeg;base64," + musicdata.questions[1].data}
                 alt={musicdata.questions[1].name}
             />
@@ -135,6 +140,9 @@
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <img
                 on:click={() => Answer(2)}
+                on:mouseenter={() => (bright[2] = 1)}
+                on:mouseleave={() => (bright[2] = 0.6)}
+                style="filter: brightness({bright[2]});"
                 src={"data:image/jpeg;base64," + musicdata.questions[2].data}
                 alt={musicdata.questions[2].name}
             />
@@ -144,6 +152,9 @@
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <img
                 on:click={() => Answer(3)}
+                on:mouseenter={() => (bright[3] = 1)}
+                on:mouseleave={() => (bright[3] = 0.6)}
+                style="filter: brightness({bright[3]});"
                 src={"data:image/jpeg;base64," + musicdata.questions[3].data}
                 alt={musicdata.questions[3].name}
             />
@@ -153,6 +164,9 @@
             <!-- svelte-ignore a11y-click-events-have-key-events -->
             <img
                 on:click={() => Answer(4)}
+                on:mouseenter={() => (bright[4] = 1)}
+                on:mouseleave={() => (bright[4] = 0.6)}
+                style="filter: brightness({bright[4]});"
                 src={"data:image/jpeg;base64," + musicdata.questions[4].data}
                 alt={musicdata.questions[4].name}
             />
