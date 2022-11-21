@@ -1,8 +1,10 @@
 <script>
     let before = 0;
     let snd = new Audio();
+    let inquestion = true;
     export let musicdata = {
         answer: "None",
+        album: { data: "" },
         questions: [
             { name: "", data: "" },
             { name: "", data: "" },
@@ -11,6 +13,15 @@
             { name: "", data: "" },
         ],
     };
+
+    export let rank = {
+        rank: -1,
+        best: -1,
+        average: -1,
+        count: -1,
+        pertange: -1,
+    };
+
     let player_seek = 0;
     export let bright = [0.6, 0.6, 0.6, 0.6, 0.6];
 
@@ -35,6 +46,7 @@
                 before = new Date();
 
                 musicdata = data;
+                inquestion = true;
             });
     }
 
@@ -48,23 +60,30 @@
     }
 
     export function Answer(index) {
-        let selected = musicdata.questions[index].name;
-        let answer = musicdata.name.substring(4);
-        if (selected == answer) {
-            let after = new Date();
-            let time = after - before;
-            playOriginal();
-            alert("정답입니다! 당신의 시간은 " + time / 1000 + "초 입니다.");
+        if (inquestion) {
+            let selected = musicdata.questions[index].name;
+            let answer = musicdata.name.substring(4);
+            if (selected == answer) {
+                let after = new Date();
+                let time = after - before;
+                inquestion = false;
+                playOriginal();
+                //alert("정답입니다! 당신의 시간은 " + time / 1000 + "초 입니다.");
 
-            fetch(
-                `http://112.164.62.41:8000/rank/${musicdata.group}/${answer}`,
-                {
-                    method: "POST",
-                    body: time.toString(),
-                }
-            )
-                .then((response) => response.json())
-                .then((data) => {
+                fetch(
+                    `http://112.164.62.41:8000/rank/${musicdata.group}/${answer}`,
+                    {
+                        method: "POST",
+                        body: time.toString(),
+                    }
+                )
+                    .then((response) => response.json())
+                    .then((data) => {
+                        rank = data;
+                        setTimeout(() => {
+                            getRandMusic(groups[musicdata.group]);
+                        }, 5000);
+                        /*
                     alert(
                         `[${data.rank}위/${data.count}명]\n최고:${
                             data.best
@@ -72,12 +91,13 @@
                             data.pertange * 100
                         }%`
                     );
-                });
-        } else {
-            alert("오답입니다!");
+                    */
+                    });
+            } else {
+                alert("오답입니다!");
+                getRandMusic(groups[musicdata.group]);
+            }
         }
-
-        getRandMusic(groups[musicdata.group]);
     }
 
     function onKeyDown(e) {
@@ -100,7 +120,7 @@
         }
     }
     setTimeout(() => {
-        getRandMusic("liella");
+        getRandMusic("nijigasaki");
     }, 1000);
 </script>
 
@@ -111,68 +131,101 @@
 <svelte:window on:keydown|preventDefault={onKeyDown} />
 
 <body>
-    <div class="images">
-        <div class="container">
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <img
-                on:click={() => Answer(0)}
-                on:mouseenter={() => (bright[0] = 1)}
-                on:mouseleave={() => (bright[0] = 0.6)}
-                style="filter: brightness({bright[0]});"
-                src={"data:image/jpeg;base64," + musicdata.questions[0].data}
-                alt={musicdata.questions[0].name}
-            />
-            <h2 style="text-align: center">{musicdata.questions[0].name}</h2>
+    {#if inquestion}
+        <div class="images">
+            <div class="container">
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <img
+                    class="question"
+                    on:click={() => Answer(0)}
+                    on:mouseenter={() => (bright[0] = 1)}
+                    on:mouseleave={() => (bright[0] = 0.6)}
+                    style="filter: brightness({bright[0]});"
+                    src={"data:image/jpeg;base64," +
+                        musicdata.questions[0].data}
+                    alt={musicdata.questions[0].name}
+                />
+                <h2 style="text-align: center">
+                    {musicdata.questions[0].name}
+                </h2>
+            </div>
+            <div class="container">
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <img
+                    class="question"
+                    on:click={() => Answer(1)}
+                    on:mouseenter={() => (bright[1] = 1)}
+                    on:mouseleave={() => (bright[1] = 0.6)}
+                    style="filter: brightness({bright[1]});"
+                    src={"data:image/jpeg;base64," +
+                        musicdata.questions[1].data}
+                    alt={musicdata.questions[1].name}
+                />
+                <h2>{musicdata.questions[1].name}</h2>
+            </div>
+            <div class="container">
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <img
+                    class="question"
+                    on:click={() => Answer(2)}
+                    on:mouseenter={() => (bright[2] = 1)}
+                    on:mouseleave={() => (bright[2] = 0.6)}
+                    style="filter: brightness({bright[2]});"
+                    src={"data:image/jpeg;base64," +
+                        musicdata.questions[2].data}
+                    alt={musicdata.questions[2].name}
+                />
+                <h2>{musicdata.questions[2].name}</h2>
+            </div>
+            <div class="container">
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <img
+                    class="question"
+                    on:click={() => Answer(3)}
+                    on:mouseenter={() => (bright[3] = 1)}
+                    on:mouseleave={() => (bright[3] = 0.6)}
+                    style="filter: brightness({bright[3]});"
+                    src={"data:image/jpeg;base64," +
+                        musicdata.questions[3].data}
+                    alt={musicdata.questions[3].name}
+                />
+                <h2>{musicdata.questions[3].name}</h2>
+            </div>
+            <div class="container">
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <img
+                    class="question"
+                    on:click={() => Answer(4)}
+                    on:mouseenter={() => (bright[4] = 1)}
+                    on:mouseleave={() => (bright[4] = 0.6)}
+                    style="filter: brightness({bright[4]});"
+                    src={"data:image/jpeg;base64," +
+                        musicdata.questions[4].data}
+                    alt={musicdata.questions[4].name}
+                />
+                <h2>{musicdata.questions[4].name}</h2>
+            </div>
         </div>
-        <div class="container">
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
+    {:else}
+        <div class="result">
+            <h1 style="font-size:64px;">
+                {`#${rank.rank}`}
+            </h1>
+            <h3 style="font-size:24px;margin-bottom:2rem">
+                {`/${rank.count}`}
+            </h3>
             <img
-                on:click={() => Answer(1)}
-                on:mouseenter={() => (bright[1] = 1)}
-                on:mouseleave={() => (bright[1] = 0.6)}
-                style="filter: brightness({bright[1]});"
-                src={"data:image/jpeg;base64," + musicdata.questions[1].data}
-                alt={musicdata.questions[1].name}
+                width="500rem"
+                height="500rem"
+                style="filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));"
+                src={"data:image/jpeg;base64," + musicdata.album.data}
+                alt=""
             />
-            <h2>{musicdata.questions[1].name}</h2>
+            <h1>{musicdata.name}</h1>
+            <h4>{musicdata.album.name}</h4>
+            <button on:click={playOriginal}>재생</button>
         </div>
-        <div class="container">
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <img
-                on:click={() => Answer(2)}
-                on:mouseenter={() => (bright[2] = 1)}
-                on:mouseleave={() => (bright[2] = 0.6)}
-                style="filter: brightness({bright[2]});"
-                src={"data:image/jpeg;base64," + musicdata.questions[2].data}
-                alt={musicdata.questions[2].name}
-            />
-            <h2>{musicdata.questions[2].name}</h2>
-        </div>
-        <div class="container">
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <img
-                on:click={() => Answer(3)}
-                on:mouseenter={() => (bright[3] = 1)}
-                on:mouseleave={() => (bright[3] = 0.6)}
-                style="filter: brightness({bright[3]});"
-                src={"data:image/jpeg;base64," + musicdata.questions[3].data}
-                alt={musicdata.questions[3].name}
-            />
-            <h2>{musicdata.questions[3].name}</h2>
-        </div>
-        <div class="container">
-            <!-- svelte-ignore a11y-click-events-have-key-events -->
-            <img
-                on:click={() => Answer(4)}
-                on:mouseenter={() => (bright[4] = 1)}
-                on:mouseleave={() => (bright[4] = 0.6)}
-                style="filter: brightness({bright[4]});"
-                src={"data:image/jpeg;base64," + musicdata.questions[4].data}
-                alt={musicdata.questions[4].name}
-            />
-            <h2>{musicdata.questions[4].name}</h2>
-        </div>
-    </div>
+    {/if}
 </body>
 
 <style>
@@ -191,7 +244,14 @@
         position: relative;
     }
 
-    img {
+    .result {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .question {
         box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
         width: 20vw;
         height: 100vh;
@@ -204,6 +264,15 @@
         top: 50%;
         transform: translate(-50%, -50%);
         color: rgb(34, 34, 34);
+    }
+
+    h1 h2 h3 {
+        font-family: "Inter", sans-serif;
+    }
+
+    * {
+        padding: 0;
+        margin: 0;
     }
     @media (min-width: 640px) {
         body {
