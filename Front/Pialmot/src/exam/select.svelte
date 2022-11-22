@@ -1,5 +1,6 @@
 <script>
     import { slide } from "svelte/transition";
+    export let params = {}; // 라우터에서 넘어온 파라미터를 받아오기위해
 
     let before = 0;
     let snd = new Audio();
@@ -140,7 +141,7 @@
     setTimeout(() => {
         while (true) {
             if (typeof MIDIjs != "undefined") {
-                getRandMusic("liella");
+                getRandMusic(params.group);
                 break;
             }
         }
