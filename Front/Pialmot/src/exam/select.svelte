@@ -1,4 +1,6 @@
 <script>
+    import { slide } from "svelte/transition";
+
     let before = 0;
     let snd = new Audio();
     let inquestion = true;
@@ -172,7 +174,7 @@
             {/each}
         </div>
     {:else}
-        <div class="result">
+        <div class="result" transition:slide>
             <h1 style="font-size:64px;">
                 {`#${rank.rank}`}
             </h1>
