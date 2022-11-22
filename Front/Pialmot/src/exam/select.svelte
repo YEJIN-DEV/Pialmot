@@ -38,7 +38,7 @@
         MIDIjs.player_callback = (ev) => {
             player_seek = ev.time;
         };
-        fetch(`http://112.164.62.41:8000/music/${target}?kind=anime&original`)
+        fetch(`http://0.0.0.0:8000/music/${target}?kind=anime&original`)
             .then((response) => response.json())
             .then((data) => {
                 MIDIjs.play("data:audio/midi;base64," + data.midi_buffer);
@@ -73,13 +73,10 @@
                 playOriginal();
                 //alert("정답입니다! 당신의 시간은 " + time / 1000 + "초 입니다.");
 
-                fetch(
-                    `http://112.164.62.41:8000/rank/${musicdata.group}/${answer}`,
-                    {
-                        method: "POST",
-                        body: time.toString(),
-                    }
-                )
+                fetch(`http://0.0.0.0:8000/rank/${musicdata.group}/${answer}`, {
+                    method: "POST",
+                    body: time.toString(),
+                })
                     .then((response) => response.json())
                     .then((data) => {
                         rank = data;
@@ -139,148 +136,40 @@
 <body>
     {#if inquestion}
         <div class="images">
-            <div class="container">
-                <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <img
-                    class="question"
-                    on:click={() => Answer(0)}
-                    on:mouseenter={() => (
-                        (bright[0] = 1),
-                        (blur[0] = 0),
-                        (player_onCursor = 1),
-                        (widthValue = [24, 19, 19, 19, 19])
-                    )}
-                    on:mouseleave={() => (
-                        (bright[0] = 0.6),
-                        (blur[0] = 1),
-                        (player_onCursor = 0),
-                        (widthValue = [20, 20, 20, 20, 20])
-                    )}
-                    style="filter: brightness({player_onCursor == 0
-                        ? 1
-                        : bright[0]}) blur({player_onCursor == 0
-                        ? 0
-                        : blur[0]}px); width: {widthValue[0]}vw;"
-                    src={"data:image/jpeg;base64," +
-                        musicdata.questions[0].data}
-                    alt={musicdata.questions[0].name}
-                />
-                <h2 style="text-align: center">
-                    {musicdata.questions[0].name}
-                </h2>
-            </div>
-            <div class="container">
-                <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <img
-                    class="question"
-                    on:click={() => Answer(1)}
-                    on:mouseenter={() => (
-                        (bright[1] = 1),
-                        (blur[1] = 0),
-                        (player_onCursor = 1),
-                        (widthValue = [19, 24, 19, 19, 19])
-                    )}
-                    on:mouseleave={() => (
-                        (bright[1] = 0.6),
-                        (blur[1] = 1),
-                        (player_onCursor = 0),
-                        (widthValue = [20, 20, 20, 20, 20])
-                    )}
-                    style="filter: brightness({player_onCursor == 0
-                        ? 1
-                        : bright[1]}) blur({player_onCursor == 0
-                        ? 0
-                        : blur[1]}px); width: {widthValue[1]}vw;"
-                    src={"data:image/jpeg;base64," +
-                        musicdata.questions[1].data}
-                    alt={musicdata.questions[1].name}
-                />
-                <h2>{musicdata.questions[1].name}</h2>
-            </div>
-            <div class="container">
-                <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <img
-                    class="question"
-                    on:click={() => Answer(2)}
-                    on:mouseenter={() => (
-                        (bright[2] = 1),
-                        (blur[2] = 0),
-                        (player_onCursor = 1),
-                        (widthValue = [19, 19, 24, 19, 19])
-                    )}
-                    on:mouseleave={() => (
-                        (bright[2] = 0.6),
-                        (blur[2] = 1),
-                        (player_onCursor = 0),
-                        (widthValue = [20, 20, 20, 20, 20])
-                    )}
-                    style="filter: brightness({player_onCursor == 0
-                        ? 1
-                        : bright[2]}) blur({player_onCursor == 0
-                        ? 0
-                        : blur[2]}px); width: {widthValue[2]}vw;"
-                    src={"data:image/jpeg;base64," +
-                        musicdata.questions[2].data}
-                    alt={musicdata.questions[2].name}
-                />
-                <h2>{musicdata.questions[2].name}</h2>
-            </div>
-            <div class="container">
-                <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <img
-                    class="question"
-                    on:click={() => Answer(3)}
-                    on:mouseenter={() => (
-                        (bright[3] = 1),
-                        (blur[3] = 0),
-                        (player_onCursor = 1),
-                        (widthValue = [19, 19, 19, 24, 19])
-                    )}
-                    on:mouseleave={() => (
-                        (bright[3] = 0.6),
-                        (blur[3] = 1),
-                        (player_onCursor = 0),
-                        (widthValue = [20, 20, 20, 20, 20])
-                    )}
-                    style="filter: brightness({player_onCursor == 0
-                        ? 1
-                        : bright[3]}) blur({player_onCursor == 0
-                        ? 0
-                        : blur[3]}px); width: {widthValue[3]}vw;"
-                    src={"data:image/jpeg;base64," +
-                        musicdata.questions[3].data}
-                    alt={musicdata.questions[3].name}
-                />
-                <h2>{musicdata.questions[3].name}</h2>
-            </div>
-            <div class="container">
-                <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <img
-                    class="question"
-                    on:click={() => Answer(4)}
-                    on:mouseenter={() => (
-                        (bright[4] = 1),
-                        (blur[4] = 0),
-                        (player_onCursor = 1),
-                        (widthValue = [19, 19, 19, 19, 24])
-                    )}
-                    on:mouseleave={() => (
-                        (bright[4] = 0.6),
-                        (blur[4] = 1),
-                        (player_onCursor = 0),
-                        (widthValue = [20, 20, 20, 20, 20])
-                    )}
-                    style="filter: brightness({player_onCursor == 0
-                        ? 1
-                        : bright[4]}) blur({player_onCursor == 0
-                        ? 0
-                        : blur[4]}px); width: {widthValue[4]}vw;"
-                    src={"data:image/jpeg;base64," +
-                        musicdata.questions[4].data}
-                    alt={musicdata.questions[4].name}
-                />
-                <h2>{musicdata.questions[4].name}</h2>
-            </div>
+            {#each { length: 5 } as _, i}
+                <div class="container">
+                    <!-- svelte-ignore a11y-click-events-have-key-events -->
+                    <img
+                        class="question"
+                        on:click={() => Answer(i)}
+                        on:mouseenter={() => (
+                            (bright[i] = 1),
+                            (blur[i] = 0),
+                            (player_onCursor = 1),
+                            (widthValue = [19, 19, 19, 19, 19].map((e, index) =>
+                                index == i ? 24 : e
+                            ))
+                        )}
+                        on:mouseleave={() => (
+                            (bright[i] = 0.6),
+                            (blur[i] = 1),
+                            (player_onCursor = 0),
+                            (widthValue = [20, 20, 20, 20, 20])
+                        )}
+                        style="filter: brightness({player_onCursor == 0
+                            ? 1
+                            : bright[i]}) blur({player_onCursor == 0
+                            ? 0
+                            : blur[i]}px); width: {widthValue[i]}vw;"
+                        src={"data:image/jpeg;base64," +
+                            musicdata.questions[i].data}
+                        alt={musicdata.questions[i].name}
+                    />
+                    <h2 style="text-align: center">
+                        {musicdata.questions[i].name}
+                    </h2>
+                </div>
+            {/each}
         </div>
     {:else}
         <div class="result">
