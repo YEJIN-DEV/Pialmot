@@ -36,22 +36,29 @@
         2: "nijigasaki",
         3: "liella",
     };
-    export function getRandMusic(target) {
+    export function getRandMusic(target, delay) {
         MIDIjs.player_callback = (ev) => {
             player_seek = ev.time;
         };
-        fetch(`http://0.0.0.0:8000/music/${target}?kind=anime&original`)
+        fetch(`http://112.164.62.41:8000/music/${target}?kind=anime&original`)
             .then((response) => response.json())
             .then((data) => {
-                MIDIjs.play("data:audio/midi;base64," + data.midi_buffer);
-                snd.src = "data:audio/mp3;base64," + data.mp3_buffer;
-                snd.volume = 0.05;
-                snd.load();
+                setTimeout(
+                    () => {
+                        MIDIjs.play(
+                            "data:audio/midi;base64," + data.midi_buffer
+                        );
+                        snd.src = "data:audio/mp3;base64," + data.mp3_buffer;
+                        snd.volume = 0.05;
+                        snd.load();
 
-                before = new Date();
+                        before = new Date();
 
-                musicdata = data;
-                inquestion = true;
+                        musicdata = data;
+                        inquestion = true;
+                    },
+                    delay == undefined ? 0 : delay
+                );
             });
     }
 
@@ -71,20 +78,21 @@
             if (selected == answer) {
                 let after = new Date();
                 let time = after - before;
-                inquestion = false;
-                playOriginal();
                 //alert("정답입니다! 당신의 시간은 " + time / 1000 + "초 입니다.");
 
-                fetch(`http://0.0.0.0:8000/rank/${musicdata.group}/${answer}`, {
-                    method: "POST",
-                    body: time.toString(),
-                })
+                fetch(
+                    `http://112.164.62.41:8000/rank/${musicdata.group}/${answer}`,
+                    {
+                        method: "POST",
+                        body: time.toString(),
+                    }
+                )
                     .then((response) => response.json())
                     .then((data) => {
                         rank = data;
-                        setTimeout(() => {
-                            getRandMusic(groups[musicdata.group]);
-                        }, 5000);
+                        inquestion = false;
+                        playOriginal();
+                        getRandMusic(groups[musicdata.group], 5000);
                         /*
                     alert(
                         `[${data.rank}위/${data.count}명]\n최고:${
@@ -96,8 +104,16 @@
                     */
                     });
             } else {
-                alert("오답입니다!");
-                getRandMusic(groups[musicdata.group]);
+                fetch(
+                    `http://112.164.62.41:8000/rank/${musicdata.group}/${answer}`
+                )
+                    .then((response) => response.json())
+                    .then((data) => {
+                        rank = data;
+                        inquestion = false;
+                        playOriginal();
+                        getRandMusic(groups[musicdata.group], 5000);
+                    });
             }
         }
     }
@@ -174,12 +190,12 @@
             {/each}
         </div>
     {:else}
-        <div class="result" transition:slide>
+        <div class="result" transition:slide={{ duration: 600 }}>
             <h1 style="font-size:64px;">
-                {`#${rank.rank}`}
+                {rank.rank == -1 ? "오답입니다" : `#${rank.rank}`}
             </h1>
             <h3 style="font-size:24px;font-weight:400;margin-bottom:2rem">
-                {`/${rank.count}`}
+                {rank.rank == -1 ? "정답은..." : `/${rank.count}`}
             </h3>
             <img
                 width="500rem"
