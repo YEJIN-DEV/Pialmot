@@ -332,7 +332,7 @@ function kindToFolder(kind: musicKind, group: groups): string | undefined {
 function randomMusic(
   groupPath: string,
   kindPath: string
-): { musicFile: string; dir: string } {
+): { musicFile: string | undefined; dir: string } {
   const dirs = getDirectories(path1.join(midiPath, groupPath, kindPath))
   const dir = dirs[getRandomInt(0, dirs.length)]
   const files = getFiles(path1.join(midiPath, groupPath, kindPath, dir))
