@@ -138,8 +138,13 @@
         }
     }
     setTimeout(() => {
-        getRandMusic("liella");
-    }, 1000);
+        while (true) {
+            if (typeof MIDIjs != "undefined") {
+                getRandMusic("liella");
+                break;
+            }
+        }
+    }, 100);
 </script>
 
 <svelte:head>
