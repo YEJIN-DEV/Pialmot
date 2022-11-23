@@ -5,6 +5,7 @@
     let before = 0;
     let snd = new Audio();
     let inQuestion = true;
+    let rotation = isLandScape();
     export let musicData = {
         answer: "None",
         album: { data: "" },
@@ -37,6 +38,7 @@
         2: "nijigasaki",
         3: "liella",
     };
+
     export function getRandMusic(target, delay) {
         MIDIjs.player_callback = (ev) => {
             player_seek = ev.time;
@@ -148,6 +150,16 @@
         return check;
     }
 
+    function isLandScape() {
+        return window.matchMedia("screen and (orientation:portrait)").matches;
+    }
+
+    window.addEventListener("orientationchange", (event) => {
+        setTimeout(() => {
+            rotation = isLandScape();
+        }, 10 /**프레임워크 버그때문에 딜레이가 필수*/);
+    });
+
     setTimeout(() => {
         while (true) {
             if (typeof MIDIjs != "undefined") {
@@ -198,11 +210,9 @@
                             ? 1
                             : bright[i]}) blur({player_onCursor == 0
                             ? 0
-                            : blur[i]}px); {checkMobile()
-                            ? 'height'
-                            : 'width'}: {checkMobile()
-                            ? `${transValue[i]}vh`
-                            : `${transValue[i]}vw`}"
+                            : blur[i]}px); {rotation
+                            ? `height:${transValue[i]}vh; width: 100vw;`
+                            : `width:${transValue[i]}vw; height: 100vh;`}"
                         src={"data:image/jpeg;base64," +
                             musicData.questions[i].data}
                         alt={musicData.questions[i].name}
@@ -270,7 +280,7 @@
         margin: 0;
         font-family: "Inter", sans-serif;
     }
-    @media (max-width: 500px) {
+    @media (orientation: portrait) {
         /*모바일*/
         .album {
             width: 300px;
@@ -281,13 +291,9 @@
             display: flex;
             flex-direction: column;
         }
-        .question {
-            width: 100vw;
-            height: 20vh;
-        }
     }
 
-    @media (min-width: 500px) {
+    @media (orientation: landscape) {
         .album {
             width: 500px;
             height: 500px;
@@ -295,11 +301,6 @@
 
         .images {
             display: flex;
-            height: 100vh;
-        }
-
-        .question {
-            width: 20vw;
             height: 100vh;
         }
     }
