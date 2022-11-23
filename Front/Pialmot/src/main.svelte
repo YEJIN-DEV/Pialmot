@@ -1,5 +1,6 @@
 <script>
     import { push } from "svelte-spa-router";
+    let mute = true;
 </script>
 
 <svelte:head>
@@ -13,7 +14,7 @@
 <body>
     <div class="video-container">
         <!-- svelte-ignore a11y-media-has-caption -->
-        <video muted autoplay loop>
+        <video bind:muted={mute} autoplay loop>
             <source src="main.webm" />
         </video>
     </div>
@@ -21,7 +22,7 @@
         <h1 style="color:white; font-size:64px;">피알못</h1>
         <h3 style="color:white">러브라이브판!</h3>
         <button
-            class="btnAqours"
+            class="btnGroups"
             on:click={() => {
                 push("/select/aqours");
             }}
@@ -29,7 +30,7 @@
             <img src="logo/Aqours.png" alt="" />
         </button>
         <button
-            class="btnNijigaku"
+            class="btnGroups"
             on:click={() => {
                 push("/select/nijigasaki");
             }}
@@ -37,7 +38,7 @@
             <img src="logo/Nijigasaki.png" alt="" />
         </button>
         <button
-            class="btnLiella"
+            class="btnGroups"
             on:click={() => {
                 push("/select/liella");
             }}
@@ -45,6 +46,17 @@
             <img src="logo/Liella.png" alt="" />
         </button>
     </div>
+    <button
+        on:click={() => {
+            mute = !mute;
+        }}
+    >
+        <img
+            src={mute ? "icon/volume_off.svg" : "icon/volume_up.svg"}
+            alt=""
+            style="height:2.5rem;width:2.5rem"
+        />
+    </button>
 </body>
 
 <style>
@@ -92,27 +104,11 @@
         margin: 1rem;
     }
 
-    .btnAqours {
-        transition: all 0.1s linear;
-    }
-    
-    .btnAqours:hover {
-        transform: scale(1.2);
-    }
-
-    .btnNijigaku {
+    .btnGroups {
         transition: all 0.1s linear;
     }
 
-    .btnNijigaku:hover {
-        transform: scale(1.2);
-    }
-
-    .btnLiella {
-        transition: all 0.1s linear;
-    }
-
-    .btnLiella:hover {
+    .btnGroups:hover {
         transform: scale(1.2);
     }
 
