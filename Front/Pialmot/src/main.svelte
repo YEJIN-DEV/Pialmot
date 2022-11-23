@@ -21,6 +21,7 @@
         <h1 style="color:white; font-size:64px;">피알못</h1>
         <h3 style="color:white">러브라이브판!</h3>
         <button
+            class="btnAqours"
             on:click={() => {
                 push("/select/aqours");
             }}
@@ -28,6 +29,7 @@
             <img src="logo/Aqours.png" alt="" />
         </button>
         <button
+            class="btnNijigaku"
             on:click={() => {
                 push("/select/nijigasaki");
             }}
@@ -35,6 +37,7 @@
             <img src="logo/Nijigasaki.png" alt="" />
         </button>
         <button
+            class="btnLiella"
             on:click={() => {
                 push("/select/liella");
             }}
@@ -87,6 +90,30 @@
     img {
         width: 200px;
         margin: 1rem;
+    }
+
+    .btnAqours {
+        transition: all 0.1s linear;
+    }
+    
+    .btnAqours:hover {
+        transform: scale(1.2);
+    }
+
+    .btnNijigaku {
+        transition: all 0.1s linear;
+    }
+
+    .btnNijigaku:hover {
+        transform: scale(1.2);
+    }
+
+    .btnLiella {
+        transition: all 0.1s linear;
+    }
+
+    .btnLiella:hover {
+        transform: scale(1.2);
     }
 
     * {

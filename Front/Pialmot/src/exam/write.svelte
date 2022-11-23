@@ -1,7 +1,7 @@
 <script>
 	let before = 0;
 	let snd = new Audio();
-	export let musicdata = { answer: "None" };
+	export let musicData = { answer: "None" };
 	let player_seek = 0;
 	export let albumArt = "";
 
@@ -38,7 +38,7 @@
 					selectbox.appendChild(opt);
 				}
 
-				musicdata = data;
+				musicData = data;
 			});
 	}
 
@@ -56,20 +56,20 @@
 		let selected = selectbox.options[selectbox.selectedIndex].value;
 		albumArt =
 			"data:image/jpeg;base64," +
-			musicdata.questions.find((x) => x.name == selected).data;
+			musicData.questions.find((x) => x.name == selected).data;
 	}
 
 	export function Answer() {
 		let selectbox = document.getElementById("questions");
 		let selected = selectbox.options[selectbox.selectedIndex].value;
-		let answer = musicdata.name.substring(4);
+		let answer = musicData.name.substring(4);
 		if (selected == answer) {
 			let after = new Date();
 			let time = after - before;
 			alert("정답입니다! 당신의 시간은 " + time / 1000 + "초 입니다.");
 
 			fetch(
-				`http://112.164.62.41:8000/rank/${musicdata.group}/${answer}`,
+				`http://112.164.62.41:8000/rank/${musicData.group}/${answer}`,
 				{
 					method: "POST",
 					body: time.toString(),
@@ -81,7 +81,7 @@
 						`[${data.rank}위]\n최고:${data.best}ms\n평균:${data.average}ms\n상위:${data.pertange}%`
 					);
 				});
-			getRandMusic(groups[musicdata.group]);
+			getRandMusic(groups[musicData.group]);
 		} else {
 			alert("오답입니다!");
 		}
@@ -102,7 +102,7 @@
 			width="700px"
 		/>
 		<div class="btns">
-			<p>{musicdata.name}</p>
+			<p>{musicData.name}</p>
 			<div class="search">
 				<input type="text" class="searchTerm" placeholder="곡 검색" />
 				<button type="submit" class="searchButton">
