@@ -44,22 +44,17 @@
         fetch(`http://112.164.62.41:8000/music/${target}?kind=anime&original`)
             .then((response) => response.json())
             .then((data) => {
-                setTimeout(
-                    () => {
-                        MIDIjs.play(
-                            "data:audio/midi;base64," + data.midi_buffer
-                        );
-                        snd.src = "data:audio/mp3;base64," + data.mp3_buffer;
-                        snd.volume = 0.05;
-                        snd.load();
+                setTimeout(() => {
+                    MIDIjs.play("data:audio/midi;base64," + data.midi_buffer);
+                    snd.src = "data:audio/mp3;base64," + data.mp3_buffer;
+                    snd.volume = 0.05;
+                    snd.load();
 
-                        before = new Date();
+                    before = new Date();
 
-                        musicData = data;
-                        inQuestion = true;
-                    },
-                    delay == undefined ? 0 : delay
-                );
+                    musicData = data;
+                    inQuestion = true;
+                }, delay ?? 0);
             });
     }
 
