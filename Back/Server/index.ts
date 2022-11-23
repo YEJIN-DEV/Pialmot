@@ -3,19 +3,19 @@ import http from 'http'
 import fs from 'fs'
 import path1 from 'path'
 
-function getDirectories(path: string): string[] {
+function getDirectories (path: string): string[] {
   return fs.readdirSync(path).filter(function (file) {
     return fs.statSync(path + '/' + file).isDirectory()
   })
 }
 
-function getFiles(path: string): string[] {
+function getFiles (path: string): string[] {
   return fs.readdirSync(path).filter(function (file) {
     return fs.statSync(path + '/' + file).isFile()
   })
 }
 
-function getRandomInt(min: number, max: number): number {
+function getRandomInt (min: number, max: number): number {
   return Math.floor(Math.random() * (max - min)) + min
 }
 
@@ -136,17 +136,17 @@ app.get('/music/:group', function (req, res) {
     mp3_buffer:
       req.query.original != undefined
         ? fs.readFileSync(
-          path1.join(
-            mp3Path,
-            groupPath,
-            kindPath.path,
-            dir,
-            musicFile.substring(0, musicFile.length - 3) + 'mp3'
-          ),
-          {
-            encoding: 'base64'
-          }
-        )
+            path1.join(
+              mp3Path,
+              groupPath,
+              kindPath.path,
+              dir,
+              musicFile.substring(0, musicFile.length - 3) + 'mp3'
+            ),
+            {
+              encoding: 'base64'
+            }
+          )
         : undefined,
     questions: []
   }
@@ -211,7 +211,6 @@ app.post('/rank/:group/:music', function (req, res) {
   rank[group] = rank[group] ?? {}
   rank[group][music] = rank[group][music] ?? []
 
-
   rank[group][music].push(time)
   rank[group][music].sort((a, b) => a - b)
 
@@ -241,7 +240,7 @@ app.get('/rank/:group/:music', function (req, res) {
       rank[group][music].length == 0
         ? 0
         : rank[group][music].reduce((a, b) => a + b) /
-        rank[group][music].length,
+          rank[group][music].length,
     count: rank[group][music].length,
     pertange: -1
   })
@@ -249,11 +248,7 @@ app.get('/rank/:group/:music', function (req, res) {
   fs.writeFileSync('rank.json', JSON.stringify(rank))
 })
 
-server.listen(8000, function () {
-  console.log('서버ON')
-})
-
-function kindToFolder(kind: musicKind, group: groups): string | undefined {
+function kindToFolder (kind: musicKind, group: groups): string | undefined {
   let path = ''
   switch (kind) {
     case musicKind.anime:
@@ -347,7 +342,7 @@ function kindToFolder(kind: musicKind, group: groups): string | undefined {
   return path
 }
 
-function randomMusic(
+function randomMusic (
   groupPath: string,
   kindPath: string
 ): { musicFile: string | undefined; dir: string } {
@@ -358,7 +353,7 @@ function randomMusic(
   return { musicFile, dir }
 }
 
-function getCover(albumPath: string, musicName: string): string {
+function getCover (albumPath: string, musicName: string): string {
   if (fs.existsSync(path1.join(albumPath, 'cover.jpg'))) {
     albumPath = path1.join(albumPath, 'cover.jpg')
   } else {
@@ -374,3 +369,23 @@ function getCover(albumPath: string, musicName: string): string {
     encoding: 'base64'
   })
 }
+
+app.get('/', function (req, res) {
+  res.sendFile(
+    path1.join(__dirname, '../../Front/Pialmot/public', 'index.html')
+  )
+})
+
+app.get('*', function (req, res) {
+  res.sendFile(
+    path1.join(
+      __dirname,
+      '../../Front/Pialmot/public',
+      (req.params as any[])[0]
+    )
+  )
+})
+
+server.listen(80, function () {
+  console.log('서버ON')
+})
