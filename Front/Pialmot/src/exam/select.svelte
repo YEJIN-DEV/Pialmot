@@ -4,8 +4,8 @@
 
     let before = 0;
     let snd = new Audio();
-    let inquestion = true;
-    export let musicdata = {
+    let inQuestion = true;
+    export let musicData = {
         answer: "None",
         album: { data: "" },
         questions: [
@@ -55,8 +55,8 @@
 
                         before = new Date();
 
-                        musicdata = data;
-                        inquestion = true;
+                        musicData = data;
+                        inQuestion = true;
                     },
                     delay == undefined ? 0 : delay
                 );
@@ -73,16 +73,16 @@
     }
 
     export function Answer(index) {
-        if (inquestion) {
-            let selected = musicdata.questions[index].name;
-            let answer = musicdata.name;
+        if (inQuestion) {
+            let selected = musicData.questions[index].name;
+            let answer = musicData.name;
             if (selected == answer) {
                 let after = new Date();
                 let time = after - before;
                 //alert("정답입니다! 당신의 시간은 " + time / 1000 + "초 입니다.");
 
                 fetch(
-                    `http://112.164.62.41:8000/rank/${musicdata.group}/${answer}`,
+                    `http://112.164.62.41:8000/rank/${musicData.group}/${answer}`,
                     {
                         method: "POST",
                         body: time.toString(),
@@ -91,9 +91,9 @@
                     .then((response) => response.json())
                     .then((data) => {
                         rank = data;
-                        inquestion = false;
+                        inQuestion = false;
                         playOriginal();
-                        getRandMusic(groups[musicdata.group], 5000);
+                        getRandMusic(groups[musicData.group], 5000);
                         /*
                     alert(
                         `[${data.rank}위/${data.count}명]\n최고:${
@@ -106,14 +106,14 @@
                     });
             } else {
                 fetch(
-                    `http://112.164.62.41:8000/rank/${musicdata.group}/${answer}`
+                    `http://112.164.62.41:8000/rank/${musicData.group}/${answer}`
                 )
                     .then((response) => response.json())
                     .then((data) => {
                         rank = data;
-                        inquestion = false;
+                        inQuestion = false;
                         playOriginal();
-                        getRandMusic(groups[musicdata.group], 5000);
+                        getRandMusic(groups[musicData.group], 5000);
                     });
             }
         }
@@ -158,7 +158,7 @@
 <svelte:window on:keydown|preventDefault={onKeyDown} />
 
 <body>
-    {#if inquestion}
+    {#if inQuestion}
         <div class="images">
             {#each { length: 5 } as _, i}
                 <div class="container">
@@ -186,11 +186,11 @@
                             ? 0
                             : blur[i]}px); width: {widthValue[i]}vw;"
                         src={"data:image/jpeg;base64," +
-                            musicdata.questions[i].data}
-                        alt={musicdata.questions[i].name}
+                            musicData.questions[i].data}
+                        alt={musicData.questions[i].name}
                     />
                     <h2 style="text-align: center">
-                        {musicdata.questions[i].name}
+                        {musicData.questions[i].name}
                     </h2>
                 </div>
             {/each}
@@ -207,11 +207,11 @@
                 width="500rem"
                 height="500rem"
                 style="filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));"
-                src={"data:image/jpeg;base64," + musicdata.album.data}
+                src={"data:image/jpeg;base64," + musicData.album.data}
                 alt=""
             />
-            <h1 style="font-weight:400;">{musicdata.name}</h1>
-            <h4 style="font-weight:400;">{musicdata.album.name}</h4>
+            <h1 style="font-weight:400;">{musicData.name}</h1>
+            <h4 style="font-weight:400;">{musicData.album.name}</h4>
         </div>
     {/if}
 </body>
@@ -244,6 +244,7 @@
         width: 20vw;
         height: 100vh;
         object-fit: cover;
+        transition: all 0.1s linear;
     }
 
     h2 {
