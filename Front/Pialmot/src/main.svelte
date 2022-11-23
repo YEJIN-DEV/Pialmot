@@ -1,5 +1,5 @@
 <script>
-    import { push, pop, replace } from "svelte-spa-router";
+    import { push } from "svelte-spa-router";
 </script>
 
 <svelte:head>
@@ -13,7 +13,7 @@
 <body>
     <div class="video-container">
         <!-- svelte-ignore a11y-media-has-caption -->
-        <video autoplay loop>
+        <video muted autoplay loop>
             <source src="main.webm" />
         </video>
     </div>
