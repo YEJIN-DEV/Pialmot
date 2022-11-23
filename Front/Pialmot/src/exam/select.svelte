@@ -27,10 +27,10 @@
     };
 
     let player_seek = 0;
-    export let bright = [0.6, 0.6, 0.6, 0.6, 0.6];
-    export let blur = [1, 1, 1, 1, 1];
+    let bright = [0.6, 0.6, 0.6, 0.6, 0.6];
+    let blur = [1, 1, 1, 1, 1];
     let player_onCursor = 0;
-    export let transValue = [20, 20, 20, 20, 20];
+    let transValue = [20, 20, 20, 20, 20];
 
     const groups = {
         0: "us",
@@ -56,6 +56,11 @@
 
                     musicData = data;
                     inQuestion = true;
+
+                    bright = [0.6, 0.6, 0.6, 0.6, 0.6];
+                    blur = [1, 1, 1, 1, 1];
+                    player_onCursor = 0;
+                    transValue = [20, 20, 20, 20, 20];
                 }, delay ?? 0);
             });
     }
