@@ -1,6 +1,26 @@
 <script>
     import { slide } from "svelte/transition";
+    import { Bar } from "svelte-chartjs";
+    import "chart.js/auto";
     export let params = {}; // 라우터에서 넘어온 파라미터를 받아오기위해
+    export const data = {
+        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+        datasets: [
+            {
+                label: "% of Votes",
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: [
+                    "rgba(255, 134,159,0.4)",
+                    "rgba(98,  182, 239,0.4)",
+                    "rgba(255, 218, 128,0.4)",
+                    "rgba(113, 205, 205,0.4)",
+                    "rgba(170, 128, 252,0.4)",
+                    "rgba(255, 177, 101,0.4)",
+                ],
+                borderWidth: 2,
+            },
+        ],
+    };
 
     let before = 0;
     let snd = new Audio();
@@ -247,6 +267,8 @@
             <h1 style="font-weight:400;">{musicData.name}</h1>
             <h4 style="font-weight:400;">{musicData.album.name}</h4>
         </div>
+
+        <Bar {data} options={{ responsive: true }} />
     {/if}
 </body>
 
