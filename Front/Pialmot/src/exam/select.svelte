@@ -159,7 +159,7 @@
     window.addEventListener("orientationchange", (event) => {
         setTimeout(() => {
             rotation = isLandScape();
-        }, 10 /**프레임워크 버그때문에 딜레이가 필수*/);
+        }, 100 /**프레임워크 버그때문에 딜레이가 필수*/);
     });
 
     function sleep(ms) {
@@ -170,7 +170,7 @@
         if (typeof MIDIjs != "undefined") {
             getRandMusic(params.group);
         }
-    }, 100);
+    }, 500);
 </script>
 
 <svelte:head>
