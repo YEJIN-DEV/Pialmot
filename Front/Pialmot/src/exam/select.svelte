@@ -43,7 +43,7 @@
         MIDIjs.player_callback = (ev) => {
             player_seek = ev.time;
         };
-        fetch(`http://112.164.62.41/music/${target}?kind=anime&original`)
+        fetch(`/music/${target}?kind=anime&original`)
             .then((response) => response.json())
             .then((data) => {
                 setTimeout(() => {
@@ -83,13 +83,10 @@
                 let time = after - before;
                 //alert("정답입니다! 당신의 시간은 " + time / 1000 + "초 입니다.");
 
-                fetch(
-                    `http://112.164.62.41/rank/${musicData.group}/${answer}`,
-                    {
-                        method: "POST",
-                        body: time.toString(),
-                    }
-                )
+                fetch(`/rank/${musicData.group}/${answer}`, {
+                    method: "POST",
+                    body: time.toString(),
+                })
                     .then((response) => response.json())
                     .then((data) => {
                         rank = data;
@@ -107,7 +104,7 @@
                     */
                     });
             } else {
-                fetch(`http://112.164.62.41/rank/${musicData.group}/${answer}`)
+                fetch(`/rank/${musicData.group}/${answer}`)
                     .then((response) => response.json())
                     .then((data) => {
                         rank = data;
@@ -165,18 +162,19 @@
         }, 10 /**프레임워크 버그때문에 딜레이가 필수*/);
     });
 
+    function sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
     setTimeout(() => {
-        while (true) {
-            if (typeof MIDIjs != "undefined") {
-                getRandMusic(params.group);
-                break;
-            }
+        if (typeof MIDIjs != "undefined") {
+            getRandMusic(params.group);
         }
     }, 100);
 </script>
 
 <svelte:head>
-    <script type="text/javascript" src="//www.midijs.net/lib/midi.js"></script>
+    <script type="text/javascript" src="midi.js"></script>
     <meta name="viewport" content="width=device-width" />
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");

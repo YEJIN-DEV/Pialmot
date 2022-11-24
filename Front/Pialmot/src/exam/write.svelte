@@ -15,7 +15,7 @@
 		MIDIjs.player_callback = (ev) => {
 			player_seek = ev.time;
 		};
-		fetch(`http://112.164.62.41:8000/music/${target}?kind=anime&original`)
+		fetch(`/music/${target}?kind=anime&original`)
 			.then((response) => response.json())
 			.then((data) => {
 				MIDIjs.play("data:audio/midi;base64," + data.midi_buffer);
@@ -68,13 +68,10 @@
 			let time = after - before;
 			alert("정답입니다! 당신의 시간은 " + time / 1000 + "초 입니다.");
 
-			fetch(
-				`http://112.164.62.41:8000/rank/${musicData.group}/${answer}`,
-				{
-					method: "POST",
-					body: time.toString(),
-				}
-			)
+			fetch(`/rank/${musicData.group}/${answer}`, {
+				method: "POST",
+				body: time.toString(),
+			})
 				.then((response) => response.json())
 				.then((data) => {
 					alert(

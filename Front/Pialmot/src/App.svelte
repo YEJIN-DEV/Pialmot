@@ -3,7 +3,7 @@
     import routes from "./routes";
 
     function routeEvent(event) {
-        if (event.detail.location === "/") {
+        if (typeof MIDIjs != "undefined" && event.detail.location === "/") {
             MIDIjs.stop();
         }
     }
