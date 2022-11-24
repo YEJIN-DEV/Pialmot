@@ -162,9 +162,13 @@
         }, 100 /**프레임워크 버그때문에 딜레이가 필수*/);
     });
 
-    function sleep(ms) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-    }
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden") {
+            MIDIjs.pause();
+        } else {
+            MIDIjs.resume();
+        }
+    });
 
     setTimeout(() => {
         if (typeof MIDIjs != "undefined") {
