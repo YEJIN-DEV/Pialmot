@@ -209,32 +209,7 @@ app.post('/rank/:group/:music', function (req, res) {
   const music = req.params.music
   const time: number = Number(req.body)
 
-  rank[group] = rank[group] ?? {}
-  rank[group][music] = rank[group][music] ?? []
-
-  rank[group][music].push(time)
-  rank[group][music] = rank[group][music].sort((a, b) => a - b)
-
-  let IQR = ss.interquartileRange(rank[group][music]);
-  let intervalData = [];
-
-  for (let i = 0; i < 5; i++) {
-    intervalData.push(rank[group][music].filter((elem) => IQR * i <= elem && elem <= IQR * (i + 1)).length)
-  }
-
-  res.status(200).send({
-    rank: rank[group][music].indexOf(time) + 1,
-    best: rank[group][music][0],
-    average:
-      rank[group][music].reduce((a, b) => a + b) / rank[group][music].length,
-    deviation: ss.standardDeviation(rank[group][music]),
-    interval: {
-      IQR,
-      count: intervalData
-    },
-    count: rank[group][music].length,
-    pertange: rank[group][music].indexOf(time) / rank[group][music].length
-  })
+  res.status(200).send(rankDataToJson(group, music, time))
 
   fs.writeFileSync('rank.json', JSON.stringify(rank))
 })
@@ -242,36 +217,57 @@ app.post('/rank/:group/:music', function (req, res) {
 app.get('/rank/:group/:music', function (req, res) {
   const group = groups[req.params.group as keyof typeof groups]
   const music = req.params.music
+  res.status(200).send(rankDataToJson(group, music))
+})
 
+function rankDataToJson(group: groups, music: string, time?: number) {
   rank[group] = rank[group] ?? {}
   rank[group][music] = rank[group][music] ?? []
-
-  let IQR = ss.interquartileRange(rank[group][music]);
-  let intervalData = [];
-
-  for (let i = 0; i < 5; i++) {
-    intervalData.push(rank[group][music].filter((elem) => IQR * i <= elem && elem <= IQR * (i + 1)).length)
+  if (time != undefined) {
+    rank[group][music].push(time)
+    rank[group][music] = rank[group][music].sort((a, b) => a - b)
   }
 
-  res.status(200).send({
-    rank: -1,
+  time = time ?? -1
+  let IQR =
+    rank[group][music].length > 0
+      ? ss.interquartileRange(rank[group][music])
+      : 0
+  let intervalData = [0, 0, 0, 0, 0]
+
+  if (rank[group][music].length > 0) {
+    intervalData = []
+    for (let i = 0; i < 5; i++) {
+      intervalData.push(
+        rank[group][music].filter(
+          elem => IQR * i <= elem && elem <= IQR * (i + 1)
+        ).length
+      )
+    }
+  }
+
+  return JSON.stringify({
+    rank: rank[group][music].indexOf(time) + 1,
     best: rank[group][music][0],
     average:
-      rank[group][music].length == 0
-        ? 0
-        : rank[group][music].reduce((a, b) => a + b) /
-        rank[group][music].length,
-    deviation: ss.standardDeviation(rank[group][music]),
+      rank[group][music].length > 0
+        ? rank[group][music].reduce((a, b) => a + b) / rank[group][music].length
+        : -1,
+    deviation:
+      rank[group][music].length > 0
+        ? ss.standardDeviation(rank[group][music])
+        : -1,
     interval: {
       IQR,
       count: intervalData
     },
     count: rank[group][music].length,
-    pertange: -1
+    pertange:
+      time > 0
+        ? rank[group][music].indexOf(time) / rank[group][music].length
+        : -1
   })
-
-  fs.writeFileSync('rank.json', JSON.stringify(rank))
-})
+}
 
 function kindToFolder(kind: musicKind, group: groups): string | undefined {
   let path = ''
