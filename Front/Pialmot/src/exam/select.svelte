@@ -4,7 +4,7 @@
     import "chart.js/auto";
     export let params = {}; // 라우터에서 넘어온 파라미터를 받아오기위해
     let isMobile = checkMobile();
-    export let graphData = {
+    let graphData = {
         datasets: [
             {
                 label: "명",
@@ -19,7 +19,7 @@
     let snd = new Audio();
     let inQuestion = true;
     let rotation = isLandScape();
-    export let musicData = {
+    let musicData = {
         answer: "None",
         album: { data: "" },
         questions: [
@@ -31,7 +31,7 @@
         ],
     };
 
-    export let rank = {
+    let rank = {
         rank: -1,
         best: -1,
         average: -1,
@@ -52,7 +52,7 @@
         3: "liella",
     };
 
-    export function getRandMusic(target, delay) {
+    function getRandMusic(target, delay) {
         MIDIjs.player_callback = (ev) => {
             player_seek = ev.time;
         };
@@ -78,7 +78,7 @@
             });
     }
 
-    export function playOriginal() {
+    function playOriginal() {
         if (snd.paused) {
             snd.currentTime = player_seek;
             snd.play();
@@ -87,7 +87,7 @@
         }
     }
 
-    export function Answer(index) {
+    function Answer(index) {
         if (inQuestion) {
             let selected = musicData.questions[index].name;
             let answer = musicData.name;
