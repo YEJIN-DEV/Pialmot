@@ -182,7 +182,7 @@
     window.addEventListener("orientationchange", (event) => {
         setTimeout(() => {
             rotation = isLandScape();
-        }, 100 /**프레임워크 버그때문에 딜레이가 필수*/);
+        }, 100 /*프레임워크 버그때문에 딜레이가 필수*/);
     });
 
     document.addEventListener("visibilitychange", () => {
