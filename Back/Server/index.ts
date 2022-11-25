@@ -2,20 +2,21 @@ import express from 'express'
 import http from 'http'
 import fs from 'fs'
 import path1 from 'path'
+import * as ss from 'simple-statistics'
 
-function getDirectories (path: string): string[] {
+function getDirectories(path: string): string[] {
   return fs.readdirSync(path).filter(function (file) {
     return fs.statSync(path + '/' + file).isDirectory()
   })
 }
 
-function getFiles (path: string): string[] {
+function getFiles(path: string): string[] {
   return fs.readdirSync(path).filter(function (file) {
     return fs.statSync(path + '/' + file).isFile()
   })
 }
 
-function getRandomInt (min: number, max: number): number {
+function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min)) + min
 }
 
@@ -136,17 +137,17 @@ app.get('/music/:group', function (req, res) {
     mp3_buffer:
       req.query.original != undefined
         ? fs.readFileSync(
-            path1.join(
-              mp3Path,
-              groupPath,
-              kindPath.path,
-              dir,
-              musicFile.substring(0, musicFile.length - 3) + 'mp3'
-            ),
-            {
-              encoding: 'base64'
-            }
-          )
+          path1.join(
+            mp3Path,
+            groupPath,
+            kindPath.path,
+            dir,
+            musicFile.substring(0, musicFile.length - 3) + 'mp3'
+          ),
+          {
+            encoding: 'base64'
+          }
+        )
         : undefined,
     questions: []
   }
@@ -212,13 +213,25 @@ app.post('/rank/:group/:music', function (req, res) {
   rank[group][music] = rank[group][music] ?? []
 
   rank[group][music].push(time)
-  rank[group][music].sort((a, b) => a - b)
+  rank[group][music] = rank[group][music].sort((a, b) => a - b)
+
+  let IQR = ss.interquartileRange(rank[group][music]);
+  let intervalData = [];
+
+  for (let i = 0; i < 5; i++) {
+    intervalData.push(rank[group][music].filter((elem) => IQR * i <= elem && elem <= IQR * (i + 1)).length)
+  }
 
   res.status(200).send({
     rank: rank[group][music].indexOf(time) + 1,
     best: rank[group][music][0],
     average:
       rank[group][music].reduce((a, b) => a + b) / rank[group][music].length,
+    deviation: ss.standardDeviation(rank[group][music]),
+    interval: {
+      IQR,
+      count: intervalData
+    },
     count: rank[group][music].length,
     pertange: rank[group][music].indexOf(time) / rank[group][music].length
   })
@@ -233,6 +246,13 @@ app.get('/rank/:group/:music', function (req, res) {
   rank[group] = rank[group] ?? {}
   rank[group][music] = rank[group][music] ?? []
 
+  let IQR = ss.interquartileRange(rank[group][music]);
+  let intervalData = [];
+
+  for (let i = 0; i < 5; i++) {
+    intervalData.push(rank[group][music].filter((elem) => IQR * i <= elem && elem <= IQR * (i + 1)).length)
+  }
+
   res.status(200).send({
     rank: -1,
     best: rank[group][music][0],
@@ -240,7 +260,12 @@ app.get('/rank/:group/:music', function (req, res) {
       rank[group][music].length == 0
         ? 0
         : rank[group][music].reduce((a, b) => a + b) /
-          rank[group][music].length,
+        rank[group][music].length,
+    deviation: ss.standardDeviation(rank[group][music]),
+    interval: {
+      IQR,
+      count: intervalData
+    },
     count: rank[group][music].length,
     pertange: -1
   })
@@ -248,7 +273,7 @@ app.get('/rank/:group/:music', function (req, res) {
   fs.writeFileSync('rank.json', JSON.stringify(rank))
 })
 
-function kindToFolder (kind: musicKind, group: groups): string | undefined {
+function kindToFolder(kind: musicKind, group: groups): string | undefined {
   let path = ''
   switch (kind) {
     case musicKind.anime:
@@ -342,7 +367,7 @@ function kindToFolder (kind: musicKind, group: groups): string | undefined {
   return path
 }
 
-function randomMusic (
+function randomMusic(
   groupPath: string,
   kindPath: string
 ): { musicFile: string | undefined; dir: string } {
@@ -353,7 +378,7 @@ function randomMusic (
   return { musicFile, dir }
 }
 
-function getCover (albumPath: string, musicName: string): string {
+function getCover(albumPath: string, musicName: string): string {
   if (fs.existsSync(path1.join(albumPath, 'cover.jpg'))) {
     albumPath = path1.join(albumPath, 'cover.jpg')
   } else {
@@ -386,6 +411,6 @@ app.get('*', function (req, res) {
   )
 })
 
-server.listen(80, function () {
+server.listen(8000, function () {
   console.log('서버ON')
 })
