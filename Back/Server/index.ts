@@ -213,7 +213,6 @@ function rankDataToJson(group: groups, music: string, time?: number) {
     rank[group][music] = rank[group][music].sort((a, b) => a - b)
   }
 
-  time = time ?? -1
   let IQR =
     rank[group][music].length > 0
       ? ss.interquartileRange(rank[group][music])
@@ -231,16 +230,20 @@ function rankDataToJson(group: groups, music: string, time?: number) {
     }
   }
 
+  let noOutlierData = rank[group][music].filter(
+    elem => elem <= IQR * 5
+  );
+
   return JSON.stringify({
-    rank: rank[group][music].indexOf(time) + 1,
+    rank: time == undefined ? -1 : rank[group][music].indexOf(time) + 1,
     best: rank[group][music][0],
     average:
-      rank[group][music].length > 0
-        ? rank[group][music].reduce((a, b) => a + b) / rank[group][music].length
-        : -1,
+      noOutlierData.length > 0
+        ? ss.mean(noOutlierData)
+        : - 1,
     deviation:
-      rank[group][music].length > 0
-        ? ss.standardDeviation(rank[group][music])
+      noOutlierData.length > 0
+        ? ss.standardDeviation(noOutlierData)
         : -1,
     interval: {
       IQR,
@@ -248,9 +251,9 @@ function rankDataToJson(group: groups, music: string, time?: number) {
     },
     count: rank[group][music].length,
     pertange:
-      time > 0
-        ? rank[group][music].indexOf(time) / rank[group][music].length
-        : -1
+      time == undefined
+        ? -1
+        : rank[group][music].indexOf(time) / rank[group][music].length
   })
 }
 
