@@ -198,7 +198,7 @@
 </script>
 
 <svelte:head>
-    <script type="text/javascript" src="midi.js"></script>
+    <script type="text/javascript" src="//www.midijs.net/lib/midi.js"></script>
     <meta name="viewport" content="width=device-width" />
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
@@ -237,9 +237,7 @@
                             ? 1
                             : bright[i]}) blur({player_onCursor == 0
                             ? 0
-                            : blur[i]}px); {rotation
-                            ? `height:${transValue[i]}vh; width: 100vw;`
-                            : `width:${transValue[i]}vw; height: 100vh;`}"
+                            : blur[i]}px);"
                         src={"data:image/jpeg;base64," +
                             musicData.questions[i].data}
                         alt={musicData.questions[i].name}
@@ -279,8 +277,14 @@
         background-color: #f0eeec;
     }
 
+    .images {
+        height: 100%;
+    }
+
     .container {
         position: relative;
+        overflow: hidden;
+        min-width: 20%;
     }
 
     .result {
@@ -292,8 +296,8 @@
 
     .question {
         box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
-        object-fit: cover;
         transition: all 0.1s linear;
+        transform: translateX(-30%);
     }
 
     h2 {
@@ -310,7 +314,7 @@
         font-family: "Inter", sans-serif;
     }
     @media (orientation: portrait) {
-        /*모바일*/
+        /*세로*/
         .album {
             width: 300px;
             height: 300px;
@@ -320,9 +324,14 @@
             display: flex;
             flex-direction: column;
         }
+
+        .question {
+            width: 100%;
+        }
     }
 
     @media (orientation: landscape) {
+        /*가로*/
         .album {
             width: 500px;
             height: 500px;
@@ -330,7 +339,10 @@
 
         .images {
             display: flex;
-            height: 100vh;
+        }
+
+        .question {
+            height: 100%;
         }
     }
 </style>

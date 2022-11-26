@@ -3,19 +3,19 @@ import http from 'http'
 import fs from 'fs'
 import path1 from 'path'
 
-function getDirectories (path: string): string[] {
+function getDirectories(path: string): string[] {
   return fs.readdirSync(path).filter(function (file) {
     return fs.statSync(path + '/' + file).isDirectory()
   })
 }
 
-function getFiles (path: string): string[] {
+function getFiles(path: string): string[] {
   return fs.readdirSync(path).filter(function (file) {
     return fs.statSync(path + '/' + file).isFile()
   })
 }
 
-function getRandomInt (min: number, max: number): number {
+function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min)) + min
 }
 
@@ -136,17 +136,17 @@ app.get('/music/:group', function (req, res) {
     mp3_buffer:
       req.query.original != undefined
         ? fs.readFileSync(
-            path1.join(
-              mp3Path,
-              groupPath,
-              kindPath.path,
-              dir,
-              musicFile.substring(0, musicFile.length - 3) + 'mp3'
-            ),
-            {
-              encoding: 'base64'
-            }
-          )
+          path1.join(
+            mp3Path,
+            groupPath,
+            kindPath.path,
+            dir,
+            musicFile.substring(0, musicFile.length - 3) + 'mp3'
+          ),
+          {
+            encoding: 'base64'
+          }
+        )
         : undefined,
     questions: []
   }
@@ -240,7 +240,7 @@ app.get('/rank/:group/:music', function (req, res) {
       rank[group][music].length == 0
         ? 0
         : rank[group][music].reduce((a, b) => a + b) /
-          rank[group][music].length,
+        rank[group][music].length,
     count: rank[group][music].length,
     pertange: -1
   })
@@ -248,7 +248,7 @@ app.get('/rank/:group/:music', function (req, res) {
   fs.writeFileSync('rank.json', JSON.stringify(rank))
 })
 
-function kindToFolder (kind: musicKind, group: groups): string | undefined {
+function kindToFolder(kind: musicKind, group: groups): string | undefined {
   let path = ''
   switch (kind) {
     case musicKind.anime:
@@ -342,7 +342,7 @@ function kindToFolder (kind: musicKind, group: groups): string | undefined {
   return path
 }
 
-function randomMusic (
+function randomMusic(
   groupPath: string,
   kindPath: string
 ): { musicFile: string | undefined; dir: string } {
@@ -353,7 +353,7 @@ function randomMusic (
   return { musicFile, dir }
 }
 
-function getCover (albumPath: string, musicName: string): string {
+function getCover(albumPath: string, musicName: string): string {
   if (fs.existsSync(path1.join(albumPath, 'cover.jpg'))) {
     albumPath = path1.join(albumPath, 'cover.jpg')
   } else {
@@ -361,8 +361,7 @@ function getCover (albumPath: string, musicName: string): string {
     if (fs.existsSync(path1.join(albumPath, `Cover_${trackNum}.jpg`))) {
       albumPath = path1.join(albumPath, `Cover_${trackNum}.jpg`)
     } else {
-      //흰색 1x1 jpg
-      return '/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAABAAEDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD9/KKKKAP/2Q=='
+      albumPath = 'white.jpg'
     }
   }
   return fs.readFileSync(albumPath, {
@@ -386,6 +385,6 @@ app.get('*', function (req, res) {
   )
 })
 
-server.listen(80, function () {
+server.listen(8000, function () {
   console.log('서버ON')
 })
