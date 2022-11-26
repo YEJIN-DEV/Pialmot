@@ -1,8 +1,13 @@
 <script>
     import { slide } from "svelte/transition";
     import { Bar } from "svelte-chartjs";
+    import { Chart as ChartJS } from "chart.js";
+    import annotationPlugin from "chartjs-plugin-annotation";
     import "chart.js/auto";
     export let params = {}; // 라우터에서 넘어온 파라미터를 받아오기위해
+
+    ChartJS.register(annotationPlugin);
+
     let isMobile = checkMobile();
     let graphData = {
         datasets: [
@@ -13,6 +18,40 @@
                 borderWidth: 2,
             },
         ],
+    };
+
+    let options = {
+        responsive: true,
+        plugins: {
+            annotation: {
+                annotations: {
+                    line1: {
+                        type: "line",
+                        label: {
+                            content: "평균",
+                            display: true,
+                            position: "start",
+                        },
+                        xMax: -1,
+                        xMin: -1,
+                        borderColor: "#FF6767",
+                        borderWidth: 2,
+                    },
+                    line2: {
+                        type: "line",
+                        label: {
+                            content: "아나타",
+                            display: true,
+                            position: "end",
+                        },
+                        xMax: -1,
+                        xMin: -1,
+                        borderColor: "#000000",
+                        borderWidth: 2,
+                    },
+                },
+            },
+        },
     };
 
     let before = 0;
@@ -110,6 +149,39 @@
                                     ((x + 1) * data.interval.IQR) / 1000
                                 }초`
                         );
+
+                        let meanX = -1;
+                        let youX = -1;
+                        for (let i = 0; i < 5; i++) {
+                            if (
+                                i * data.interval.IQR <= rank.average &&
+                                rank.average <= (i + 1) * data.interval.IQR
+                            ) {
+                                meanX = i;
+                            }
+
+                            if (
+                                i * data.interval.IQR <= time &&
+                                time <= (i + 1) * data.interval.IQR
+                            ) {
+                                youX = i;
+                            }
+                        }
+                        options.plugins.annotation.annotations.line1.xMin =
+                            meanX;
+                        options.plugins.annotation.annotations.line1.xMax =
+                            meanX;
+                        options.plugins.annotation.annotations.line2.xMin =
+                            youX;
+                        options.plugins.annotation.annotations.line2.xMax =
+                            youX;
+
+                        options.plugins.annotation.annotations.line1.label.content = `평균\n${(
+                            rank.average / 1000
+                        ).toFixed(3)}`;
+                        options.plugins.annotation.annotations.line2.label.content = `아나타\n${(
+                            time / 1000
+                        ).toFixed(3)}`;
                         graphData.datasets[0].data = data.interval.count;
                         inQuestion = false;
                         playOriginal();
@@ -125,12 +197,40 @@
                     */
                     });
             } else {
-                graphData.labels = undefined;
-                graphData.datasets[0].data = [0, 0, 0, 0, 0];
                 fetch(`/rank/${musicData.group}/${answer}`)
                     .then((response) => response.json())
                     .then((data) => {
                         rank = data;
+
+                        graphData.labels = Array.from(
+                            Array(5),
+                            (_, x) =>
+                                `${(x * data.interval.IQR) / 1000}초 ~ ${
+                                    ((x + 1) * data.interval.IQR) / 1000
+                                }초`
+                        );
+
+                        let meanX = -1;
+                        for (let i = 0; i < 5; i++) {
+                            if (
+                                i * data.interval.IQR <= rank.average &&
+                                rank.average <= (i + 1) * data.interval.IQR
+                            ) {
+                                meanX = i;
+                            }
+                        }
+                        options.plugins.annotation.annotations.line1.xMin =
+                            meanX;
+                        options.plugins.annotation.annotations.line1.xMax =
+                            meanX;
+
+                        options.plugins.annotation.annotations.line2.xMin = -1;
+                        options.plugins.annotation.annotations.line2.xMax = -1;
+
+                        options.plugins.annotation.annotations.line1.label.content = `평균\n${(
+                            rank.average / 1000
+                        ).toFixed(3)}`;
+
                         inQuestion = false;
                         playOriginal();
                         getRandMusic(groups[musicData.group], 5000);
@@ -271,8 +371,8 @@
             <h4 style="font-weight:400;">{musicData.album.name}</h4>
         </div>
         {#if !isMobile}
-            <div class="chart" style="width:500px; height: 700px;">
-                <Bar data={graphData} options={{ responsive: true }} />
+            <div class="chart">
+                <Bar data={graphData} {options} />
             </div>
         {/if}
     {/if}
@@ -294,13 +394,6 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-    }
-
-    .chart {
-        position: absolute;
-        left: 80%;
-        top: 50%;
-        transform: translate(-50%, -20%);
     }
 
     .question {
@@ -333,6 +426,13 @@
             display: flex;
             flex-direction: column;
         }
+
+        .chart {
+            position: absolute;
+            left: 50%;
+            top: 80%;
+            transform: translate(-50%, -20%);
+        }
     }
 
     @media (orientation: landscape) {
@@ -344,6 +444,15 @@
         .images {
             display: flex;
             height: 100vh;
+        }
+
+        .chart {
+            position: absolute;
+            left: 80%;
+            top: 50%;
+            transform: translate(-50%, -20%);
+            width: 25vw;
+            height: 60vh;
         }
     }
 </style>
