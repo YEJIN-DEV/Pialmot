@@ -86,7 +86,7 @@
 </script>
 
 <svelte:head>
-	<script type="text/javascript" src="//www.midijs.net/lib/midi.js"></script>
+	<script type="text/javascript" src="midi.js"></script>
 </svelte:head>
 
 <body>
