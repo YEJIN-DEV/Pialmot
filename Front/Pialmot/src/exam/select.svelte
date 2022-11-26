@@ -21,7 +21,7 @@
     };
 
     let options = {
-        responsive: true,
+        maintainAspectRatio: false,
         plugins: {
             annotation: {
                 annotations: {
@@ -301,7 +301,10 @@
 </script>
 
 <svelte:head>
-    <script type="text/javascript" src="//www.midijs.net/lib/midi.js"></script>
+    <script
+        type="text/javascript"
+        src="https://www.midijs.net/lib/midi.js"
+    ></script>
     <meta name="viewport" content="width=device-width" />
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
@@ -428,10 +431,8 @@
         }
 
         .chart {
-            position: absolute;
-            left: 50%;
-            top: 80%;
-            transform: translate(-50%, -20%);
+            width: 25vw;
+            height: 30vh;
         }
     }
 
@@ -447,12 +448,8 @@
         }
 
         .chart {
-            position: absolute;
-            left: 80%;
-            top: 50%;
-            transform: translate(-50%, -20%);
-            width: 25vw;
-            height: 60vh;
+            width: 30vw;
+            height: 30vh;
         }
     }
 </style>
