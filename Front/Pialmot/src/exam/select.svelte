@@ -1,32 +1,64 @@
 <script>
     import { slide } from "svelte/transition";
     import { Bar } from "svelte-chartjs";
+    import { Chart as ChartJS } from "chart.js";
+    import annotationPlugin from "chartjs-plugin-annotation";
     import "chart.js/auto";
     export let params = {}; // 라우터에서 넘어온 파라미터를 받아오기위해
-    export const data = {
-        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+
+    ChartJS.register(annotationPlugin);
+
+    let isMobile = checkMobile();
+    let graphData = {
         datasets: [
             {
-                label: "% of Votes",
-                data: [12, 19, 3, 5, 2, 3],
-                backgroundColor: [
-                    "rgba(255, 134,159,0.4)",
-                    "rgba(98,  182, 239,0.4)",
-                    "rgba(255, 218, 128,0.4)",
-                    "rgba(113, 205, 205,0.4)",
-                    "rgba(170, 128, 252,0.4)",
-                    "rgba(255, 177, 101,0.4)",
-                ],
+                label: "명",
+                data: [0, 0, 0, 0, 0],
+                borderColor: "#70675E",
                 borderWidth: 2,
             },
         ],
+    };
+
+    let options = {
+        maintainAspectRatio: false,
+        plugins: {
+            annotation: {
+                annotations: {
+                    line1: {
+                        type: "line",
+                        label: {
+                            content: "평균",
+                            display: true,
+                            position: "start",
+                        },
+                        xMax: -1,
+                        xMin: -1,
+                        borderColor: "#FF6767",
+                        borderWidth: 2,
+                    },
+                    line2: {
+                        type: "line",
+                        label: {
+                            content: "아나타",
+                            display: true,
+                            position: "end",
+                        },
+                        xMax: -1,
+                        xMin: -1,
+                        borderColor: "#000000",
+                        borderWidth: 2,
+                    },
+                },
+            },
+        },
     };
 
     let before = 0;
     let snd = new Audio();
     let inQuestion = true;
     let rotation = isLandScape();
-    export let musicData = {
+    let musicData = {
         answer: "None",
         album: { data: "" },
         questions: [
@@ -38,7 +70,7 @@
         ],
     };
 
-    export let rank = {
+    let rank = {
         rank: -1,
         best: -1,
         average: -1,
@@ -59,7 +91,7 @@
         3: "liella",
     };
 
-    export function getRandMusic(target, delay) {
+    function getRandMusic(target, delay) {
         MIDIjs.player_callback = (ev) => {
             player_seek = ev.time;
         };
@@ -85,7 +117,7 @@
             });
     }
 
-    export function playOriginal() {
+    function playOriginal() {
         if (snd.paused) {
             snd.currentTime = player_seek;
             snd.play();
@@ -94,7 +126,7 @@
         }
     }
 
-    export function Answer(index) {
+    function Answer(index) {
         if (inQuestion) {
             let selected = musicData.questions[index].name;
             let answer = musicData.name;
@@ -110,6 +142,47 @@
                     .then((response) => response.json())
                     .then((data) => {
                         rank = data;
+                        graphData.labels = Array.from(
+                            Array(5),
+                            (_, x) =>
+                                `${(x * data.interval.IQR) / 1000}초 ~ ${
+                                    ((x + 1) * data.interval.IQR) / 1000
+                                }초`
+                        );
+
+                        let meanX = -1;
+                        let youX = -1;
+                        for (let i = 0; i < 5; i++) {
+                            if (
+                                i * data.interval.IQR <= rank.average &&
+                                rank.average <= (i + 1) * data.interval.IQR
+                            ) {
+                                meanX = i;
+                            }
+
+                            if (
+                                i * data.interval.IQR <= time &&
+                                time <= (i + 1) * data.interval.IQR
+                            ) {
+                                youX = i;
+                            }
+                        }
+                        options.plugins.annotation.annotations.line1.xMin =
+                            meanX;
+                        options.plugins.annotation.annotations.line1.xMax =
+                            meanX;
+                        options.plugins.annotation.annotations.line2.xMin =
+                            youX;
+                        options.plugins.annotation.annotations.line2.xMax =
+                            youX;
+
+                        options.plugins.annotation.annotations.line1.label.content = `평균\n${(
+                            rank.average / 1000
+                        ).toFixed(3)}`;
+                        options.plugins.annotation.annotations.line2.label.content = `아나타\n${(
+                            time / 1000
+                        ).toFixed(3)}`;
+                        graphData.datasets[0].data = data.interval.count;
                         inQuestion = false;
                         playOriginal();
                         getRandMusic(groups[musicData.group], 5000);
@@ -128,6 +201,36 @@
                     .then((response) => response.json())
                     .then((data) => {
                         rank = data;
+
+                        graphData.labels = Array.from(
+                            Array(5),
+                            (_, x) =>
+                                `${(x * data.interval.IQR) / 1000}초 ~ ${
+                                    ((x + 1) * data.interval.IQR) / 1000
+                                }초`
+                        );
+
+                        let meanX = -1;
+                        for (let i = 0; i < 5; i++) {
+                            if (
+                                i * data.interval.IQR <= rank.average &&
+                                rank.average <= (i + 1) * data.interval.IQR
+                            ) {
+                                meanX = i;
+                            }
+                        }
+                        options.plugins.annotation.annotations.line1.xMin =
+                            meanX;
+                        options.plugins.annotation.annotations.line1.xMax =
+                            meanX;
+
+                        options.plugins.annotation.annotations.line2.xMin = -1;
+                        options.plugins.annotation.annotations.line2.xMax = -1;
+
+                        options.plugins.annotation.annotations.line1.label.content = `평균\n${(
+                            rank.average / 1000
+                        ).toFixed(3)}`;
+
                         inQuestion = false;
                         playOriginal();
                         getRandMusic(groups[musicData.group], 5000);
@@ -179,7 +282,7 @@
     window.addEventListener("orientationchange", (event) => {
         setTimeout(() => {
             rotation = isLandScape();
-        }, 100 /**프레임워크 버그때문에 딜레이가 필수*/);
+        }, 100 /*프레임워크 버그때문에 딜레이가 필수*/);
     });
 
     document.addEventListener("visibilitychange", () => {
@@ -198,7 +301,7 @@
 </script>
 
 <svelte:head>
-    <script type="text/javascript" src="//www.midijs.net/lib/midi.js"></script>
+    <script type="text/javascript" src="midi.js"></script>
     <meta name="viewport" content="width=device-width" />
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
@@ -216,7 +319,7 @@
                         class="question"
                         on:click={() => Answer(i)}
                         on:mouseenter={() => {
-                            if (!checkMobile()) {
+                            if (!isMobile) {
                                 bright[i] = 1;
                                 blur[i] = 0;
                                 player_onCursor = 1;
@@ -226,7 +329,7 @@
                             }
                         }}
                         on:mouseleave={() => {
-                            if (!checkMobile()) {
+                            if (!isMobile) {
                                 bright[i] = 0.6;
                                 blur[i] = 1;
                                 player_onCursor = 0;
@@ -265,8 +368,11 @@
             <h1 style="font-weight:400;">{musicData.name}</h1>
             <h4 style="font-weight:400;">{musicData.album.name}</h4>
         </div>
-
-        <Bar {data} options={{ responsive: true }} />
+        {#if !isMobile}
+            <div class="chart">
+                <Bar data={graphData} {options} />
+            </div>
+        {/if}
     {/if}
 </body>
 
@@ -328,6 +434,11 @@
         .question {
             width: 100%;
         }
+
+        .chart {
+            width: 25vw;
+            height: 30vh;
+        }
     }
 
     @media (orientation: landscape) {
@@ -343,6 +454,11 @@
 
         .question {
             height: 100%;
+        }
+
+        .chart {
+            width: 30vw;
+            height: 30vh;
         }
     }
 </style>
