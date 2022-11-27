@@ -358,7 +358,7 @@
         </div>
     {:else}
         <div class="result" transition:slide={{ delay: 150, duration: 600 }}>
-            <div style="margin-left: 10%;">
+            <div>
                 <h1 style="font-size:64px;">
                     {rank.rank == -1 ? "오답입니다" : `#${rank.rank}`}
                 </h1>
@@ -379,7 +379,6 @@
             </div>
             <img
                 class="album"
-                style="margin-right: 50px;"
                 src={"data:image/jpeg;base64," + musicData.album.data}
                 alt=""
             />
@@ -439,7 +438,7 @@
             flex-flow: column wrap;
             flex-shrink: 1;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
         }
 
         .images {
@@ -455,6 +454,10 @@
             width: 80vw;
             max-height: 15vh;
         }
+
+        .album {
+            padding-top: 3%;
+        }
     }
 
     @media (orientation: landscape) {
@@ -467,7 +470,7 @@
             flex-flow: row wrap;
             flex-shrink: 1;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
         }
 
         .images {
@@ -482,6 +485,10 @@
         .chart {
             max-width: 80vw;
             max-height: 20vh;
+        }
+
+        .album {
+            padding-left: 3%;
         }
     }
 </style>

@@ -3,6 +3,7 @@ import http from 'http'
 import fs from 'fs'
 import path1 from 'path'
 import * as ss from 'simple-statistics'
+import sharp from 'sharp'
 
 function getDirectories(path: string): string[] {
   return fs.readdirSync(path).filter(function (file) {
@@ -42,6 +43,7 @@ const app = express()
 app.use(express.text())
 const server = http.createServer(app)
 
+
 /*
 오류:
 니지동: 싱글
@@ -52,7 +54,7 @@ const server = http.createServer(app)
 리에라: anime, original, single, special, album
 */
 
-app.get('/music/:group', function (req, res) {
+app.get('/music/:group', async function (req, res) {
   let groupPath = ''
   const group = groups[req.params.group as keyof typeof groups]
   switch (group) {
@@ -121,7 +123,7 @@ app.get('/music/:group', function (req, res) {
     name: musicFile.substring(4, musicFile.length - 4),
     album: {
       name: dir,
-      data: getCover(
+      data: await getCover(
         path1.join(mp3Path, groupPath, kindPath.path, dir),
         musicFile
       )
@@ -171,7 +173,7 @@ app.get('/music/:group', function (req, res) {
           if (result.questions.findIndex(e => e.name == musicFile) == -1)
             result.questions.push({
               name: musicFile,
-              data: getCover(
+              data: await getCover(
                 path1.join(mp3Path, groupPath, kindPath, dir),
                 musicFile
               )
@@ -362,7 +364,7 @@ function randomMusic(
   return { musicFile, dir }
 }
 
-function getCover(albumPath: string, musicName: string): string {
+async function getCover(albumPath: string, musicName: string): Promise<string> {
   if (fs.existsSync(path1.join(albumPath, 'cover.jpg'))) {
     albumPath = path1.join(albumPath, 'cover.jpg')
   } else {
@@ -373,9 +375,13 @@ function getCover(albumPath: string, musicName: string): string {
       albumPath = 'white.jpg'
     }
   }
-  return fs.readFileSync(albumPath, {
-    encoding: 'base64'
-  })
+
+  return await sharp(fs.readFileSync(albumPath))
+    .resize(1000, 1000)
+    .jpeg({ mozjpeg: true })
+    .toBuffer().then(data => data.toString('base64'))
+
+
 }
 
 app.get('/', function (req, res) {
