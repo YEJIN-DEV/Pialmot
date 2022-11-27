@@ -51,6 +51,9 @@
                     },
                 },
             },
+            legend: {
+                display: false,
+            },
         },
     };
 
@@ -145,9 +148,10 @@
                         graphData.labels = Array.from(
                             Array(5),
                             (_, x) =>
-                                `${(x * data.interval.IQR) / 1000}초 ~ ${
-                                    ((x + 1) * data.interval.IQR) / 1000
-                                }초`
+                                `~ ${(
+                                    ((x + 1) * data.interval.IQR) /
+                                    1000
+                                ).toFixed(2)}초`
                         );
 
                         let meanX = -1;
@@ -205,9 +209,10 @@
                         graphData.labels = Array.from(
                             Array(5),
                             (_, x) =>
-                                `${(x * data.interval.IQR) / 1000}초 ~ ${
-                                    ((x + 1) * data.interval.IQR) / 1000
-                                }초`
+                                `~ ${(
+                                    ((x + 1) * data.interval.IQR) /
+                                    1000
+                                ).toFixed(2)}초`
                         );
 
                         let meanX = -1;
@@ -352,27 +357,33 @@
             {/each}
         </div>
     {:else}
-        <div class="result" transition:slide={{ duration: 600 }}>
-            <h1 style="font-size:64px;">
-                {rank.rank == -1 ? "오답입니다" : `#${rank.rank}`}
-            </h1>
-            <h3 style="font-size:24px;font-weight:400;margin-bottom:2rem">
-                {rank.rank == -1 ? "정답은..." : `/${rank.count}`}
-            </h3>
+        <div class="result" transition:slide={{ delay: 150, duration: 600 }}>
+            <div style="margin-left: 10%;">
+                <h1 style="font-size:64px;">
+                    {rank.rank == -1 ? "오답입니다" : `#${rank.rank}`}
+                </h1>
+                <h3
+                    style="padding-top:5px; font-size:24px;font-weight:400;margin-bottom:2rem"
+                >
+                    {rank.rank == -1 ? "정답은..." : `/${rank.count}`}
+                </h3>
+                <h1 style="font-weight:400;">
+                    {musicData.name}
+                </h1>
+                <h4 style="text-overflow: ellipsis;font-weight:400;">
+                    {musicData.album.name}
+                </h4>
+                <div class="chart">
+                    <Bar data={graphData} {options} />
+                </div>
+            </div>
             <img
                 class="album"
-                style="filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));"
+                style="margin-right: 50px;"
                 src={"data:image/jpeg;base64," + musicData.album.data}
                 alt=""
             />
-            <h1 style="font-weight:400;">{musicData.name}</h1>
-            <h4 style="font-weight:400;">{musicData.album.name}</h4>
         </div>
-        {#if !isMobile}
-            <div class="chart">
-                <Bar data={graphData} {options} />
-            </div>
-        {/if}
     {/if}
 </body>
 
@@ -393,17 +404,15 @@
         min-width: 20%;
     }
 
-    .result {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-    }
-
     .question {
         box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
         transition: all 0.1s linear;
-        transform: translateX(-30%);
+    }
+
+    .album {
+        filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+        max-width: 90%;
+        max-height: 90%;
     }
 
     h2 {
@@ -419,11 +428,18 @@
         margin: 0;
         font-family: "Inter", sans-serif;
     }
+
     @media (orientation: portrait) {
         /*세로*/
-        .album {
-            width: 300px;
-            height: 300px;
+
+        .result {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-flow: column wrap;
+            flex-shrink: 1;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .images {
@@ -436,16 +452,22 @@
         }
 
         .chart {
-            width: 25vw;
-            height: 30vh;
+            width: 80vw;
+            max-height: 15vh;
         }
     }
 
     @media (orientation: landscape) {
         /*가로*/
-        .album {
-            width: 500px;
-            height: 500px;
+
+        .result {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-flow: row wrap;
+            flex-shrink: 1;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .images {
@@ -454,11 +476,12 @@
 
         .question {
             height: 100%;
+            transform: translateX(-30%);
         }
 
         .chart {
-            width: 30vw;
-            height: 30vh;
+            max-width: 80vw;
+            max-height: 20vh;
         }
     }
 </style>
