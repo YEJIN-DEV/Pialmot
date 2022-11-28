@@ -4,9 +4,23 @@
     import { Chart as ChartJS } from "chart.js";
     import annotationPlugin from "chartjs-plugin-annotation";
     import "chart.js/auto";
+    import { _ } from "svelte-i18n";
+    import { register, init, getLocaleFromNavigator } from "svelte-i18n";
+
+    register("en", () => import("../../i18n/en.json"));
+    register("ko", () => import("../../i18n/ko.json"));
+    register("ja", () => import("../../i18n/ja.json"));
+
+    init({
+        fallbackLocale: "en",
+        initialLocale: getLocaleFromNavigator(),
+    });
+
     export let params = {}; // 라우터에서 넘어온 파라미터를 받아오기위해
 
     ChartJS.register(annotationPlugin);
+
+    // en, en-US and pt are not available yet
 
     let isMobile = checkMobile();
     let graphData = {
@@ -180,12 +194,12 @@
                         options.plugins.annotation.annotations.line2.xMax =
                             youX;
 
-                        options.plugins.annotation.annotations.line1.label.content = `평균\n${(
-                            rank.average / 1000
-                        ).toFixed(3)}`;
-                        options.plugins.annotation.annotations.line2.label.content = `아나타\n${(
-                            time / 1000
-                        ).toFixed(3)}`;
+                        options.plugins.annotation.annotations.line1.label.content = `${$_(
+                            "mean"
+                        )}\n${(rank.average / 1000).toFixed(3)}`;
+                        options.plugins.annotation.annotations.line2.label.content = `${$_(
+                            "you"
+                        )}\n${(time / 1000).toFixed(3)}`;
                         graphData.datasets[0].data = data.interval.count;
                         inQuestion = false;
                         playOriginal();
@@ -232,9 +246,9 @@
                         options.plugins.annotation.annotations.line2.xMin = -1;
                         options.plugins.annotation.annotations.line2.xMax = -1;
 
-                        options.plugins.annotation.annotations.line1.label.content = `평균\n${(
-                            rank.average / 1000
-                        ).toFixed(3)}`;
+                        options.plugins.annotation.annotations.line1.label.content = `${$_(
+                            "mean"
+                        )}\n${(rank.average / 1000).toFixed(3)}`;
 
                         inQuestion = false;
                         playOriginal();
@@ -361,12 +375,12 @@
         <div class="result" transition:slide={{ delay: 150, duration: 600 }}>
             <div>
                 <h1 style="font-size:64px;">
-                    {rank.rank == -1 ? "오답입니다" : `#${rank.rank}`}
+                    {rank.rank == -1 ? $_("wrong") : `#${rank.rank}`}
                 </h1>
                 <h3
                     style="padding-top:5px; font-size:24px;font-weight:400;margin-bottom:2rem"
                 >
-                    {rank.rank == -1 ? "정답은..." : `/${rank.count}`}
+                    {rank.rank == -1 ? $_("correctis") : `/${rank.count}`}
                 </h3>
                 <h1 style="font-weight:400;">
                     {musicData.name}

@@ -1,5 +1,20 @@
 <script>
     import { push } from "svelte-spa-router";
+    import { _ } from "svelte-i18n";
+    import { addMessages, init, getLocaleFromNavigator } from "svelte-i18n";
+
+    import en from "../i18n/en.json";
+    import ko from "../i18n/ko.json";
+    import ja from "../i18n/ja.json";
+
+    addMessages("en", en);
+    addMessages("ko", ko);
+    addMessages("ja", ja);
+
+    init({
+        fallbackLocale: "en",
+        initialLocale: getLocaleFromNavigator(),
+    });
     let mute = true;
 </script>
 
@@ -19,8 +34,8 @@
         </video>
     </div>
     <div class="text">
-        <h1 style="color:white; font-size:64px;">피알못</h1>
-        <h3 style="color:white">러브라이브판!</h3>
+        <h1 style="color:white; font-size:64px;">{$_("title")}</h1>
+        <h3 style="color:white">{$_("edtion")}</h3>
         <button
             class="btnGroups"
             on:click={() => {
