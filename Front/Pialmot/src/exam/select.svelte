@@ -334,7 +334,10 @@
             {#each { length: 5 } as _, i}
                 <div class="container">
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <button style="border: none;" on:click={() => Answer(i)}>
+                    <button
+                        style="border: none; height: 100%;"
+                        on:click={() => Answer(i)}
+                    >
                         <img
                             class="question"
                             on:mouseenter={() => {
