@@ -320,39 +320,40 @@
             {#each { length: 5 } as _, i}
                 <div class="container">
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <img
-                        class="question"
-                        on:click={() => Answer(i)}
-                        on:mouseenter={() => {
-                            if (!isMobile) {
-                                bright[i] = 1;
-                                blur[i] = 0;
-                                player_onCursor = 1;
-                                transValue = [19, 19, 19, 19, 19].map(
-                                    (e, index) => (index == i ? 24 : e)
-                                );
-                            }
-                        }}
-                        on:mouseleave={() => {
-                            if (!isMobile) {
-                                bright[i] = 0.6;
-                                blur[i] = 1;
-                                player_onCursor = 0;
-                                transValue = [20, 20, 20, 20, 20];
-                            }
-                        }}
-                        style="filter: brightness({player_onCursor == 0
-                            ? 1
-                            : bright[i]}) blur({player_onCursor == 0
-                            ? 0
-                            : blur[i]}px);"
-                        src={"data:image/jpeg;base64," +
-                            musicData.questions[i].data}
-                        alt={musicData.questions[i].name}
-                    />
-                    <h2 style="text-align: center">
-                        {musicData.questions[i].name}
-                    </h2>
+                    <button style="border: none;" on:click={() => Answer(i)}>
+                        <img
+                            class="question"
+                            on:mouseenter={() => {
+                                if (!isMobile) {
+                                    bright[i] = 1;
+                                    blur[i] = 0;
+                                    player_onCursor = 1;
+                                    transValue = [19, 19, 19, 19, 19].map(
+                                        (e, index) => (index == i ? 24 : e)
+                                    );
+                                }
+                            }}
+                            on:mouseleave={() => {
+                                if (!isMobile) {
+                                    bright[i] = 0.6;
+                                    blur[i] = 1;
+                                    player_onCursor = 0;
+                                    transValue = [20, 20, 20, 20, 20];
+                                }
+                            }}
+                            style="filter: brightness({player_onCursor == 0
+                                ? 1
+                                : bright[i]}) blur({player_onCursor == 0
+                                ? 0
+                                : blur[i]}px);"
+                            src={"data:image/jpeg;base64," +
+                                musicData.questions[i].data}
+                            alt={musicData.questions[i].name}
+                        />
+                        <h2 style="text-align: center">
+                            {musicData.questions[i].name}
+                        </h2>
+                    </button>
                 </div>
             {/each}
         </div>
