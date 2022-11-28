@@ -426,6 +426,16 @@
         transition: all 0.1s linear;
     }
 
+    .result {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-flow: row wrap;
+        flex-shrink: 1;
+        align-items: center;
+        justify-content: center;
+    }
+
     .album {
         filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
         max-width: 90%;
@@ -449,16 +459,6 @@
     @media (orientation: portrait) {
         /*세로*/
 
-        .result {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-flow: column wrap;
-            flex-shrink: 1;
-            align-items: center;
-            justify-content: center;
-        }
-
         .images {
             display: flex;
             flex-direction: column;
@@ -480,16 +480,6 @@
 
     @media (orientation: landscape) {
         /*가로*/
-
-        .result {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-flow: row wrap;
-            flex-shrink: 1;
-            align-items: center;
-            justify-content: center;
-        }
 
         .images {
             display: flex;
