@@ -5,6 +5,7 @@
     import annotationPlugin from "chartjs-plugin-annotation";
     import "chart.js/auto";
     import { _ } from "svelte-i18n";
+    import { Stretch } from "svelte-loading-spinners";
     import { register, init, getLocaleFromNavigator } from "svelte-i18n";
 
     register("en", () => import("../../i18n/en.json"));
@@ -73,7 +74,10 @@
 
     let before = 0;
     let snd = new Audio();
-    let inQuestion = true;
+    let inQuestion = false;
+    let loading = true;
+    let fetchEnd = false;
+    let firstFetch = true;
     let rotation = isLandScape();
     let musicData = {
         answer: "None",
@@ -116,7 +120,10 @@
             .then((response) => response.json())
             .then((data) => {
                 setTimeout(() => {
+                    loading = true;
                     MIDIjs.play("data:audio/midi;base64," + data.midi_buffer);
+                    if (firstFetch) MIDIjs.pause();
+
                     snd.src = "data:audio/mp3;base64," + data.mp3_buffer;
                     snd.volume = 0.05;
                     snd.load();
@@ -130,20 +137,14 @@
                     blur = [1, 1, 1, 1, 1];
                     player_onCursor = 0;
                     transValue = [20, 20, 20, 20, 20];
+                    loading = false;
+                    fetchEnd = true;
                 }, delay ?? 0);
             });
     }
 
-    function playOriginal() {
-        if (snd.paused) {
-            snd.currentTime = player_seek;
-            snd.play();
-        } else {
-            snd.pause();
-        }
-    }
-
     function Answer(index) {
+        firstFetch = false;
         if (inQuestion) {
             let selected = musicData.questions[index].name;
             let answer = musicData.name;
@@ -202,7 +203,6 @@
                         )}\n${(time / 1000).toFixed(3)}`;
                         graphData.datasets[0].data = data.interval.count;
                         inQuestion = false;
-                        playOriginal();
                         getRandMusic(groups[musicData.group], 5000);
                         /*
                     alert(
@@ -251,7 +251,6 @@
                         )}\n${(rank.average / 1000).toFixed(3)}`;
 
                         inQuestion = false;
-                        playOriginal();
                         getRandMusic(groups[musicData.group], 5000);
                     });
             }
@@ -329,14 +328,55 @@
 <svelte:window on:keydown|preventDefault={onKeyDown} />
 
 <body>
-    {#if inQuestion}
+    {#if loading && firstFetch}
+        <div
+            style=" position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);"
+        >
+            <Stretch
+                style=" position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);"
+                size="60"
+                color="#FF3E00"
+                unit="px"
+                duration="1s"
+            />
+        </div>
+    {:else if fetchEnd && firstFetch}
+        <!-- svelte-ignore a11y-click-events-have-key-events -->
+        <btn
+            style=" position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);"
+            on:click={() => {
+                loading = false;
+                fetchEnd = false;
+                MIDIjs.resume();
+            }}
+        >
+            <img
+                style="width: 80%; height: 80%;"
+                src="logo/Lovelive.png"
+                alt=""
+            />
+        </btn>
+    {:else if inQuestion}
         <div class="images">
             {#each { length: 5 } as _, i}
                 <div class="container">
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <button
                         style="border: none; height: 100%;"
-                        on:click={() => Answer(i)}
+                        on:click={() => {
+                            Answer(i);
+                            snd.currentTime = player_seek;
+                            snd.play();
+                        }}
                     >
                         <img
                             class="question"

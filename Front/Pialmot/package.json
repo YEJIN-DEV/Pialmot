@@ -23,6 +23,7 @@
     "sirv-cli": "^2.0.0",
     "svelte-chartjs": "^3.1.0",
     "svelte-i18n": "^3.6.0",
+    "svelte-loading-spinners": "^0.3.4",
     "svelte-spa-router": "^3.3.0"
   }
 }

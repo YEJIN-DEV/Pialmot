@@ -29,7 +29,7 @@
 <body>
     <div class="video-container">
         <!-- svelte-ignore a11y-media-has-caption -->
-        <video bind:muted={mute} autoplay loop inline>
+        <video bind:muted={mute} autoplay loop playsinline>
             <source src="main.mp4" />
         </video>
     </div>
