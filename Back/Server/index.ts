@@ -4,6 +4,7 @@ import fs from 'fs'
 import path1 from 'path'
 import * as ss from 'simple-statistics'
 import sharp from 'sharp'
+import morgan from 'morgan'
 
 function getDirectories(path: string): string[] {
   return fs.readdirSync(path).filter(function (file) {
@@ -41,6 +42,7 @@ enum groups {
 }
 const app = express()
 app.use(express.text())
+app.use(morgan('common'));
 const server = http.createServer(app)
 
 
