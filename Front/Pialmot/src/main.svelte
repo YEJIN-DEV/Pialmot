@@ -19,7 +19,6 @@
 </script>
 
 <svelte:head>
-    <script type="text/javascript" src="//www.midijs.net/lib/midi.js"></script>
     <meta name="viewport" content="width=device-width" />
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");

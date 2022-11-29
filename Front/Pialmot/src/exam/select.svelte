@@ -21,8 +21,6 @@
 
     ChartJS.register(annotationPlugin);
 
-    // en, en-US and pt are not available yet
-
     let isMobile = checkMobile();
     let graphData = {
         datasets: [
@@ -98,6 +96,16 @@
         count: -1,
         pertange: -1,
     };
+    let kind = [
+        "anime", // 애니 삽입곡
+        "original", // 오리지널
+        "single", // 싱글
+        "game", // 게임 삽입곡
+        "unit", // 유닛
+        "special", // 특전
+        "album", // 정규 앨범
+    ];
+    let isKindSelect = true;
 
     let player_seek = 0;
     let bright = [0.6, 0.6, 0.6, 0.6, 0.6];
@@ -116,7 +124,7 @@
         MIDIjs.player_callback = (ev) => {
             player_seek = ev.time;
         };
-        fetch(`/music/${target}?kind=anime&original`)
+        fetch(`/music/${target}?kind=${kind.join("&kind=")}&original`)
             .then((response) => response.json())
             .then((data) => {
                 setTimeout(() => {
@@ -311,11 +319,23 @@
         }
     });
 
-    setTimeout(() => {
-        if (typeof MIDIjs != "undefined") {
-            getRandMusic(params.group);
-        }
-    }, 500);
+    function kindSel() {
+        isKindSelect = false;
+        kind = kind.filter((item) => {
+            switch (params.group) {
+                case "us":
+                    break;
+                case "aqours":
+                    if (item == "original" || item == "single") return false;
+                case "nijigasaki":
+                    if (item == "single") return false;
+                case "liella":
+                    if (item == "unit" || item == "game") return false;
+            }
+            return true;
+        });
+        getRandMusic(params.group);
+    }
 </script>
 
 <svelte:head>
@@ -328,7 +348,85 @@
 <svelte:window on:keydown|preventDefault={onKeyDown} />
 
 <body>
-    {#if loading && firstFetch}
+    {#if isKindSelect}
+        {#if params.group == "aqours"}
+            <form on:submit|preventDefault={kindSel}>
+                <h4>한판,,하쉴?</h4>
+                <input type="checkbox" bind:group={kind} value="anime" />애니<br
+                />
+                <input
+                    type="checkbox"
+                    bind:group={kind}
+                    value="original"
+                />오리지널<br />
+                <input
+                    type="checkbox"
+                    bind:group={kind}
+                    value="single"
+                />싱글<br />
+                <input
+                    type="checkbox"
+                    bind:group={kind}
+                    value="special"
+                />스페셜<br />
+                <input type="checkbox" bind:group={kind} value="album" />정규
+                앨범<br />
+                <input type="checkbox" bind:group={kind} value="game" />게임
+                삽입곡
+                <br />
+                <button>게임 스타토</button>
+            </form>
+        {:else if params.group == "nijigasaki"}
+            <form on:submit|preventDefault={kindSel}>
+                <h4>한판,,하쉴?</h4>
+                <input type="checkbox" bind:group={kind} value="anime" />애니<br
+                />
+                <input
+                    type="checkbox"
+                    bind:group={kind}
+                    value="original"
+                />오리지널<br />
+                <input type="checkbox" bind:group={kind} value="unit" />유닛<br
+                />
+                <input
+                    type="checkbox"
+                    bind:group={kind}
+                    value="special"
+                />스페셜<br />
+                <input type="checkbox" bind:group={kind} value="album" />정규
+                앨범<br />
+                <input type="checkbox" bind:group={kind} value="game" />게임
+                삽입곡
+                <br />
+                <button>게임 스타토</button>
+            </form>
+        {:else if params.group == "liella"}
+            <form on:submit|preventDefault={kindSel}>
+                <h4>한판,,하쉴?</h4>
+                <input type="checkbox" bind:group={kind} value="anime" />애니<br
+                />
+                <input
+                    type="checkbox"
+                    bind:group={kind}
+                    value="original"
+                    checked
+                />오리지널<br />
+                <input
+                    type="checkbox"
+                    bind:group={kind}
+                    value="single"
+                />싱글<br />
+                <input
+                    type="checkbox"
+                    bind:group={kind}
+                    value="special"
+                />스페셜<br />
+                <input type="checkbox" bind:group={kind} value="album" />정규
+                앨범<br />
+                <button>게임 스타토</button>
+            </form>
+        {/if}
+    {:else if loading && firstFetch}
         <div
             style=" position: fixed;
                     top: 50%;
@@ -487,6 +585,12 @@
         color: rgb(34, 34, 34);
     }
 
+    form {
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        position: absolute;
+    }
     * {
         padding: 0;
         margin: 0;

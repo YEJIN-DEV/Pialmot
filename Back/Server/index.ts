@@ -29,6 +29,7 @@ enum musicKind {
   anime, // 애니 삽입곡
   original, // 오리지널
   single, // 싱글
+  game, // 게임 삽입곡
   unit, // 유닛
   special, // 특전
   album // 정규 앨범
@@ -49,11 +50,12 @@ const server = http.createServer(app)
 /*
 오류:
 니지동: 싱글
-리에라: 유닛
+리에라: 유닛, 게임
 아쿠아: 오리지널, 싱글
 정상:
-니지동: anime, original, unit, special, album
+니지동: anime, original, unit, special, album, game
 리에라: anime, original, single, special, album
+아쿠아: anime, unit, special, album, game
 */
 
 app.get('/music/:group', async function (req, res) {
@@ -332,6 +334,21 @@ function kindToFolder(kind: musicKind, group: groups): string | undefined {
           break
         case groups.liella:
           path = '[2022-2022] Albums'
+      }
+      break
+    case musicKind.game:
+      switch (group) {
+        case groups.us:
+          path = '' // TODO: 폴더명
+          break
+        case groups.aqours:
+          path = '[2016-2021] Game' // TODO: 폴더명
+          break
+        case groups.nijigasaki:
+          path = '[2022-2022] Game'
+          break
+        case groups.liella:
+          return undefined
       }
       break
   }
