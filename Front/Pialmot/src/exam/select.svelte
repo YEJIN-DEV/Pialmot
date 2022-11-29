@@ -7,16 +7,18 @@
     import { _ } from "svelte-i18n";
     import { Stretch } from "svelte-loading-spinners";
     import { register, init, getLocaleFromNavigator } from "svelte-i18n";
+    import { isLoading as i18nloading } from "svelte-i18n";
 
     register("en", () => import("../../i18n/en.json"));
     register("ko", () => import("../../i18n/ko.json"));
     register("ja", () => import("../../i18n/ja.json"));
 
-    init({
-        fallbackLocale: "en",
-        initialLocale: getLocaleFromNavigator(),
-    });
-
+    if (i18nloading) {
+        init({
+            fallbackLocale: "en",
+            initialLocale: getLocaleFromNavigator(),
+        });
+    }
     export let params = {}; // 라우터에서 넘어온 파라미터를 받아오기위해
 
     ChartJS.register(annotationPlugin);
