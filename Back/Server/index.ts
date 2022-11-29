@@ -5,6 +5,8 @@ import path1 from 'path'
 import * as ss from 'simple-statistics'
 import sharp from 'sharp'
 import morgan from 'morgan'
+import dotenv from 'dotenv';
+dotenv.config();
 
 function getDirectories(path: string): string[] {
   return fs.readdirSync(path).filter(function (file) {
@@ -405,6 +407,6 @@ app.get('/cover/*', async function (req, res) {
   ))
 })
 
-server.listen(8000, function () {
+server.listen(process.env.PORT, function () {
   console.log('서버ON')
 })
