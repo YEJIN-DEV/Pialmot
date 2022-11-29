@@ -6,12 +6,16 @@
     import "chart.js/auto";
     import { _ } from "svelte-i18n";
     import { Stretch } from "svelte-loading-spinners";
-    import { register, init, getLocaleFromNavigator } from "svelte-i18n";
+    import { addMessages, init, getLocaleFromNavigator } from "svelte-i18n";
     import { isLoading as i18nloading } from "svelte-i18n";
 
-    register("en", () => import("../../i18n/en.json"));
-    register("ko", () => import("../../i18n/ko.json"));
-    register("ja", () => import("../../i18n/ja.json"));
+    import en from "../../i18n/en.json";
+    import ko from "../../i18n/ko.json";
+    import ja from "../../i18n/ja.json";
+
+    addMessages("en", en);
+    addMessages("ko", ko);
+    addMessages("ja", ja);
 
     if (i18nloading) {
         init({
