@@ -121,10 +121,10 @@
             .then((data) => {
                 setTimeout(() => {
                     loading = true;
-                    MIDIjs.play("data:audio/midi;base64," + data.midi_buffer);
+                    MIDIjs.play(data.midi);
                     if (firstFetch) MIDIjs.pause();
 
-                    snd.src = "data:audio/mp3;base64," + data.mp3_buffer;
+                    snd.src = data.mp3;
                     snd.volume = 0.05;
                     snd.load();
 
@@ -403,8 +403,7 @@
                                 : bright[i]}) blur({player_onCursor == 0
                                 ? 0
                                 : blur[i]}px);"
-                            src={"data:image/jpeg;base64," +
-                                musicData.questions[i].data}
+                            src={musicData.questions[i].path}
                             alt={musicData.questions[i].name}
                         />
                         <h2 style="text-align: center">
@@ -435,11 +434,7 @@
                     <Bar data={graphData} {options} />
                 </div>
             </div>
-            <img
-                class="album"
-                src={"data:image/jpeg;base64," + musicData.album.data}
-                alt=""
-            />
+            <img class="album" src={musicData.album.path} alt="" />
         </div>
     {/if}
 </body>

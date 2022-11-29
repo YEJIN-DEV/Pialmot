@@ -92,11 +92,11 @@ app.get('/music/:group', async function (req, res) {
   let result: {
     name: string
     group: groups
-    album: { name: string; data: string }
+    album: { name: string; path: string }
     kind: musicKind
-    questions: { name: string; data: string }[]
-    midi_buffer: string
-    mp3_buffer?: string
+    questions: { name: string; path: string }[]
+    midi: string
+    mp3?: string
   } = undefined as any
 
   let kindPath: {
@@ -123,32 +123,18 @@ app.get('/music/:group', async function (req, res) {
     name: musicFile.substring(4, musicFile.length - 4),
     album: {
       name: dir,
-      data: await getCover(
-        path1.join(mp3Path, groupPath, kindPath.path, dir),
-        musicFile
-      )
+      path: '/cover/' + path1.join(groupPath, kindPath.path, dir, musicFile)
     },
     group: group,
     kind: kindPath.kind,
-    midi_buffer: fs.readFileSync(
-      path1.join(midiPath, groupPath, kindPath.path, dir, musicFile),
-      {
-        encoding: 'base64'
-      }
-    ),
-    mp3_buffer:
+    midi: '/midi/' + path1.join(groupPath, kindPath.path, dir, musicFile),
+    mp3:
       req.query.original != undefined
-        ? fs.readFileSync(
-          path1.join(
-            mp3Path,
-            groupPath,
-            kindPath.path,
-            dir,
-            musicFile.substring(0, musicFile.length - 3) + 'mp3'
-          ),
-          {
-            encoding: 'base64'
-          }
+        ? '/mp3/' + path1.join(
+          groupPath,
+          kindPath.path,
+          dir,
+          musicFile.substring(0, musicFile.length - 3) + 'mp3'
         )
         : undefined,
     questions: []
@@ -158,7 +144,7 @@ app.get('/music/:group', async function (req, res) {
     if (i == answerIndex) {
       result.questions.push({
         name: result.name,
-        data: result.album.data
+        path: result.album.path.substring(0, result.album.path.length - 4)
       })
     } else {
       const kindPath = kindToFolder(
@@ -173,10 +159,7 @@ app.get('/music/:group', async function (req, res) {
           if (result.questions.findIndex(e => e.name == musicFile) == -1)
             result.questions.push({
               name: musicFile,
-              data: await getCover(
-                path1.join(mp3Path, groupPath, kindPath, dir),
-                musicFile
-              )
+              path: '/cover/' + path1.join(groupPath, kindPath, dir, musicFile),
             })
           else i--
         } else i--
@@ -364,13 +347,13 @@ function randomMusic(
   return { musicFile, dir }
 }
 
-async function getCover(albumPath: string, musicName: string): Promise<string> {
-  if (fs.existsSync(path1.join(albumPath, 'cover.jpg'))) {
-    albumPath = path1.join(albumPath, 'cover.jpg')
+async function getCover(albumPath: string, musicName: string): Promise<Buffer> {
+  if (fs.existsSync(path1.join(mp3Path, albumPath, 'cover.jpg'))) {
+    albumPath = path1.join(mp3Path, albumPath, 'cover.jpg')
   } else {
     let trackNum = musicName.substring(0, 2)
-    if (fs.existsSync(path1.join(albumPath, `Cover_${trackNum}.jpg`))) {
-      albumPath = path1.join(albumPath, `Cover_${trackNum}.jpg`)
+    if (fs.existsSync(path1.join(mp3Path, albumPath, `Cover_${trackNum}.jpg`))) {
+      albumPath = path1.join(mp3Path, albumPath, `Cover_${trackNum}.jpg`)
     } else {
       albumPath = 'white.jpg'
     }
@@ -379,9 +362,7 @@ async function getCover(albumPath: string, musicName: string): Promise<string> {
   return await sharp(fs.readFileSync(albumPath))
     .resize(1000, 1000)
     .jpeg({ mozjpeg: true })
-    .toBuffer().then(data => data.toString('base64'))
-
-
+    .toBuffer().then(data => data)
 }
 
 app.get('/', function (req, res) {
@@ -390,14 +371,19 @@ app.get('/', function (req, res) {
   )
 })
 
-app.get('*', function (req, res) {
-  res.sendFile(
-    path1.join(
-      __dirname,
-      '../../Front/Pialmot/public',
-      (req.params as any[])[0]
-    )
-  )
+app.use('/', express.static('../../Front/Pialmot/public'))
+app.use('/mp3', express.static(mp3Path, { maxAge: 31536000 }))
+app.use('/midi', express.static(midiPath, { maxAge: 31536000 }))
+app.get('/cover/*', async function (req, res) {
+  const path = (req as any).params[0];
+  let pos = path.lastIndexOf('/');
+
+  res.setHeader('Content-Type', 'image/jpeg')
+  res.setHeader('Cache-Control', 'max-age=31536000')
+  res.status(200).send(await getCover(
+    path.substring(0, pos),
+    path.substring(pos + 1)
+  ))
 })
 
 server.listen(8000, function () {
