@@ -416,7 +416,9 @@
     {:else}
         <div class="result" transition:slide={{ delay: 150, duration: 600 }}>
             <div>
-                <h1 style="font-size:64px;">
+                <h1
+                    style="wdith:100%; background-color:#0078D7; color:white; font-size:64px;"
+                >
                     {rank.rank == -1 ? $_("wrong") : `#${rank.rank}`}
                 </h1>
                 <h3
