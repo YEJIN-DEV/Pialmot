@@ -127,34 +127,38 @@
     };
 
     function getRandMusic(target, delay) {
-        MIDIjs.player_callback = (ev) => {
-            player_seek = ev.time;
-        };
-        fetch(`/music/${target}?kind=${kind.join("&kind=")}&original`)
-            .then((response) => response.json())
-            .then((data) => {
-                setTimeout(() => {
-                    loading = true;
-                    MIDIjs.play(data.midi);
-                    if (firstFetch) MIDIjs.pause();
+        if (MIDIjsloaded) {
+            MIDIjs.player_callback = (ev) => {
+                player_seek = ev.time;
+            };
+            fetch(`/music/${target}?kind=${kind.join("&kind=")}&original`)
+                .then((response) => response.json())
+                .then((data) => {
+                    setTimeout(() => {
+                        loading = true;
 
-                    snd.src = data.mp3;
-                    snd.volume = 0.05;
-                    snd.load();
+                        snd.src = data.mp3;
+                        snd.volume = 0.05;
+                        snd.load();
 
-                    before = new Date();
+                        before = new Date();
 
-                    musicData = data;
-                    inQuestion = true;
+                        musicData = data;
+                        inQuestion = true;
 
-                    bright = [0.6, 0.6, 0.6, 0.6, 0.6];
-                    blur = [1, 1, 1, 1, 1];
-                    player_onCursor = 0;
-                    transValue = [20, 20, 20, 20, 20];
-                    loading = false;
-                    fetchEnd = true;
-                }, delay ?? 0);
-            });
+                        bright = [0.6, 0.6, 0.6, 0.6, 0.6];
+                        blur = [1, 1, 1, 1, 1];
+                        player_onCursor = 0;
+                        transValue = [20, 20, 20, 20, 20];
+                        loading = false;
+                        fetchEnd = true;
+                    }, delay ?? 0);
+                });
+        } else {
+            setTimeout(() => {
+                getRandMusic(target, delay);
+            }, 50);
+        }
     }
 
     function Answer(index) {
@@ -325,6 +329,17 @@
         }
     });
 
+    let MIDIjsloaded = false;
+    function MIDIjsChecker() {
+        if (typeof MIDIjs === "undefined") {
+            setTimeout(MIDIjsChecker, 50);
+            return;
+        }
+        console.log("MIDIjs loaded");
+        MIDIjsloaded = true;
+    }
+    MIDIjsChecker();
+
     function kindSel() {
         isKindSelect = false;
         kind = kind.filter((item) => {
@@ -355,120 +370,138 @@
 
 <body>
     {#if isKindSelect}
-        {#if params.group == "aqours"}
-            <form on:submit|preventDefault={kindSel}>
-                <h4>한판,,하쉴?</h4>
-                <input type="checkbox" bind:group={kind} value="anime" />애니<br
-                />
-                <input
-                    type="checkbox"
-                    bind:group={kind}
-                    value="original"
-                />오리지널<br />
-                <input
-                    type="checkbox"
-                    bind:group={kind}
-                    value="single"
-                />싱글<br />
-                <input
-                    type="checkbox"
-                    bind:group={kind}
-                    value="special"
-                />스페셜<br />
-                <input type="checkbox" bind:group={kind} value="album" />정규
-                앨범<br />
-                <input type="checkbox" bind:group={kind} value="game" />게임
-                삽입곡
-                <br />
-                <button>게임 스타토</button>
-            </form>
-        {:else if params.group == "nijigasaki"}
-            <form on:submit|preventDefault={kindSel}>
-                <h4>한판,,하쉴?</h4>
-                <input type="checkbox" bind:group={kind} value="anime" />애니<br
-                />
-                <input
-                    type="checkbox"
-                    bind:group={kind}
-                    value="original"
-                />오리지널<br />
-                <input type="checkbox" bind:group={kind} value="unit" />유닛<br
-                />
-                <input
-                    type="checkbox"
-                    bind:group={kind}
-                    value="special"
-                />스페셜<br />
-                <input type="checkbox" bind:group={kind} value="album" />정규
-                앨범<br />
-                <input type="checkbox" bind:group={kind} value="game" />게임
-                삽입곡
-                <br />
-                <button>게임 스타토</button>
-            </form>
-        {:else if params.group == "liella"}
-            <form on:submit|preventDefault={kindSel}>
-                <h4>한판,,하쉴?</h4>
-                <input type="checkbox" bind:group={kind} value="anime" />애니<br
-                />
-                <input
-                    type="checkbox"
-                    bind:group={kind}
-                    value="original"
-                    checked
-                />오리지널<br />
-                <input
-                    type="checkbox"
-                    bind:group={kind}
-                    value="single"
-                />싱글<br />
-                <input
-                    type="checkbox"
-                    bind:group={kind}
-                    value="special"
-                />스페셜<br />
-                <input type="checkbox" bind:group={kind} value="album" />정규
-                앨범<br />
-                <button>게임 스타토</button>
-            </form>
-        {/if}
+        <!-- svelte-ignore a11y-media-has-caption -->
+        <div class="linchanboard">
+            <img src="board.jpg" alt="" />
+            {#if params.group == "aqours"}
+                <form on:submit|preventDefault={kindSel}>
+                    <h4>한판,,하쉴?</h4>
+                    <input
+                        type="checkbox"
+                        bind:group={kind}
+                        value="anime"
+                    />애니<br />
+                    <input
+                        type="checkbox"
+                        bind:group={kind}
+                        value="original"
+                    />오리지널<br />
+                    <input
+                        type="checkbox"
+                        bind:group={kind}
+                        value="single"
+                    />싱글<br />
+                    <input
+                        type="checkbox"
+                        bind:group={kind}
+                        value="special"
+                    />스페셜<br />
+                    <input
+                        type="checkbox"
+                        bind:group={kind}
+                        value="album"
+                    />정규 앨범<br />
+                    <input type="checkbox" bind:group={kind} value="game" />게임
+                    삽입곡
+                    <br />
+                    <button class="startbtn">게임 스타토</button>
+                </form>
+            {:else if params.group == "nijigasaki"}
+                <form on:submit|preventDefault={kindSel}>
+                    <h4>한판,,하쉴?</h4>
+                    <input
+                        type="checkbox"
+                        bind:group={kind}
+                        value="anime"
+                    />애니<br />
+                    <input
+                        type="checkbox"
+                        bind:group={kind}
+                        value="original"
+                    />오리지널<br />
+                    <input
+                        type="checkbox"
+                        bind:group={kind}
+                        value="unit"
+                    />유닛<br />
+                    <input
+                        type="checkbox"
+                        bind:group={kind}
+                        value="special"
+                    />스페셜<br />
+                    <input
+                        type="checkbox"
+                        bind:group={kind}
+                        value="album"
+                    />정규 앨범<br />
+                    <input type="checkbox" bind:group={kind} value="game" />게임
+                    삽입곡
+                    <br />
+                    <button class="startbtn">게임 스타토</button>
+                </form>
+            {:else if params.group == "liella"}
+                <form on:submit|preventDefault={kindSel}>
+                    <h4>한판,,하쉴?</h4>
+                    <input
+                        type="checkbox"
+                        bind:group={kind}
+                        value="anime"
+                    />애니<br />
+                    <input
+                        type="checkbox"
+                        bind:group={kind}
+                        value="original"
+                        checked
+                    />오리지널<br />
+                    <input
+                        type="checkbox"
+                        bind:group={kind}
+                        value="single"
+                    />싱글<br />
+                    <input
+                        type="checkbox"
+                        bind:group={kind}
+                        value="special"
+                    />스페셜<br />
+                    <input
+                        type="checkbox"
+                        bind:group={kind}
+                        value="album"
+                    />정규 앨범<br />
+                    <button class="startbtn">게임 스타토</button>
+                </form>
+            {/if}
+        </div>
     {:else if loading && firstFetch}
-        <div
-            style=" position: fixed;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);"
-        >
-            <Stretch
-                style=" position: fixed;
-            top: 50%;
+        <div class="linchanboard">
+            <img src="board.jpg" alt="" />
+            <div
+                style="position: absolute;
             left: 50%;
+            top: 55%;
             transform: translate(-50%, -50%);"
-                size="60"
-                color="#FF3E00"
-                unit="px"
-                duration="1s"
-            />
+            >
+                <Stretch size="100" color="#FF3E00" unit="px" duration="1s" />
+            </div>
         </div>
     {:else if fetchEnd && firstFetch}
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <btn
-            style=" position: fixed;
-                    top: 50%;
-                    left: 50%;
-                    transform: translate(-50%, -50%);"
-            on:click={() => {
-                loading = false;
-                fetchEnd = false;
-                MIDIjs.resume();
-            }}
-        >
-            <img
-                style="width: 80%; height: 80%;"
-                src="logo/Lovelive.png"
-                alt=""
-            />
-        </btn>
+        <div class="linchanboard">
+            <img src="board.jpg" alt="" />
+            <btn
+                on:click={() => {
+                    loading = false;
+                    fetchEnd = false;
+                    MIDIjs.play(musicData.midi);
+                }}
+            >
+                <img
+                    style="width: 80%; height: 80%;"
+                    src="logo/Lovelive.png"
+                    alt=""
+                />
+            </btn>
+        </div>
     {:else if inQuestion}
         <div class="images">
             {#each { length: 5 } as _, i}
@@ -546,6 +579,74 @@
 </body>
 
 <style>
+    .linchanboard {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+    .linchanboard > img {
+        /* Make video to at least 100% wide and tall */
+        min-width: 100%;
+        min-height: 100%;
+
+        /* Setting width & height to auto prevents the browser from stretching or squishing the video */
+        width: auto;
+        height: auto;
+
+        /* Center the video */
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .linchanboard > form {
+        position: absolute;
+        left: 50%;
+        top: 55%;
+        transform: translate(-50%, -50%);
+    }
+
+    .linchanboard > btn {
+        position: absolute;
+        left: 50%;
+        top: 55%;
+        transform: translate(-50%, -50%);
+    }
+    .linchanboard form button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+
+        background: var(--button-bg-color);
+        color: var(--button-color);
+
+        margin-top: 30px;
+        padding: 0.5rem 1rem;
+
+        font-family: "Noto Sans KR", sans-serif;
+        font-size: 1rem;
+        font-weight: 400;
+        text-align: center;
+        text-decoration: none;
+
+        border: none;
+        border-radius: 4px;
+
+        display: inline-block;
+        width: auto;
+
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+            0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+        cursor: pointer;
+
+        transition: 0.5s;
+    }
+
     body {
         text-align: center;
         margin: 0 auto;
@@ -591,12 +692,6 @@
         color: rgb(34, 34, 34);
     }
 
-    form {
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        position: absolute;
-    }
     * {
         padding: 0;
         margin: 0;
