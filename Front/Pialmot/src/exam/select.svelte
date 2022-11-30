@@ -136,7 +136,7 @@
                 .then((data) => {
                     setTimeout(() => {
                         loading = true;
-
+                        if (!firstFetch) MIDIjs.play(data.midi);
                         snd.src = data.mp3;
                         snd.volume = 0.05;
                         snd.load();
