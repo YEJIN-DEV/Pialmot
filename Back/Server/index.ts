@@ -392,14 +392,14 @@ app.get('/', function (req, res) {
 })
 
 app.use('/', express.static('../../Front/Pialmot/public'))
-app.use('/mp3', express.static(mp3Path, { maxAge: "31536000000" })) //ms로 받더라;; 웹표준은 max-age=<seconds>인데..
-app.use('/midi', express.static(midiPath, { maxAge: "31536000000" }))
+app.use('/mp3', express.static(mp3Path, { maxAge: "31536000000", immutable: true })) //ms로 받더라;; 웹표준은 max-age=<seconds>인데..
+app.use('/midi', express.static(midiPath, { maxAge: "31536000000", immutable: true }))
 app.get('/cover/*', async function (req, res) {
   const path = (req as any).params[0];
   let pos = path.lastIndexOf('/');
 
   res.setHeader('Content-Type', 'image/jpeg')
-  res.setHeader('Cache-Control', 'public, max-age=31536000')
+  res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
   res.status(200).send(await getCover(
     path.substring(0, pos),
     path.substring(pos + 1)
