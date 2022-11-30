@@ -20,6 +20,7 @@ jobs:
           cd Pialmot
           git pull
           cd Front/Pialmot/
+          npm i
           npm run build
           cd ../../Back/Server/
           npm i
