@@ -1,0 +1,26 @@
+name: Deploy to yejin
+on:
+  push:
+    branches:
+    - main
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy by SSH
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: |
+          cd Pialmot
+          git pull
+          cd Front/Pialmot/
+          npm run build
+          cd ../../Back/Server/
+          tsc
+          pm2 restart 0
