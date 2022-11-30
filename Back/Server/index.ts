@@ -3,7 +3,6 @@ import https from 'https'
 import fs from 'fs'
 import path1 from 'path'
 import * as ss from 'simple-statistics'
-import sharp from 'sharp'
 import morgan from 'morgan'
 import dotenv from 'dotenv';
 dotenv.config();
@@ -383,10 +382,7 @@ async function getCover(albumPath: string, musicName: string): Promise<Buffer> {
     }
   }
 
-  return await sharp(fs.readFileSync(albumPath))
-    .resize(1000, 1000)
-    .jpeg({ mozjpeg: true })
-    .toBuffer().then(data => data)
+  return fs.readFileSync(albumPath)
 }
 
 app.get('/', function (req, res) {
