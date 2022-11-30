@@ -1,6 +1,5 @@
 import express from 'express'
 import https from 'https'
-import http from 'http'
 import fs from 'fs'
 import path1 from 'path'
 import * as ss from 'simple-statistics'
@@ -53,8 +52,6 @@ const app = express()
 app.use(express.text())
 app.use(morgan('common'));
 const httpsServer = https.createServer(credentials, app)
-const httpServer = http.createServer(app)
-
 /*
 오류:
 니지동: 싱글
@@ -414,10 +411,5 @@ app.get('/cover/*', async function (req, res) {
 })
 
 httpsServer.listen(process.env.httpsPORT, function () {
-  console.log('https서버ON')
-})
-
-
-httpServer.listen(process.env.httpPORT, function () {
-  console.log('http서버ON')
+  console.log('서버ON')
 })
