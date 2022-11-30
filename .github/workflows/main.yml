@@ -22,5 +22,6 @@ jobs:
           cd Front/Pialmot/
           npm run build
           cd ../../Back/Server/
+          npm i
           tsc
           echo ${{ secrets.PASSWORD }} | sudo -S pm2 restart 0
