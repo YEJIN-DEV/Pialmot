@@ -380,7 +380,7 @@
 <body>
     {#if isKindSelect}
         <!-- svelte-ignore a11y-media-has-caption -->
-        <div class="linchanboard">
+        <div class="linachanboard">
             <img src="board.jpg" alt="" />
             {#if params.group == "aqours"}
                 <form on:submit|preventDefault={kindSel}>
@@ -482,7 +482,7 @@
             {/if}
         </div>
     {:else if loading && firstFetch}
-        <div class="linchanboard">
+        <div class="linachanboard">
             <img src="board.jpg" alt="" />
             <div
                 style="position: absolute;
@@ -495,7 +495,7 @@
         </div>
     {:else if fetchEnd && firstFetch}
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div class="linchanboard">
+        <div class="linachanboard">
             <img src="board.jpg" alt="" />
             <btn
                 on:click={() => {
@@ -589,7 +589,7 @@
 
 <style>
     /* vw vh 다음줄에 있는 calc 함수들은 딱맡개 처리를 하기위해*/
-    .linchanboard {
+    .linachanboard {
         position: absolute;
         top: 0;
         bottom: 0;
@@ -598,7 +598,7 @@
         overflow: hidden;
     }
 
-    .linchanboard > img {
+    .linachanboard > img {
         /* Make video to at least 100% wide and tall */
         min-width: 100%;
         min-height: 100%;
@@ -614,20 +614,20 @@
         transform: translate(-50%, -50%);
     }
 
-    .linchanboard > form {
+    .linachanboard > form {
         position: absolute;
         left: 50%;
         top: 55%;
         transform: translate(-50%, -50%);
     }
 
-    .linchanboard > btn {
+    .linachanboard > btn {
         position: absolute;
         left: 50%;
         top: 55%;
         transform: translate(-50%, -50%);
     }
-    .linchanboard form button {
+    .linachanboard form button {
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
