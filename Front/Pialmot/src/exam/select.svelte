@@ -614,19 +614,14 @@
         transform: translate(-50%, -50%);
     }
 
-    .linachanboard > form {
+    .linachanboard > form,
+    btn {
         position: absolute;
         left: 50%;
         top: 55%;
         transform: translate(-50%, -50%);
     }
 
-    .linachanboard > btn {
-        position: absolute;
-        left: 50%;
-        top: 55%;
-        transform: translate(-50%, -50%);
-    }
     .linachanboard form button {
         -webkit-appearance: none;
         -moz-appearance: none;
@@ -673,7 +668,6 @@
     .container {
         position: relative;
         overflow: hidden;
-        min-width: 20vw;
         min-width: calc(var(--vw, 1vw) * 20);
     }
 
@@ -703,9 +697,7 @@
 
     .album {
         filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
-        max-width: 90vw;
         max-width: calc(var(--vw, 1vw) * 90);
-        max-height: 90vh;
         max-height: calc(var(--vh, 1vh) * 90);
     }
 
@@ -743,7 +735,7 @@
         #ablumName,
         #title {
             min-width: 0;
-            max-width: 90vw;
+            max-width: calc(var(--vw, 1vw) * 90);
         }
 
         .album {
@@ -774,7 +766,7 @@
         #ablumName,
         #title {
             min-width: 0;
-            width: 50vw;
+            max-width: calc(var(--vw, 1vw) * 50);
         }
 
         .album {
