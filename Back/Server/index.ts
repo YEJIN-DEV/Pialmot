@@ -128,15 +128,16 @@ app.get('/music/:group', async function (req, res) {
     }
   }
 
+  let answerCover = path1.join(groupPath, kindPath.path, dir, musicFile);
   result = {
     name: musicFile.substring(4, musicFile.length - 4),
     album: {
       name: dir,
-      path: '/cover/' + path1.join(groupPath, kindPath.path, dir, musicFile)
+      path: '/cover/' + answerCover.substring(0, answerCover.length - 4),
     },
     group: group,
     kind: kindPath.kind,
-    midi: '/midi/' + path1.join(groupPath, kindPath.path, dir, musicFile),
+    midi: '/midi/' + answerCover,
     mp3:
       req.query.original != undefined
         ? '/mp3/' + path1.join(
