@@ -321,6 +321,15 @@
         }, 100 /*프레임워크 버그때문에 딜레이가 필수*/);
     });
 
+    function setScreenSize() {
+        let vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty("--vh", `${vh}px`);
+        let vw = window.innerWidth * 0.01;
+        document.documentElement.style.setProperty("--vw", `${vw}px`);
+    }
+    setScreenSize();
+    window.addEventListener("resize", setScreenSize);
+
     document.addEventListener("visibilitychange", () => {
         if (document.visibilityState === "hidden") {
             MIDIjs.pause();
