@@ -583,8 +583,8 @@
         position: absolute;
         top: 0;
         bottom: 0;
-        width: 100%;
-        height: 100%;
+        width: 100dvw;
+        height: 100dvh;
         overflow: hidden;
     }
     .linchanboard > img {
@@ -654,13 +654,13 @@
     }
 
     .images {
-        height: 100%;
+        height: 100dvh;
     }
 
     .container {
         position: relative;
         overflow: hidden;
-        min-width: 20%;
+        min-width: 20dvw;
     }
 
     .question {
@@ -670,7 +670,7 @@
 
     .result {
         width: 100%;
-        height: 100%;
+        height: 100dvh;
         display: flex;
         flex-flow: row wrap;
         flex-shrink: 1;
@@ -680,8 +680,8 @@
 
     .album {
         filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
-        max-width: 90%;
-        max-height: 90%;
+        max-width: 90dvw;
+        max-height: 90dvh;
     }
 
     h2 {
@@ -707,12 +707,12 @@
         }
 
         .question {
-            width: 100%;
+            width: 100dvw;
         }
 
         .chart {
             width: 80vw;
-            max-height: 15vh;
+            max-height: 15dvh;
         }
 
         .album {
@@ -733,8 +733,8 @@
         }
 
         .chart {
-            max-width: 80vw;
-            max-height: 20vh;
+            max-width: 80dvw;
+            max-height: 20dvh;
         }
 
         .album {

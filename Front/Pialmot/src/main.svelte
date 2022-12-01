@@ -81,8 +81,8 @@
         position: absolute;
         top: 0;
         bottom: 0;
-        width: 100%;
-        height: 100%;
+        width: 100dvw;
+        height: 100dvh;
         overflow: hidden;
         z-index: -1;
     }
