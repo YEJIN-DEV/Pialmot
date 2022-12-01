@@ -113,7 +113,6 @@
     ];
     let isKindSelect = true;
 
-    let player_seek = 0;
     let bright = [0.6, 0.6, 0.6, 0.6, 0.6];
     let blur = [1, 1, 1, 1, 1];
     let player_onCursor = 0;
@@ -128,15 +127,31 @@
 
     function getRandMusic(target, delay) {
         if (MIDIjsloaded) {
-            MIDIjs.player_callback = (ev) => {
-                player_seek = ev.time;
-            };
             fetch(`/music/${target}?kind=${kind.join("&kind=")}&original`)
                 .then((response) => response.json())
                 .then((data) => {
                     setTimeout(() => {
                         loading = true;
-                        if (!firstFetch) MIDIjs.play(data.midi);
+                        MIDI.loadPlugin({
+                            soundfontUrl:
+                                "https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/",
+                            instrument: "acoustic_grand_piano",
+                            onsuccess: function () {
+                                MIDI.Player.loadFile(
+                                    musicData.midi,
+                                    function () {
+                                        console.log("midi file loaded");
+                                        loading = false;
+                                        fetchEnd = true;
+                                        if (!firstFetch) MIDI.Player.start();
+                                    },
+                                    undefined,
+                                    function (e) {
+                                        console.log(e);
+                                    }
+                                );
+                            },
+                        });
                         snd.src = data.mp3;
                         snd.volume = 0.05;
                         snd.load();
@@ -150,8 +165,6 @@
                         blur = [1, 1, 1, 1, 1];
                         player_onCursor = 0;
                         transValue = [20, 20, 20, 20, 20];
-                        loading = false;
-                        fetchEnd = true;
                     }, delay ?? 0);
                 });
         } else {
@@ -164,65 +177,67 @@
     function Answer(index) {
         firstFetch = false;
         if (inQuestion) {
-            let selected = musicData.questions[index].name;
-            let answer = musicData.name;
-            if (selected == answer) {
-                let after = new Date();
-                let time = after - before;
-                //alert("정답입니다! 당신의 시간은 " + time / 1000 + "초 입니다.");
+            if (MIDI.Player.currentTime > 0) {
+                let selected = musicData.questions[index].name;
+                let answer = musicData.name;
+                if (selected == answer) {
+                    let after = new Date();
+                    let time = after - before;
+                    snd.currentTime = MIDI.Player.currentTime;
+                    //alert("정답입니다! 당신의 시간은 " + time / 1000 + "초 입니다.");
 
-                fetch(`/rank/${musicData.group}/${answer}`, {
-                    method: "POST",
-                    body: time.toString(),
-                })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        rank = data;
-                        graphData.labels = Array.from(
-                            Array(5),
-                            (_, x) =>
-                                `~ ${(
-                                    ((x + 1) * data.interval.IQR) /
-                                    1000
-                                ).toFixed(2)}초`
-                        );
+                    fetch(`/rank/${musicData.group}/${answer}`, {
+                        method: "POST",
+                        body: time.toString(),
+                    })
+                        .then((response) => response.json())
+                        .then((data) => {
+                            rank = data;
+                            graphData.labels = Array.from(
+                                Array(5),
+                                (_, x) =>
+                                    `~ ${(
+                                        ((x + 1) * data.interval.IQR) /
+                                        1000
+                                    ).toFixed(2)}초`
+                            );
 
-                        let meanX = -1;
-                        let youX = -1;
-                        for (let i = 0; i < 5; i++) {
-                            if (
-                                i * data.interval.IQR <= rank.average &&
-                                rank.average <= (i + 1) * data.interval.IQR
-                            ) {
-                                meanX = i;
+                            let meanX = -1;
+                            let youX = -1;
+                            for (let i = 0; i < 5; i++) {
+                                if (
+                                    i * data.interval.IQR <= rank.average &&
+                                    rank.average <= (i + 1) * data.interval.IQR
+                                ) {
+                                    meanX = i;
+                                }
+
+                                if (
+                                    i * data.interval.IQR <= time &&
+                                    time <= (i + 1) * data.interval.IQR
+                                ) {
+                                    youX = i;
+                                }
                             }
+                            options.plugins.annotation.annotations.line1.xMin =
+                                meanX;
+                            options.plugins.annotation.annotations.line1.xMax =
+                                meanX;
+                            options.plugins.annotation.annotations.line2.xMin =
+                                youX;
+                            options.plugins.annotation.annotations.line2.xMax =
+                                youX;
 
-                            if (
-                                i * data.interval.IQR <= time &&
-                                time <= (i + 1) * data.interval.IQR
-                            ) {
-                                youX = i;
-                            }
-                        }
-                        options.plugins.annotation.annotations.line1.xMin =
-                            meanX;
-                        options.plugins.annotation.annotations.line1.xMax =
-                            meanX;
-                        options.plugins.annotation.annotations.line2.xMin =
-                            youX;
-                        options.plugins.annotation.annotations.line2.xMax =
-                            youX;
-
-                        options.plugins.annotation.annotations.line1.label.content = `${$_(
-                            "mean"
-                        )}\n${(rank.average / 1000).toFixed(3)}`;
-                        options.plugins.annotation.annotations.line2.label.content = `${$_(
-                            "you"
-                        )}\n${(time / 1000).toFixed(3)}`;
-                        graphData.datasets[0].data = data.interval.count;
-                        inQuestion = false;
-                        getRandMusic(groups[musicData.group], 5000);
-                        /*
+                            options.plugins.annotation.annotations.line1.label.content = `${$_(
+                                "mean"
+                            )}\n${(rank.average / 1000).toFixed(3)}`;
+                            options.plugins.annotation.annotations.line2.label.content = `${$_(
+                                "you"
+                            )}\n${(time / 1000).toFixed(3)}`;
+                            graphData.datasets[0].data = data.interval.count;
+                            inQuestion = false;
+                            getRandMusic(groups[musicData.group], 5000);
+                            /*
                     alert(
                         `[${data.rank}위/${data.count}명]\n최고:${
                             data.best
@@ -231,46 +246,52 @@
                         }%`
                     );
                     */
-                    });
-            } else {
-                fetch(`/rank/${musicData.group}/${answer}`)
-                    .then((response) => response.json())
-                    .then((data) => {
-                        rank = data;
+                        });
+                } else {
+                    fetch(`/rank/${musicData.group}/${answer}`)
+                        .then((response) => response.json())
+                        .then((data) => {
+                            rank = data;
 
-                        graphData.labels = Array.from(
-                            Array(5),
-                            (_, x) =>
-                                `~ ${(
-                                    ((x + 1) * data.interval.IQR) /
-                                    1000
-                                ).toFixed(2)}초`
-                        );
+                            graphData.labels = Array.from(
+                                Array(5),
+                                (_, x) =>
+                                    `~ ${(
+                                        ((x + 1) * data.interval.IQR) /
+                                        1000
+                                    ).toFixed(2)}초`
+                            );
 
-                        let meanX = -1;
-                        for (let i = 0; i < 5; i++) {
-                            if (
-                                i * data.interval.IQR <= rank.average &&
-                                rank.average <= (i + 1) * data.interval.IQR
-                            ) {
-                                meanX = i;
+                            let meanX = -1;
+                            for (let i = 0; i < 5; i++) {
+                                if (
+                                    i * data.interval.IQR <= rank.average &&
+                                    rank.average <= (i + 1) * data.interval.IQR
+                                ) {
+                                    meanX = i;
+                                }
                             }
-                        }
-                        options.plugins.annotation.annotations.line1.xMin =
-                            meanX;
-                        options.plugins.annotation.annotations.line1.xMax =
-                            meanX;
+                            options.plugins.annotation.annotations.line1.xMin =
+                                meanX;
+                            options.plugins.annotation.annotations.line1.xMax =
+                                meanX;
 
-                        options.plugins.annotation.annotations.line2.xMin = -1;
-                        options.plugins.annotation.annotations.line2.xMax = -1;
+                            options.plugins.annotation.annotations.line2.xMin =
+                                -1;
+                            options.plugins.annotation.annotations.line2.xMax =
+                                -1;
 
-                        options.plugins.annotation.annotations.line1.label.content = `${$_(
-                            "mean"
-                        )}\n${(rank.average / 1000).toFixed(3)}`;
+                            options.plugins.annotation.annotations.line1.label.content = `${$_(
+                                "mean"
+                            )}\n${(rank.average / 1000).toFixed(3)}`;
 
-                        inQuestion = false;
-                        getRandMusic(groups[musicData.group], 5000);
-                    });
+                            inQuestion = false;
+                            getRandMusic(groups[musicData.group], 5000);
+                        });
+                }
+            } else {
+                alert("음원이 재생되지 않았습니다.");
+                getRandMusic(groups[musicData.group]);
             }
         }
     }
@@ -332,19 +353,19 @@
 
     document.addEventListener("visibilitychange", () => {
         if (document.visibilityState === "hidden") {
-            MIDIjs.pause();
+            MIDI.Player.pause();
         } else {
-            MIDIjs.resume();
+            MIDI.Player.resume();
         }
     });
 
     let MIDIjsloaded = false;
     function MIDIjsChecker() {
-        if (typeof MIDIjs === "undefined") {
+        if (typeof MIDI === "undefined") {
             setTimeout(MIDIjsChecker, 50);
             return;
         }
-        console.log("MIDIjs loaded");
+        console.log("MIDI loaded");
         MIDIjsloaded = true;
     }
     MIDIjsChecker();
@@ -369,7 +390,13 @@
 </script>
 
 <svelte:head>
-    <script type="text/javascript" src="//www.midijs.net/lib/midi.js"></script>
+    <script src="/inc/shim/Base64.js" type="text/javascript"></script>
+    <script src="/inc/shim/Base64binary.js" type="text/javascript"></script>
+    <script src="/inc/shim/WebAudioAPI.js" type="text/javascript"></script>
+    <script src="/inc/jasmid/stream.js"></script>
+    <script src="/inc/jasmid/midifile.js"></script>
+    <script src="/inc/jasmid/replayer.js"></script>
+    <script type="text/javascript" src="/MIDI.js"></script>
     <meta name="viewport" content="width=device-width" />
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
@@ -501,7 +528,7 @@
                 on:click={() => {
                     loading = false;
                     fetchEnd = false;
-                    MIDIjs.play(musicData.midi);
+                    MIDI.Player.start();
                 }}
             >
                 <img
@@ -520,7 +547,6 @@
                         style="border: none; height: 100%;"
                         on:click={() => {
                             Answer(i);
-                            snd.currentTime = player_seek;
                             snd.play();
                         }}
                     >
