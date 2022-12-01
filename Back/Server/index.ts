@@ -366,7 +366,7 @@ function randomMusic(
 ): { musicFile: string | undefined; dir: string } {
   const dirs = getDirectories(path1.join(midiPath, groupPath, kindPath))
   const dir = dirs[getRandomInt(0, dirs.length)]
-  const files = getFiles(path1.join(midiPath, groupPath, kindPath, dir))
+  const files = getFiles(path1.join(midiPath, groupPath, kindPath, dir)).filter((file) => file.endsWith('.mp3'))
   const musicFile = files[getRandomInt(0, files.length)]
   return { musicFile, dir }
 }

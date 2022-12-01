@@ -1,0 +1,1 @@
+for /R %%f in (.\*.mid) do timidity "%%f" -Ow -o - | ffmpeg -i - -acodec libmp3lame -ab 64k "%%~df%%~pf%%~nf.mp3"
