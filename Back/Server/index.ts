@@ -1,5 +1,6 @@
 import express from 'express'
 import https from 'https'
+import http from 'http'
 import fs from 'fs'
 import path1 from 'path'
 import * as ss from 'simple-statistics'
@@ -409,3 +410,8 @@ app.get('/cover/*', async function (req, res) {
 httpsServer.listen(process.env.httpsPORT, function () {
   console.log('서버ON')
 })
+
+http.createServer(function (req, res) {
+  res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
+  res.end();
+}).listen(80);
