@@ -183,7 +183,7 @@
                 if (selected == answer) {
                     let after = new Date();
                     let time = after - before;
-                    snd.currentTime = MIDI.Player.currentTime;
+                    snd.currentTime = MIDI.Player.currentTime / 1000;
                     //alert("정답입니다! 당신의 시간은 " + time / 1000 + "초 입니다.");
 
                     fetch(`/rank/${musicData.group}/${answer}`, {
