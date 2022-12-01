@@ -554,7 +554,7 @@
         <div class="result" transition:slide={{ delay: 150, duration: 600 }}>
             <div>
                 <h1
-                    style="wdith:100%; background-color:#0078D7; color:white; font-size:64px;"
+                    style="background-color:#0078D7; color:white; font-size:64px;"
                 >
                     {rank.rank == -1 ? $_("wrong") : `#${rank.rank}`}
                 </h1>
@@ -563,10 +563,10 @@
                 >
                     {rank.rank == -1 ? $_("correctis") : `/${rank.count}`}
                 </h3>
-                <h1 style="font-weight:400;">
+                <h1 id="title">
                     {musicData.name}
                 </h1>
-                <h4 style="text-overflow: ellipsis;font-weight:400;">
+                <h4 id="ablumName">
                     {musicData.album.name}
                 </h4>
                 <div class="chart">
@@ -579,14 +579,16 @@
 </body>
 
 <style>
+    /* vw vh 다음줄에 있는 calc 함수들은 딱맡개 처리를 하기위해*/
     .linchanboard {
         position: absolute;
         top: 0;
         bottom: 0;
-        width: 100dvw;
-        height: 100dvh;
+        width: calc(var(--vw, 1vw) * 100);
+        height: calc(var(--vh, 1vh) * 100);
         overflow: hidden;
     }
+
     .linchanboard > img {
         /* Make video to at least 100% wide and tall */
         min-width: 100%;
@@ -651,16 +653,19 @@
         text-align: center;
         margin: 0 auto;
         background-color: #f0eeec;
+        height: calc(var(--vh, 1vh) * 100);
+        width: calc(var(--vw, 1vw) * 100);
     }
 
     .images {
-        height: 100dvh;
+        height: calc(var(--vh, 1vh) * 100);
     }
 
     .container {
         position: relative;
         overflow: hidden;
-        min-width: 20dvw;
+        min-width: 20vw;
+        min-width: calc(var(--vw, 1vw) * 20);
     }
 
     .question {
@@ -670,7 +675,8 @@
 
     .result {
         width: 100%;
-        height: 100dvh;
+
+        height: calc(var(--vh, 1vh) * 100);
         display: flex;
         flex-flow: row wrap;
         flex-shrink: 1;
@@ -678,10 +684,20 @@
         justify-content: center;
     }
 
+    #ablumName,
+    #title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-weight: 400;
+    }
+
     .album {
         filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
-        max-width: 90dvw;
-        max-height: 90dvh;
+        max-width: 90vw;
+        max-width: calc(var(--vw, 1vw) * 90);
+        max-height: 90vh;
+        max-height: calc(var(--vh, 1vh) * 90);
     }
 
     h2 {
@@ -707,12 +723,18 @@
         }
 
         .question {
-            width: 100dvw;
+            width: calc(var(--vw, 1vw) * 100);
         }
 
         .chart {
-            width: 80vw;
-            max-height: 15dvh;
+            width: 100%;
+            min-height: 15%;
+        }
+
+        #ablumName,
+        #title {
+            min-width: 0;
+            max-width: 90vw;
         }
 
         .album {
@@ -722,6 +744,9 @@
 
     @media (orientation: landscape) {
         /*가로*/
+        .result {
+            flex-flow: column wrap;
+        }
 
         .images {
             display: flex;
@@ -733,8 +758,14 @@
         }
 
         .chart {
-            max-width: 80dvw;
-            max-height: 20dvh;
+            width: 100%;
+            min-height: 15%;
+        }
+
+        #ablumName,
+        #title {
+            min-width: 0;
+            width: 50vw;
         }
 
         .album {
