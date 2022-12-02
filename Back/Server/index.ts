@@ -1,5 +1,5 @@
 import express from 'express'
-import https from 'https'
+import spdy from 'spdy'
 import http from 'http'
 import fs from 'fs'
 import path1 from 'path'
@@ -51,7 +51,7 @@ enum groups {
 const app = express()
 app.use(express.text())
 app.use(morgan('common'));
-const httpsServer = https.createServer(credentials, app)
+const httpsServer = spdy.createServer(credentials, app)
 /*
 오류:
 니지동: 싱글
