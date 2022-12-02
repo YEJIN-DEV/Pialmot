@@ -82,7 +82,6 @@
     let inQuestion = false;
     let loading = true;
     let fetchEnd = false;
-    let firstFetch = true;
     let rotation = isLandScape();
     let musicData = {
         answer: "None",
@@ -135,7 +134,7 @@
 
                     MIDIPlayer.src = data.midi;
                     MIDIPlayer.load();
-                    if (!firstFetch) MIDIPlayer.play();
+                    MIDIPlayer.play();
 
                     OriginalPlayer.src = data.mp3;
                     OriginalPlayer.volume = 0.05;
@@ -157,7 +156,6 @@
     }
 
     function Answer(index) {
-        firstFetch = false;
         if (inQuestion) {
             let selected = musicData.questions[index].name;
             let answer = musicData.name;
@@ -465,7 +463,7 @@
                 </form>
             {/if}
         </div>
-    {:else if loading && firstFetch}
+    {:else if loading}
         <div class="linachanboard">
             <img src="board.jpg" alt="" />
             <div
@@ -477,25 +475,7 @@
                 <Stretch size="100" color="#FF3E00" unit="px" duration="1s" />
             </div>
         </div>
-    {:else if fetchEnd && firstFetch}
-        <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div class="linachanboard">
-            <img src="board.jpg" alt="" />
-            <btn
-                on:click={() => {
-                    loading = false;
-                    fetchEnd = false;
-                    MIDIPlayer.play();
-                }}
-            >
-                <img
-                    style="width: 80%; height: 80%;"
-                    src="logo/Lovelive.png"
-                    alt=""
-                />
-            </btn>
-        </div>
-    {:else if inQuestion}
+    {:else if fetchEnd && inQuestion}
         <div class="images">
             {#each { length: 5 } as _, i}
                 <div class="container">
@@ -597,8 +577,7 @@
         transform: translate(-50%, -50%);
     }
 
-    .linachanboard > form,
-    btn {
+    .linachanboard > form {
         position: absolute;
         left: 50%;
         top: 55%;
