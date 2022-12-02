@@ -165,7 +165,7 @@ app.get('/music/:group', async function (req, res) {
         if (musicFile !== undefined) {
           musicFile = musicFile.substring(4, musicFile.length - 4)
 
-          if (result.questions.findIndex(e => e.name == result.name) == -1)
+          if (result.questions.findIndex(e => e.name == musicFile) == -1 && musicFile !== result.name)
             result.questions.push({
               name: musicFile,
               path: '/cover/' + path1.join(groupPath, kindPath, dir, musicFile),
