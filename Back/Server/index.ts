@@ -1,6 +1,5 @@
 import express from 'express'
 import https from 'https'
-import http from 'http'
 import fs from 'fs'
 import path1 from 'path'
 import * as ss from 'simple-statistics'
@@ -387,15 +386,6 @@ async function getCover(albumPath: string, musicName: string): Promise<Buffer> {
   return fs.readFileSync(albumPath)
 }
 
-app.get('/', function (req, res) {
-  res.sendFile(
-    path1.join(__dirname, '../../Front/Pialmot/public', 'index.html')
-  )
-})
-
-app.use('/', express.static('../../Front/Pialmot/public'))
-app.use('/mp3', express.static(mp3Path, { maxAge: "31536000000", immutable: true })) //ms로 받더라;; 웹표준은 max-age=<seconds>인데..
-app.use('/midi', express.static(midiPath, { maxAge: "31536000000", immutable: true }))
 app.get('/cover/*', async function (req, res) {
   const path = (req as any).params[0];
   let pos = path.lastIndexOf('/');
@@ -408,11 +398,6 @@ app.get('/cover/*', async function (req, res) {
   ))
 })
 
-httpsServer.listen(process.env.httpsPORT, function () {
+httpsServer.listen(8000, 'localhost', function () {
   console.log('서버ON')
 })
-
-http.createServer(function (req, res) {
-  res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
-  res.end();
-}).listen(80);
