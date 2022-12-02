@@ -163,9 +163,9 @@ app.get('/music/:group', async function (req, res) {
       if (kindPath !== undefined) {
         let { musicFile, dir } = randomMusic(groupPath, kindPath)
         if (musicFile !== undefined) {
-          musicFile = musicFile.substring(0, musicFile.length - 4).substring(4)
+          musicFile = musicFile.substring(4, musicFile.length - 4)
 
-          if (result.questions.findIndex(e => e.name == musicFile) == -1)
+          if (result.questions.findIndex(e => e.name == result.name) == -1)
             result.questions.push({
               name: musicFile,
               path: '/cover/' + path1.join(groupPath, kindPath, dir, musicFile),
