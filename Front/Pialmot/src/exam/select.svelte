@@ -127,8 +127,6 @@
     };
 
     function getRandMusic(target, delay) {
-        OriginalPlayer = document.getElementById("original");
-        MIDIPlayer = document.getElementById("midi");
         fetch(`/music/${target}?kind=${kind.join("&kind=")}&original`)
             .then((response) => response.json())
             .then((data) => {
@@ -364,8 +362,6 @@
 <svelte:window on:keydown|preventDefault={onKeyDown} />
 
 <body>
-    <audio id="midi" style="display:none;" />
-    <audio id="original" style="display:none;" />
     {#if isKindSelect}
         <!-- svelte-ignore a11y-media-has-caption -->
         <div class="linachanboard">
