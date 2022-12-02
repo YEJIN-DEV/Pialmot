@@ -79,10 +79,15 @@ app.get('/music/:group', async function (req, res) {
       groupPath = 'Liella!'
       break
     default:
-      res.status(404).send('그룹이 존재하지 않습니다.')
+      res.status(400).send('해당하는 그룹이 존재하지 않습니다.')
+      return
   }
 
   const kindPaths: { kind: musicKind; path: string }[] = []
+  if (req.query.kind == undefined) {
+    res.status(400).send('종류가 없습니다.')
+    return
+  }
   if (!Array.isArray(req.query.kind)) {
     req.query.kind = [req.query.kind as string]
   }
