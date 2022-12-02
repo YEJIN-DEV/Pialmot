@@ -18,6 +18,15 @@
             initialLocale: getLocaleFromNavigator(),
         });
     }
+    function setScreenSize() {
+        let vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty("--vh", `${vh}px`);
+        let vw = window.innerWidth * 0.01;
+        document.documentElement.style.setProperty("--vw", `${vw}px`);
+    }
+    setScreenSize();
+    window.addEventListener("resize", setScreenSize);
+
     let mute = true;
 </script>
 
@@ -81,8 +90,8 @@
         position: absolute;
         top: 0;
         bottom: 0;
-        width: 100dvw;
-        height: 100dvh;
+        width: calc(var(--vw, 1vw) * 100);
+        height: calc(var(--vh, 1vh) * 100);
         overflow: hidden;
         z-index: -1;
     }
