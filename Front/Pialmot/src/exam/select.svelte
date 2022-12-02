@@ -77,7 +77,8 @@
     };
 
     let before = 0;
-    let snd = new Audio();
+    let OriginalPlayer = new Audio();
+    let MIDIPlayer = new Audio();
     let inQuestion = false;
     let loading = true;
     let fetchEnd = false;
@@ -126,118 +127,98 @@
     };
 
     function getRandMusic(target, delay) {
-        if (MIDIjsloaded) {
-            fetch(`/music/${target}?kind=${kind.join("&kind=")}&original`)
-                .then((response) => response.json())
-                .then((data) => {
-                    setTimeout(() => {
-                        loading = true;
-                        MIDI.loadPlugin({
-                            soundfontUrl:
-                                "https://gleitz.github.io/midi-js-soundfonts/FluidR3_GM/",
-                            instrument: "acoustic_grand_piano",
-                            onsuccess: function () {
-                                MIDI.Player.loadFile(
-                                    musicData.midi,
-                                    function () {
-                                        console.log("midi file loaded");
-                                        loading = false;
-                                        fetchEnd = true;
-                                        if (!firstFetch) MIDI.Player.start();
-                                    },
-                                    undefined,
-                                    function (e) {
-                                        console.log(e);
-                                    }
-                                );
-                            },
-                        });
-                        snd.src = data.mp3;
-                        snd.volume = 0.05;
-                        snd.load();
+        fetch(`/music/${target}?kind=${kind.join("&kind=")}&original`)
+            .then((response) => response.json())
+            .then((data) => {
+                setTimeout(() => {
+                    loading = true;
 
-                        before = new Date();
+                    MIDIPlayer.src = data.midi;
+                    MIDIPlayer.load();
+                    if (!firstFetch) MIDIPlayer.play();
 
-                        musicData = data;
-                        inQuestion = true;
+                    OriginalPlayer.src = data.mp3;
+                    OriginalPlayer.volume = 0.05;
+                    OriginalPlayer.load();
 
-                        bright = [0.6, 0.6, 0.6, 0.6, 0.6];
-                        blur = [1, 1, 1, 1, 1];
-                        player_onCursor = 0;
-                        transValue = [20, 20, 20, 20, 20];
-                    }, delay ?? 0);
-                });
-        } else {
-            setTimeout(() => {
-                getRandMusic(target, delay);
-            }, 50);
-        }
+                    before = new Date();
+
+                    musicData = data;
+                    inQuestion = true;
+
+                    bright = [0.6, 0.6, 0.6, 0.6, 0.6];
+                    blur = [1, 1, 1, 1, 1];
+                    player_onCursor = 0;
+                    transValue = [20, 20, 20, 20, 20];
+                    loading = false;
+                    fetchEnd = true;
+                }, delay ?? 0);
+            });
     }
 
     function Answer(index) {
         firstFetch = false;
         if (inQuestion) {
-            if (MIDI.Player.currentTime > 0) {
-                let selected = musicData.questions[index].name;
-                let answer = musicData.name;
-                if (selected == answer) {
-                    let after = new Date();
-                    let time = after - before;
-                    snd.currentTime = MIDI.Player.currentTime / 1000;
-                    //alert("정답입니다! 당신의 시간은 " + time / 1000 + "초 입니다.");
+            let selected = musicData.questions[index].name;
+            let answer = musicData.name;
+            if (selected == answer) {
+                let after = new Date();
+                let time = after - before;
+                OriginalPlayer.currentTime = MIDIPlayer.currentTime;
+                //alert("정답입니다! 당신의 시간은 " + time / 1000 + "초 입니다.");
 
-                    fetch(`/rank/${musicData.group}/${answer}`, {
-                        method: "POST",
-                        body: time.toString(),
-                    })
-                        .then((response) => response.json())
-                        .then((data) => {
-                            rank = data;
-                            graphData.labels = Array.from(
-                                Array(5),
-                                (_, x) =>
-                                    `~ ${(
-                                        ((x + 1) * data.interval.IQR) /
-                                        1000
-                                    ).toFixed(2)}초`
-                            );
+                fetch(`/rank/${musicData.group}/${answer}`, {
+                    method: "POST",
+                    body: time.toString(),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        rank = data;
+                        graphData.labels = Array.from(
+                            Array(5),
+                            (_, x) =>
+                                `~ ${(
+                                    ((x + 1) * data.interval.IQR) /
+                                    1000
+                                ).toFixed(2)}초`
+                        );
 
-                            let meanX = -1;
-                            let youX = -1;
-                            for (let i = 0; i < 5; i++) {
-                                if (
-                                    i * data.interval.IQR <= rank.average &&
-                                    rank.average <= (i + 1) * data.interval.IQR
-                                ) {
-                                    meanX = i;
-                                }
-
-                                if (
-                                    i * data.interval.IQR <= time &&
-                                    time <= (i + 1) * data.interval.IQR
-                                ) {
-                                    youX = i;
-                                }
+                        let meanX = -1;
+                        let youX = -1;
+                        for (let i = 0; i < 5; i++) {
+                            if (
+                                i * data.interval.IQR <= rank.average &&
+                                rank.average <= (i + 1) * data.interval.IQR
+                            ) {
+                                meanX = i;
                             }
-                            options.plugins.annotation.annotations.line1.xMin =
-                                meanX;
-                            options.plugins.annotation.annotations.line1.xMax =
-                                meanX;
-                            options.plugins.annotation.annotations.line2.xMin =
-                                youX;
-                            options.plugins.annotation.annotations.line2.xMax =
-                                youX;
 
-                            options.plugins.annotation.annotations.line1.label.content = `${$_(
-                                "mean"
-                            )}\n${(rank.average / 1000).toFixed(3)}`;
-                            options.plugins.annotation.annotations.line2.label.content = `${$_(
-                                "you"
-                            )}\n${(time / 1000).toFixed(3)}`;
-                            graphData.datasets[0].data = data.interval.count;
-                            inQuestion = false;
-                            getRandMusic(groups[musicData.group], 5000);
-                            /*
+                            if (
+                                i * data.interval.IQR <= time &&
+                                time <= (i + 1) * data.interval.IQR
+                            ) {
+                                youX = i;
+                            }
+                        }
+                        options.plugins.annotation.annotations.line1.xMin =
+                            meanX;
+                        options.plugins.annotation.annotations.line1.xMax =
+                            meanX;
+                        options.plugins.annotation.annotations.line2.xMin =
+                            youX;
+                        options.plugins.annotation.annotations.line2.xMax =
+                            youX;
+
+                        options.plugins.annotation.annotations.line1.label.content = `${$_(
+                            "mean"
+                        )}\n${(rank.average / 1000).toFixed(3)}`;
+                        options.plugins.annotation.annotations.line2.label.content = `${$_(
+                            "you"
+                        )}\n${(time / 1000).toFixed(3)}`;
+                        graphData.datasets[0].data = data.interval.count;
+                        inQuestion = false;
+                        getRandMusic(groups[musicData.group], 5000);
+                        /*
                     alert(
                         `[${data.rank}위/${data.count}명]\n최고:${
                             data.best
@@ -246,52 +227,46 @@
                         }%`
                     );
                     */
-                        });
-                } else {
-                    fetch(`/rank/${musicData.group}/${answer}`)
-                        .then((response) => response.json())
-                        .then((data) => {
-                            rank = data;
-
-                            graphData.labels = Array.from(
-                                Array(5),
-                                (_, x) =>
-                                    `~ ${(
-                                        ((x + 1) * data.interval.IQR) /
-                                        1000
-                                    ).toFixed(2)}초`
-                            );
-
-                            let meanX = -1;
-                            for (let i = 0; i < 5; i++) {
-                                if (
-                                    i * data.interval.IQR <= rank.average &&
-                                    rank.average <= (i + 1) * data.interval.IQR
-                                ) {
-                                    meanX = i;
-                                }
-                            }
-                            options.plugins.annotation.annotations.line1.xMin =
-                                meanX;
-                            options.plugins.annotation.annotations.line1.xMax =
-                                meanX;
-
-                            options.plugins.annotation.annotations.line2.xMin =
-                                -1;
-                            options.plugins.annotation.annotations.line2.xMax =
-                                -1;
-
-                            options.plugins.annotation.annotations.line1.label.content = `${$_(
-                                "mean"
-                            )}\n${(rank.average / 1000).toFixed(3)}`;
-
-                            inQuestion = false;
-                            getRandMusic(groups[musicData.group], 5000);
-                        });
-                }
+                    });
             } else {
-                alert("음원이 재생되지 않았습니다.");
-                getRandMusic(groups[musicData.group]);
+                fetch(`/rank/${musicData.group}/${answer}`)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        rank = data;
+
+                        graphData.labels = Array.from(
+                            Array(5),
+                            (_, x) =>
+                                `~ ${(
+                                    ((x + 1) * data.interval.IQR) /
+                                    1000
+                                ).toFixed(2)}초`
+                        );
+
+                        let meanX = -1;
+                        for (let i = 0; i < 5; i++) {
+                            if (
+                                i * data.interval.IQR <= rank.average &&
+                                rank.average <= (i + 1) * data.interval.IQR
+                            ) {
+                                meanX = i;
+                            }
+                        }
+                        options.plugins.annotation.annotations.line1.xMin =
+                            meanX;
+                        options.plugins.annotation.annotations.line1.xMax =
+                            meanX;
+
+                        options.plugins.annotation.annotations.line2.xMin = -1;
+                        options.plugins.annotation.annotations.line2.xMax = -1;
+
+                        options.plugins.annotation.annotations.line1.label.content = `${$_(
+                            "mean"
+                        )}\n${(rank.average / 1000).toFixed(3)}`;
+
+                        inQuestion = false;
+                        getRandMusic(groups[musicData.group], 5000);
+                    });
             }
         }
     }
@@ -353,22 +328,11 @@
 
     document.addEventListener("visibilitychange", () => {
         if (document.visibilityState === "hidden") {
-            MIDI.Player.pause();
+            MIDIPlayer.pause();
         } else {
-            MIDI.Player.resume();
+            MIDIPlayer.play();
         }
     });
-
-    let MIDIjsloaded = false;
-    function MIDIjsChecker() {
-        if (typeof MIDI === "undefined") {
-            setTimeout(MIDIjsChecker, 50);
-            return;
-        }
-        console.log("MIDI loaded");
-        MIDIjsloaded = true;
-    }
-    MIDIjsChecker();
 
     function kindSel() {
         isKindSelect = false;
@@ -390,13 +354,6 @@
 </script>
 
 <svelte:head>
-    <script src="/inc/shim/Base64.js" type="text/javascript"></script>
-    <script src="/inc/shim/Base64binary.js" type="text/javascript"></script>
-    <script src="/inc/shim/WebAudioAPI.js" type="text/javascript"></script>
-    <script src="/inc/jasmid/stream.js"></script>
-    <script src="/inc/jasmid/midifile.js"></script>
-    <script src="/inc/jasmid/replayer.js"></script>
-    <script type="text/javascript" src="/MIDI.js"></script>
     <meta name="viewport" content="width=device-width" />
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
@@ -528,7 +485,7 @@
                 on:click={() => {
                     loading = false;
                     fetchEnd = false;
-                    MIDI.Player.start();
+                    MIDIPlayer.play();
                 }}
             >
                 <img
@@ -547,7 +504,7 @@
                         style="border: none; height: 100%;"
                         on:click={() => {
                             Answer(i);
-                            snd.play();
+                            OriginalPlayer.play();
                         }}
                     >
                         <img
