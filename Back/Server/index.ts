@@ -391,6 +391,18 @@ async function getCover(albumPath: string, musicName: string): Promise<Buffer> {
   return fs.readFileSync(albumPath)
 }
 
+if (process.env.NODE_ENV === 'development') {
+  app.get('/', function (req, res) {
+    res.sendFile(
+      path1.join(__dirname, '../../Front/Pialmot/public', 'index.html')
+    )
+  })
+
+  app.use('/', express.static('../../Front/Pialmot/public'))
+  app.use('/mp3', express.static(mp3Path))
+  app.use('/midi', express.static(midiPath))
+}
+
 app.get('/cover/*', async function (req, res) {
   const path = (req as any).params[0];
   let pos = path.lastIndexOf('/');
@@ -403,6 +415,6 @@ app.get('/cover/*', async function (req, res) {
   ))
 })
 
-httpsServer.listen(8000, 'localhost', function () {
+httpsServer.listen(8000, process.env.NODE_ENV === 'development' ? '0.0.0.0' : 'localhost', function () {
   console.log('서버ON')
 })

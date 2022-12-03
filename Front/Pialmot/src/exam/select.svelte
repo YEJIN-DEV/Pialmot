@@ -498,10 +498,15 @@
     {:else if inQuestion}
         <div class="images">
             {#each { length: 5 } as _, i}
-                <div class="container">
+                <div
+                    class="container"
+                    style="min-{isLandScape()
+                        ? `height: calc(var(--vh, 1vh)*${transValue[i]}`
+                        : `width: calc(var(--vw, 1vw)*${transValue[i]}`}"
+                >
                     <!-- svelte-ignore a11y-click-events-have-key-events -->
                     <button
-                        style="border: none; height: 100%;"
+                        style="border: none; height: 100%; touch-action: none;"
                         on:click={() => {
                             Answer(i);
                             OriginalPlayer.play();
@@ -651,7 +656,6 @@
     .container {
         position: relative;
         overflow: hidden;
-        min-width: calc(var(--vw, 1vw) * 20);
     }
 
     .question {
