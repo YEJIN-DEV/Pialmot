@@ -765,7 +765,9 @@
 
         .question {
             height: 100%;
-            transform: translateX(-300px);
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         .chart {
