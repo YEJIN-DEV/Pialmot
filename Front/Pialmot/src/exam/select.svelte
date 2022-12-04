@@ -599,7 +599,7 @@
 </body>
 
 <style>
-    /* vw vh 다음줄에 있는 calc 함수들은 딱맡개 처리를 하기위해*/
+    /* calc 함수들과 --vw랑 --vh는 viewport에 딱맞게 처리를 하기위해 있음.*/
     .linachanboard {
         position: absolute;
         top: 0;
