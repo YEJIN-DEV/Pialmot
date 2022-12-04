@@ -688,13 +688,10 @@
 
     .result {
         width: 100%;
-
         height: calc(var(--vh, 1vh) * 100);
         display: flex;
-        flex-flow: row wrap;
-        flex-shrink: 1;
+        flex-flow: row wrap; /* 세로화면에서도 row로 해야하는데, 표시할 컨텐츠[글씨/표]가 세로로 길기때문 */
         align-items: center;
-        justify-content: center;
     }
 
     #ablumName,
@@ -751,12 +748,16 @@
         .album {
             padding-top: 3%;
         }
+
+        .result {
+            justify-content: center;
+        }
     }
 
     @media (orientation: landscape) {
         /*가로*/
         .result {
-            flex-flow: column wrap;
+            justify-content: space-evenly;
         }
 
         .images {
