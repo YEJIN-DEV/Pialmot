@@ -161,19 +161,24 @@ app.get('/music/:group', async function (req, res) {
         path: result.album.path.substring(0, result.album.path.length - 4)
       })
     } else {
-      const kindPath = kindToFolder(
-        getRandomInt(musicKind.anime, musicKind.album),
-        group
-      )
-      if (kindPath !== undefined) {
-        let { musicFile, dir } = randomMusic(groupPath, kindPath)
+      let randkindPath: string | undefined;
+      if (req.query.allkindchoices == undefined) {
+        randkindPath = kindPaths[getRandomInt(0, kindPaths.length)].path
+      } else {
+        randkindPath = kindToFolder(
+          getRandomInt(musicKind.anime, musicKind.album),
+          group
+        )
+      }
+      if (randkindPath !== undefined) {
+        let { musicFile, dir } = randomMusic(groupPath, randkindPath)
         if (musicFile !== undefined) {
           musicFile = musicFile.substring(4, musicFile.length - 4)
 
           if (result.questions.findIndex(e => e.name == musicFile) == -1 && musicFile !== result.name)
             result.questions.push({
               name: musicFile,
-              path: '/cover/' + path1.join(groupPath, kindPath, dir, musicFile),
+              path: '/cover/' + path1.join(groupPath, randkindPath, dir, musicFile),
             })
           else i--
         } else i--

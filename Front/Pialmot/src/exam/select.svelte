@@ -112,6 +112,7 @@
         "special", // 특전
         "album", // 정규 앨범
     ];
+    let allkindchoices = true;
     let isKindSelect = true;
 
     let bright = [0.6, 0.6, 0.6, 0.6, 0.6];
@@ -127,7 +128,11 @@
     };
 
     function getRandMusic(target, delay) {
-        fetch(`/music/${target}?kind=${kind.join("&kind=")}&original`)
+        fetch(
+            `/music/${target}?kind=${kind.join("&kind=")}&original${
+                allkindchoices ? "&allkindchoices" : ""
+            }`
+        )
             .then((response) => response.json())
             .then((data) => {
                 setTimeout(() => {
@@ -397,6 +402,12 @@
                     <input type="checkbox" bind:group={kind} value="game" />게임
                     삽입곡
                     <br />
+                    <br />
+                    <input
+                        type="checkbox"
+                        bind:checked={allkindchoices}
+                    />보기를 전체분류에서 출제
+                    <br />
                     <button class="startbtn">게임 스타토</button>
                 </form>
             {:else if params.group == "nijigasaki"}
@@ -430,6 +441,12 @@
                     <input type="checkbox" bind:group={kind} value="game" />게임
                     삽입곡
                     <br />
+                    <br />
+                    <input
+                        type="checkbox"
+                        bind:checked={allkindchoices}
+                    />보기를 전체분류에서 출제
+                    <br />
                     <button class="startbtn">게임 스타토</button>
                 </form>
             {:else if params.group == "liella"}
@@ -461,6 +478,12 @@
                         bind:group={kind}
                         value="album"
                     />정규 앨범<br />
+                    <br />
+                    <input
+                        type="checkbox"
+                        bind:checked={allkindchoices}
+                    />보기를 전체분류에서 출제
+                    <br />
                     <button class="startbtn">게임 스타토</button>
                 </form>
             {/if}
