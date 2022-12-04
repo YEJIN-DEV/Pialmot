@@ -5,6 +5,7 @@ import path1 from 'path'
 import * as ss from 'simple-statistics'
 import morgan from 'morgan'
 import dotenv from 'dotenv';
+import jsmediatags from 'jsmediatags';
 dotenv.config();
 
 const credentials = {
@@ -158,7 +159,7 @@ app.get('/music/:group', async function (req, res) {
     if (i == answerIndex) {
       result.questions.push({
         name: result.name,
-        path: result.album.path.substring(0, result.album.path.length - 4)
+        path: result.album.path
       })
     } else {
       let randkindPath: string | undefined;
@@ -171,14 +172,15 @@ app.get('/music/:group', async function (req, res) {
         )
       }
       if (randkindPath !== undefined) {
-        let { musicFile, dir } = randomMusic(groupPath, randkindPath)
-        if (musicFile !== undefined) {
-          musicFile = musicFile.substring(4, musicFile.length - 4)
+        let { musicFile: musicPath, dir } = randomMusic(groupPath, randkindPath)
+        if (musicPath !== undefined) {
+          let musicName = musicPath.substring(4, musicPath.length - 4) //정답과 비교용
+          musicPath = musicPath.substring(0, musicPath.length - 4) //확장자 제거
 
-          if (result.questions.findIndex(e => e.name == musicFile) == -1 && musicFile !== result.name)
+          if (result.questions.findIndex(e => e.name == musicName) == -1 && musicName !== result.name)
             result.questions.push({
-              name: musicFile,
-              path: '/cover/' + path1.join(groupPath, randkindPath, dir, musicFile),
+              name: musicName,
+              path: '/cover/' + path1.join(groupPath, randkindPath, dir, musicPath),
             })
           else i--
         } else i--
@@ -382,19 +384,39 @@ function randomMusic(
 }
 
 async function getCover(albumPath: string, musicName: string): Promise<Buffer> {
-  if (fs.existsSync(path1.join(mp3Path, albumPath, 'cover.jpg'))) {
-    albumPath = path1.join(mp3Path, albumPath, 'cover.jpg')
-  } else {
-    let trackNum = musicName.substring(0, 2)
-    if (fs.existsSync(path1.join(mp3Path, albumPath, `Cover_${trackNum}.jpg`))) {
-      albumPath = path1.join(mp3Path, albumPath, `Cover_${trackNum}.jpg`)
-    } else {
-      albumPath = 'white.jpg'
-    }
-  }
+  let trackNum = musicName.substring(0, 2)
+  return new Promise(function (resolve, reject) {
+    /* 
+    1. cover.jpg 검사 
+    2. Cover_번호.jpg 검사 
+    3. mp3메타데이터 추출 
+    4. 파일이없거나 메타데이터 추출중오류-> reject
+    */
 
-  return fs.readFileSync(albumPath)
+    if (fs.existsSync(path1.join(mp3Path, albumPath, 'cover.jpg'))) {
+      albumPath = path1.join(mp3Path, albumPath, 'cover.jpg')
+      resolve(fs.readFileSync(albumPath))
+    } else if (fs.existsSync(path1.join(mp3Path, albumPath, `Cover_${trackNum}.jpg`))) {
+      albumPath = path1.join(mp3Path, albumPath, `Cover_${trackNum}.jpg`)
+      resolve(fs.readFileSync(albumPath))
+    } else if (fs.existsSync(path1.join(mp3Path, albumPath, musicName + '.mp3'))) {
+      jsmediatags.read(path1.join(mp3Path, albumPath, musicName + '.mp3'), {
+        onSuccess: function (result) {
+          if (result.tags.picture !== undefined) {
+            const { data, format } = result.tags.picture;
+            resolve(Buffer.from(data));
+          }
+        },
+        onError: function (error) {
+          reject();
+        }
+      });
+    } else {
+      reject();
+    }
+  });
 }
+
 
 if (process.env.NODE_ENV === 'development') {
   app.get('/', function (req, res) {
@@ -414,10 +436,14 @@ app.get('/cover/*', async function (req, res) {
 
   res.setHeader('Content-Type', 'image/jpeg')
   res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
-  res.status(200).send(await getCover(
+  getCover(
     path.substring(0, pos),
     path.substring(pos + 1)
-  ))
+  ).then((data) => {
+    res.status(200).send(data);
+  }).catch(() => {
+    res.send(fs.readFileSync('white.jpg'))
+  })
 })
 
 httpsServer.listen(8000, process.env.NODE_ENV === 'development' ? '0.0.0.0' : 'localhost', function () {
