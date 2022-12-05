@@ -6,6 +6,7 @@ import * as ss from 'simple-statistics'
 import morgan from 'morgan'
 import dotenv from 'dotenv';
 import jsmediatags from 'jsmediatags';
+
 dotenv.config();
 
 const credentials = {
@@ -13,16 +14,12 @@ const credentials = {
   cert: fs.readFileSync('cert/domain.cert.pem'),
 };
 
-function getDirectories(path: string): string[] {
-  return fs.readdirSync(path).filter(function (file) {
-    return fs.statSync(path + '/' + file).isDirectory()
-  })
+async function getDirectories(path: string): Promise<string[]> {
+  return (await fs.promises.readdir(path)).filter(async (file) => (await fs.promises.stat(path + '/' + file)).isDirectory());
 }
 
-function getFiles(path: string): string[] {
-  return fs.readdirSync(path).filter(function (file) {
-    return fs.statSync(path + '/' + file).isFile()
-  })
+async function getFiles(path: string): Promise<string[]> {
+  return (await fs.promises.readdir(path)).filter(async (file) => (await fs.promises.stat(path + '/' + file)).isFile());
 }
 
 function getRandomInt(min: number, max: number): number {
@@ -63,7 +60,7 @@ const httpsServer = https.createServer(credentials, app)
 아쿠아: anime, unit, special, album, game
 */
 
-app.get('/music/:group', async function (req, res) {
+app.get('/music/:group', function (req, res) {
   let groupPath = ''
   const group = groups[req.params.group as keyof typeof groups]
   switch (group) {
@@ -117,78 +114,72 @@ app.get('/music/:group', async function (req, res) {
     kind: musicKind
     path: string
   }
-  let musicFile: string = ''
-  let dir: string = ''
-  while (true) {
-    kindPath = kindPaths[getRandomInt(0, kindPaths.length)]
-    let { musicFile: tmp_musicFile, dir: tmp_dir } = randomMusic(
-      groupPath,
-      kindPath.path
-    )
 
-    if (tmp_musicFile !== undefined) {
-      musicFile = tmp_musicFile
-      dir = tmp_dir
-      break
+  kindPath = kindPaths[getRandomInt(0, kindPaths.length)]
+  randomMusic(
+    groupPath,
+    kindPath.path
+  ).then(({ musicFile, dir }) => {
+    let answerCover = path1.join(groupPath, kindPath.path, dir, musicFile);
+    result = {
+      name: musicFile.substring(4, musicFile.length - 4),
+      album: {
+        name: dir,
+        path: '/cover/' + answerCover.substring(0, answerCover.length - 4),
+      },
+      group: group,
+      kind: kindPath.kind,
+      midi: '/midi/' + answerCover,
+      mp3:
+        req.query.original != undefined
+          ? '/mp3/' + path1.join(
+            groupPath,
+            kindPath.path,
+            dir,
+            musicFile.substring(0, musicFile.length - 3) + 'mp3'
+          )
+          : undefined,
+      questions: []
     }
-  }
 
-  let answerCover = path1.join(groupPath, kindPath.path, dir, musicFile);
-  result = {
-    name: musicFile.substring(4, musicFile.length - 4),
-    album: {
-      name: dir,
-      path: '/cover/' + answerCover.substring(0, answerCover.length - 4),
-    },
-    group: group,
-    kind: kindPath.kind,
-    midi: '/midi/' + answerCover,
-    mp3:
-      req.query.original != undefined
-        ? '/mp3/' + path1.join(
-          groupPath,
-          kindPath.path,
-          dir,
-          musicFile.substring(0, musicFile.length - 3) + 'mp3'
-        )
-        : undefined,
-    questions: []
-  }
-  let answerIndex = getRandomInt(0, 4)
-  for (let i = 0; i < 5; i++) {
-    if (i == answerIndex) {
-      result.questions.push({
+    Promise.all([makeQuestion(), makeQuestion(), makeQuestion(), makeQuestion(), makeQuestion()]).then((elem) => {
+      result.questions[getRandomInt(0, 4)] = {
         name: result.name,
         path: result.album.path
-      })
+      };
+      res.json(result)
+    });
+  }).catch(_e => {
+    return
+  })
+
+
+  async function makeQuestion(): Promise<void> {
+    let randkindPath: string | undefined
+    if (req.query.allkindchoices == undefined) {
+      randkindPath = kindPaths[getRandomInt(0, kindPaths.length)].path
     } else {
-      let randkindPath: string | undefined;
-      if (req.query.allkindchoices == undefined) {
-        randkindPath = kindPaths[getRandomInt(0, kindPaths.length)].path
-      } else {
-        randkindPath = kindToFolder(
-          getRandomInt(musicKind.anime, musicKind.album),
-          group
-        )
-      }
-      if (randkindPath !== undefined) {
-        let { musicFile: musicPath, dir } = randomMusic(groupPath, randkindPath)
-        if (musicPath !== undefined) {
-          let musicName = musicPath.substring(4, musicPath.length - 4) //정답과 비교용
-          musicPath = musicPath.substring(0, musicPath.length - 4) //확장자 제거
-
-          if (result.questions.findIndex(e => e.name == musicName) == -1 && musicName !== result.name)
-            result.questions.push({
-              name: musicName,
-              path: '/cover/' + path1.join(groupPath, randkindPath, dir, musicPath),
-            })
-          else i--
-        } else i--
-      } else i--
+      randkindPath = kindToFolder(
+        getRandomInt(musicKind.anime, musicKind.album),
+        group
+      )
     }
-  }
+    if (randkindPath !== undefined) {
+      let { musicFile, dir } = await randomMusic(groupPath, randkindPath)
+      let musicName = musicFile.substring(4, musicFile.length - 4) //정답과 비교용
+      musicFile = musicFile.substring(0, musicFile.length - 4) //확장자 제거
 
-  res.json(result)
+      if (result.questions.findIndex(e => e.name == musicName) == -1 && musicName !== result.name) {
+        result.questions.push({
+          name: musicName,
+          path: '/cover/' + path1.join(groupPath, randkindPath!, dir, musicFile),
+        })
+        return Promise.resolve()
+      } else {
+        return makeQuestion()
+      }
+    } else return makeQuestion()
+  }
 })
 
 let rank: { [key: string]: { [key: string]: number[] } } = JSON.parse(
@@ -202,7 +193,7 @@ app.post('/rank/:group/:music', function (req, res) {
 
   res.status(200).send(rankDataToJson(group, music, time))
 
-  fs.writeFileSync('rank.json', JSON.stringify(rank))
+  fs.writeFile('rank.json', JSON.stringify(rank), (err) => { })
 })
 
 app.get('/rank/:group/:music', function (req, res) {
@@ -372,48 +363,56 @@ function kindToFolder(kind: musicKind, group: groups): string | undefined {
   return path
 }
 
-function randomMusic(
+async function randomMusic(
   groupPath: string,
   kindPath: string
-): { musicFile: string | undefined; dir: string } {
-  const dirs = getDirectories(path1.join(midiPath, groupPath, kindPath))
+): Promise<{ musicFile: string; dir: string }> {
+  const dirs = await getDirectories(path1.join(midiPath, groupPath, kindPath))
   const dir = dirs[getRandomInt(0, dirs.length)]
-  const files = getFiles(path1.join(midiPath, groupPath, kindPath, dir)).filter((file) => file.endsWith('.mp3'))
+  const files = (await getFiles(path1.join(midiPath, groupPath, kindPath, dir))).filter((file) => file.endsWith('.mp3'))
   const musicFile = files[getRandomInt(0, files.length)]
-  return { musicFile, dir }
+
+  if (musicFile == undefined) {
+    return randomMusic(groupPath, kindPath);
+  } else {
+    return { musicFile, dir }
+  }
 }
 
 async function getCover(albumPath: string, musicName: string): Promise<Buffer> {
-  let trackNum = musicName.substring(0, 2)
-  return new Promise(function (resolve, reject) {
-    /* 
-    1. cover.jpg 검사 
-    2. Cover_번호.jpg 검사 
-    3. mp3메타데이터 추출 
-    4. 파일이없거나 메타데이터 추출중오류-> reject
-    */
-
-    if (fs.existsSync(path1.join(mp3Path, albumPath, 'cover.jpg'))) {
-      albumPath = path1.join(mp3Path, albumPath, 'cover.jpg')
-      resolve(fs.readFileSync(albumPath))
-    } else if (fs.existsSync(path1.join(mp3Path, albumPath, `Cover_${trackNum}.jpg`))) {
-      albumPath = path1.join(mp3Path, albumPath, `Cover_${trackNum}.jpg`)
-      resolve(fs.readFileSync(albumPath))
-    } else if (fs.existsSync(path1.join(mp3Path, albumPath, musicName + '.mp3'))) {
-      jsmediatags.read(path1.join(mp3Path, albumPath, musicName + '.mp3'), {
-        onSuccess: function (result) {
-          if (result.tags.picture !== undefined) {
-            const { data, format } = result.tags.picture;
-            resolve(Buffer.from(data));
-          }
-        },
-        onError: function (error) {
-          reject();
-        }
+  /* 
+  1. cover.jpg 검사 
+  2. Cover_번호.jpg 검사 
+  3. mp3메타데이터 추출 
+  4. 파일이없거나 메타데이터 추출중오류-> reject
+  */
+  return new Promise((resolve, reject) => {
+    fs.promises.access(path1.join(mp3Path, albumPath, 'cover.jpg'), fs.constants.F_OK).then(() => {
+      fs.readFile(path1.join(mp3Path, albumPath, 'cover.jpg'), (err, data) => {
+        resolve(data);
+      })
+    }).catch(() => {
+      let trackNum = musicName.substring(0, 2)
+      fs.promises.access(path1.join(mp3Path, albumPath, `Cover_${trackNum}.jpg`), fs.constants.F_OK).then(() => {
+        fs.readFile(path1.join(mp3Path, albumPath, `Cover_${trackNum}.jpg`), (err, data) => {
+          resolve(data);
+        })
+      }).catch(() => {
+        fs.promises.access(path1.join(mp3Path, albumPath, musicName + '.mp3'), fs.constants.F_OK).then(() => {
+          jsmediatags.read(path1.join(mp3Path, albumPath, musicName + '.mp3'), {
+            onSuccess: function (result) {
+              if (result.tags.picture !== undefined) {
+                const { data, format } = result.tags.picture;
+                resolve(Buffer.from(data));
+              }
+            },
+            onError: function (error) {
+              reject(error);
+            }
+          });
+        })
       });
-    } else {
-      reject();
-    }
+    });
   });
 }
 
@@ -430,7 +429,7 @@ if (process.env.NODE_ENV === 'development') {
   app.use('/midi', express.static(midiPath))
 }
 
-app.get('/cover/*', async function (req, res) {
+app.get('/cover/*', function (req, res) {
   const path = (req as any).params[0];
   let pos = path.lastIndexOf('/');
 
