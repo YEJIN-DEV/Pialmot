@@ -61,7 +61,7 @@
                 push("/select/nijigasaki");
             }}
         >
-            <img src="logo/Nijigasaki.png" alt="" />
+            <img src="logo/Nijigasaki_{$_("filesuffix")}.png" alt="" />
         </button>
         <button
             class="btnGroups"
