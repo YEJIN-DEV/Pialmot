@@ -1,8 +1,20 @@
 {
-    "wrong": "Wrong",
-    "correctis": "The Answer is...",
+    "wrong": "Wrong Answer",
+    "correctis": "The correct one is...",
     "you": "You",
     "mean": "Mean",
+    "sec": "s",
     "title": "Pialmot",
-    "edtion": "LoveLive Edtion!"
+    "edtion": "LoveLive Edtion!",
+    "filesuffix": "EN",
+    "kindtitle": "Gonna Try?",
+    "anime": "Anime",
+    "original": "Original",
+    "unit": "Unit",
+    "single": "Single",
+    "special": "Specials",
+    "album": "Full Album",
+    "game": "Game Single",
+    "kindchoice": "Set the options from all categories",
+    "gamestart": "Game Start!"
 }

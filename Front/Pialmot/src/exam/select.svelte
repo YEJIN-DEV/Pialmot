@@ -179,13 +179,14 @@
                     .then((response) => response.json())
                     .then((data) => {
                         rank = data;
+                        let sec = `${$_("sec")}`
                         graphData.labels = Array.from(
                             Array(5),
                             (_, x) =>
                                 `~ ${(
                                     ((x + 1) * data.interval.IQR) /
                                     1000
-                                ).toFixed(2)}초`
+                                ).toFixed(2)}${sec}`
                         );
 
                         let meanX = -1;
@@ -238,14 +239,14 @@
                     .then((response) => response.json())
                     .then((data) => {
                         rank = data;
-
+                        let sec = `${$_("sec")}`
                         graphData.labels = Array.from(
                             Array(5),
                             (_, x) =>
                                 `~ ${(
                                     ((x + 1) * data.interval.IQR) /
                                     1000
-                                ).toFixed(2)}초`
+                                ).toFixed(2)}${sec}`
                         );
 
                         let meanX = -1;
@@ -373,118 +374,122 @@
             <img src="board.jpg" alt="" />
             {#if params.group == "aqours"}
                 <form on:submit|preventDefault={kindSel}>
-                    <h4>한판,,하쉴?</h4>
+                    <h4>{$_("kindtitle")}</h4>
                     <input
                         type="checkbox"
                         bind:group={kind}
                         value="anime"
-                    />애니<br />
+                    />{$_("anime")}<br />
                     <input
                         type="checkbox"
                         bind:group={kind}
                         value="original"
-                    />오리지널<br />
+                    />{$_("original")}<br />
                     <input
                         type="checkbox"
                         bind:group={kind}
                         value="single"
-                    />싱글<br />
+                    />{$_("single")}<br />
                     <input
                         type="checkbox"
                         bind:group={kind}
                         value="special"
-                    />스페셜<br />
+                    />{$_("special")}<br />
                     <input
                         type="checkbox"
                         bind:group={kind}
                         value="album"
-                    />정규 앨범<br />
-                    <input type="checkbox" bind:group={kind} value="game" />게임
-                    삽입곡
-                    <br />
+                    />{$_("album")}<br />
+                    <input
+                        type="checkbox"
+                        bind:group={kind}
+                        value="game"
+                    />{$_("game")}<br />
                     <br />
                     <input
                         type="checkbox"
                         bind:checked={allkindchoices}
-                    />보기를 전체분류에서 출제
+                    />{$_("kindchoice")}
                     <br />
-                    <button class="startbtn">게임 스타토</button>
+                    <button class="startbtn">{$_("gamestart")}</button>
                 </form>
             {:else if params.group == "nijigasaki"}
                 <form on:submit|preventDefault={kindSel}>
-                    <h4>한판,,하쉴?</h4>
+                    <h4>{$_("kindtitle")}</h4>
                     <input
                         type="checkbox"
                         bind:group={kind}
                         value="anime"
-                    />애니<br />
+                    />{$_("anime")}<br />
                     <input
                         type="checkbox"
                         bind:group={kind}
                         value="original"
-                    />오리지널<br />
+                    />{$_("original")}<br />
                     <input
                         type="checkbox"
                         bind:group={kind}
                         value="unit"
-                    />유닛<br />
+                    />{$_("unit")}<br />
                     <input
                         type="checkbox"
                         bind:group={kind}
                         value="special"
-                    />스페셜<br />
+                    />{$_("special")}<br />
                     <input
                         type="checkbox"
                         bind:group={kind}
                         value="album"
-                    />정규 앨범<br />
-                    <input type="checkbox" bind:group={kind} value="game" />게임
-                    삽입곡
-                    <br />
+                    />{$_("album")}<br />
+                    <input
+                        type="checkbox"
+                        bind:group={kind}
+                        value="game"
+                    />{$_("game")}<br />
                     <br />
                     <input
                         type="checkbox"
                         bind:checked={allkindchoices}
-                    />보기를 전체분류에서 출제
+                    />{$_("kindchoice")}
                     <br />
-                    <button class="startbtn">게임 스타토</button>
+                    <button class="startbtn">{$_("gamestart")}</button>
                 </form>
             {:else if params.group == "liella"}
                 <form on:submit|preventDefault={kindSel}>
-                    <h4>한판,,하쉴?</h4>
+                    <h4>{$_("kindtitle")}</h4>
                     <input
                         type="checkbox"
                         bind:group={kind}
                         value="anime"
-                    />애니<br />
+                    />{$_("anime")}<br />
                     <input
                         type="checkbox"
                         bind:group={kind}
                         value="original"
                         checked
-                    />오리지널<br />
+                    />{$_("original")}<br />
                     <input
                         type="checkbox"
                         bind:group={kind}
                         value="single"
-                    />싱글<br />
+                    />{$_("single")}<br />
                     <input
                         type="checkbox"
                         bind:group={kind}
                         value="special"
-                    />스페셜<br />
+                    />{$_("special")}<br />
                     <input
                         type="checkbox"
                         bind:group={kind}
                         value="album"
-                    />정규 앨범<br />
+                    />{$_("album")}<br />
                     <br />
                     <input
                         type="checkbox"
                         bind:checked={allkindchoices}
-                    />보기를 전체분류에서 출제
+                    />{$_("kindchoice")}
                     <br />
-                    <button class="startbtn">게임 스타토</button>
+                    <button class="startbtn">{$_("gamestart")}</button>
                 </form>
             {/if}
         </div>

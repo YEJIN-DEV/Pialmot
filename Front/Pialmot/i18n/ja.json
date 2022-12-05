@@ -1,8 +1,20 @@
 {
-    "wrong": "間違っています",
+    "wrong": "間違った答えです",
     "correctis": "正解は…",
-    "you": "君",
+    "you": "あなた",
     "mean": "平均",
+    "sec": "秒",
     "title": "ピアルモッ",
-    "edtion": "ラブライブ版!"
+    "edtion": "ラブライブ版!",
+    "filesuffix": "JP",
+    "kindtitle": "やってみない？",
+    "anime": "アニメ",
+    "original": "オリジナル",
+    "unit": "ウニット",
+    "single": "シングル",
+    "special": "スペシャル",
+    "album": "アルバム",
+    "game": "ゲーム挿入歌",
+    "kindchoice": "選択肢を全分類から出題",
+    "gamestart": "ゲームスタート！"
 }
