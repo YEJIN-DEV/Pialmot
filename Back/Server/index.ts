@@ -410,6 +410,8 @@ async function getCover(albumPath: string, musicName: string): Promise<Buffer> {
               reject(error);
             }
           });
+        }).catch(() => {
+          reject()
         })
       });
     });
