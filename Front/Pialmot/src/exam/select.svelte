@@ -354,117 +354,40 @@
         <!-- svelte-ignore a11y-media-has-caption -->
         <div class="linachanboard">
             <img src="board.jpg" alt="" />
-            {#if params.group == "aqours"}
-                <form on:submit|preventDefault={kindSel}>
-                    <h4>{$_("kindtitle")}</h4>
-                    <input
-                        type="checkbox"
-                        bind:group={kind}
-                        value="anime"
-                    />{$_("anime")}<br />
-                    <input
-                        type="checkbox"
-                        bind:group={kind}
-                        value="original"
-                    />{$_("original")}<br />
-                    <input
-                        type="checkbox"
-                        bind:group={kind}
-                        value="single"
-                    />{$_("single")}<br />
-                    <input
-                        type="checkbox"
-                        bind:group={kind}
-                        value="special"
-                    />{$_("special")}<br />
-                    <input
-                        type="checkbox"
-                        bind:group={kind}
-                        value="album"
-                    />{$_("album")}<br />
-                    <input type="checkbox" bind:group={kind} value="game" />{$_(
-                        "game"
-                    )}<br />
-                    <br />
-                    <input type="checkbox" bind:checked={allkindchoices} />{$_(
-                        "kindchoice"
-                    )}
-                    <br />
-                    <button class="startbtn">{$_("gamestart")}</button>
-                </form>
-            {:else if params.group == "nijigasaki"}
-                <form on:submit|preventDefault={kindSel}>
-                    <h4>{$_("kindtitle")}</h4>
-                    <input
-                        type="checkbox"
-                        bind:group={kind}
-                        value="anime"
-                    />{$_("anime")}<br />
-                    <input
-                        type="checkbox"
-                        bind:group={kind}
-                        value="original"
-                    />{$_("original")}<br />
-                    <input type="checkbox" bind:group={kind} value="unit" />{$_(
-                        "unit"
-                    )}<br />
-                    <input
-                        type="checkbox"
-                        bind:group={kind}
-                        value="special"
-                    />{$_("special")}<br />
-                    <input
-                        type="checkbox"
-                        bind:group={kind}
-                        value="album"
-                    />{$_("album")}<br />
-                    <input type="checkbox" bind:group={kind} value="game" />{$_(
-                        "game"
-                    )}<br />
-                    <br />
-                    <input type="checkbox" bind:checked={allkindchoices} />{$_(
-                        "kindchoice"
-                    )}
-                    <br />
-                    <button class="startbtn">{$_("gamestart")}</button>
-                </form>
-            {:else if params.group == "liella"}
-                <form on:submit|preventDefault={kindSel}>
-                    <h4>{$_("kindtitle")}</h4>
-                    <input
-                        type="checkbox"
-                        bind:group={kind}
-                        value="anime"
-                    />{$_("anime")}<br />
-                    <input
-                        type="checkbox"
-                        bind:group={kind}
-                        value="original"
-                        checked
-                    />{$_("original")}<br />
-                    <input
-                        type="checkbox"
-                        bind:group={kind}
-                        value="single"
-                    />{$_("single")}<br />
-                    <input
-                        type="checkbox"
-                        bind:group={kind}
-                        value="special"
-                    />{$_("special")}<br />
-                    <input
-                        type="checkbox"
-                        bind:group={kind}
-                        value="album"
-                    />{$_("album")}<br />
-                    <br />
-                    <input type="checkbox" bind:checked={allkindchoices} />{$_(
-                        "kindchoice"
-                    )}
-                    <br />
-                    <button class="startbtn">{$_("gamestart")}</button>
-                </form>
-            {/if}
+            <form on:submit|preventDefault={kindSel}>
+                <h4>{$_("kindtitle")}</h4>
+                {#if params.group == "aqours"}
+                    {#each ["anime", "original", "single", "special", "album", "game"] as kindStr}
+                        <input
+                            type="checkbox"
+                            bind:group={kind}
+                            value={kindStr}
+                        />{$_(kindStr)}<br />
+                    {/each}
+                {:else if params.group == "nijigasaki"}
+                    {#each ["anime", "original", "unit", "special", "album", "game"] as kindStr}
+                        <input
+                            type="checkbox"
+                            bind:group={kind}
+                            value={kindStr}
+                        />{$_(kindStr)}<br />
+                    {/each}
+                {:else if params.group == "liella"}
+                    {#each ["anime", "original", "single", "special", "album"] as kindStr}
+                        <input
+                            type="checkbox"
+                            bind:group={kind}
+                            value={kindStr}
+                        />{$_(kindStr)}<br />
+                    {/each}
+                {/if}
+                <br />
+                <input type="checkbox" bind:checked={allkindchoices} />{$_(
+                    "kindchoice"
+                )}
+                <br />
+                <button class="startbtn">{$_("gamestart")}</button>
+            </form>
         </div>
     {:else if loading && firstFetch}
         <div class="linachanboard">
