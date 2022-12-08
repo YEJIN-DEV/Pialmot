@@ -1,6 +1,6 @@
 <script>
-    import Result from "./UI/resultUI.svelte";
-    import Select from "./UI/selectUI.svelte";
+    import Result from "../UI/resultUI.svelte";
+    import Select from "../UI/selectUI.svelte";
     import { slide } from "svelte/transition";
     import { Chart as ChartJS } from "chart.js";
     import annotationPlugin from "chartjs-plugin-annotation";
