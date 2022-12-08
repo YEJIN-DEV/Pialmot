@@ -1,6 +1,7 @@
 <script>
     import Result from "../UI/resultUI.svelte";
     import Select from "../UI/selectUI.svelte";
+    import Linachanboard from "../UI/linachanboard.svelte";
     import { slide } from "svelte/transition";
     import { Chart as ChartJS } from "chart.js";
     import annotationPlugin from "chartjs-plugin-annotation";
@@ -352,8 +353,7 @@
 <body>
     {#if isKindSelect}
         <!-- svelte-ignore a11y-media-has-caption -->
-        <div class="linachanboard">
-            <img src="board.jpg" alt="" />
+        <Linachanboard>
             <form on:submit|preventDefault={kindSel}>
                 <h4>{$_("kindtitle")}</h4>
                 {#if params.group == "aqours"}
@@ -388,23 +388,16 @@
                 <br />
                 <button class="startbtn">{$_("gamestart")}</button>
             </form>
-        </div>
+        </Linachanboard>
     {:else if loading && firstFetch}
-        <div class="linachanboard">
-            <img src="board.jpg" alt="" />
-            <div
-                style="position: absolute;
-            left: 50%;
-            top: 55%;
-            transform: translate(-50%, -50%);"
-            >
+        <Linachanboard>
+            <form>
                 <Stretch size="100" color="#FF3E00" unit="px" duration="1s" />
-            </div>
-        </div>
+            </form>
+        </Linachanboard>
     {:else if fetchEnd && firstFetch}
         <!-- svelte-ignore a11y-click-events-have-key-events -->
-        <div class="linachanboard">
-            <img src="board.jpg" alt="" />
+        <Linachanboard>
             <btn
                 on:click={() => {
                     loading = false;
@@ -418,7 +411,7 @@
                     alt=""
                 />
             </btn>
-        </div>
+        </Linachanboard>
     {:else if inQuestion}
         <Select
             onAnswer={(i) => {
@@ -442,38 +435,6 @@
 
 <style>
     /* calc 함수들과 --vw랑 --vh는 viewport에 딱맞게 처리를 하기위해 있음.*/
-    .linachanboard {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: calc(var(--vw, 1vw) * 100);
-        height: calc(var(--vh, 1vh) * 100);
-        overflow: hidden;
-    }
-
-    .linachanboard > img {
-        /* Make video to at least 100% wide and tall */
-        min-width: 100%;
-        min-height: 100%;
-
-        /* Setting width & height to auto prevents the browser from stretching or squishing the video */
-        width: auto;
-        height: auto;
-
-        /* Center the video */
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-
-    .linachanboard > form,
-    btn {
-        position: absolute;
-        left: 50%;
-        top: 55%;
-        transform: translate(-50%, -50%);
-    }
 
     .linachanboard form button {
         -webkit-appearance: none;
@@ -505,7 +466,6 @@
 
         transition: 0.5s;
     }
-
     body {
         text-align: center;
         margin: 0 auto;
