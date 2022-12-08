@@ -1,6 +1,7 @@
 <script>
+    import Result from "./UI/resultUI.svelte";
+    import Select from "./UI/selectUI.svelte";
     import { slide } from "svelte/transition";
-    import { Bar } from "svelte-chartjs";
     import { Chart as ChartJS } from "chart.js";
     import annotationPlugin from "chartjs-plugin-annotation";
     import "chart.js/auto";
@@ -103,6 +104,7 @@
         count: -1,
         pertange: -1,
     };
+
     let kind = [
         "anime", // 애니 삽입곡
         "original", // 오리지널
@@ -114,11 +116,6 @@
     ];
     let allkindchoices = true;
     let isKindSelect = true;
-
-    let bright = [0.6, 0.6, 0.6, 0.6, 0.6];
-    let blur = [1, 1, 1, 1, 1];
-    let player_onCursor = 0;
-    let transValue = [20, 20, 20, 20, 20];
 
     const groups = {
         0: "us",
@@ -150,11 +147,6 @@
 
                     musicData = data;
                     inQuestion = true;
-
-                    bright = [0.6, 0.6, 0.6, 0.6, 0.6];
-                    blur = [1, 1, 1, 1, 1];
-                    player_onCursor = 0;
-                    transValue = [20, 20, 20, 20, 20];
                     loading = false;
                     fetchEnd = true;
                 }, delay ?? 0);
@@ -170,7 +162,6 @@
                 let after = new Date();
                 let time = after - before;
                 OriginalPlayer.currentTime = MIDIPlayer.currentTime;
-                //alert("정답입니다! 당신의 시간은 " + time / 1000 + "초 입니다.");
 
                 fetch(`/rank/${musicData.group}/${answer}`, {
                     method: "POST",
@@ -179,7 +170,7 @@
                     .then((response) => response.json())
                     .then((data) => {
                         rank = data;
-                        let sec = `${$_("sec")}`
+                        let sec = `${$_("sec")}`;
                         graphData.labels = Array.from(
                             Array(5),
                             (_, x) =>
@@ -224,22 +215,13 @@
                         graphData.datasets[0].data = data.interval.count;
                         inQuestion = false;
                         getRandMusic(groups[musicData.group], 5000);
-                        /*
-                    alert(
-                        `[${data.rank}위/${data.count}명]\n최고:${
-                            data.best
-                        }ms\n평균:${data.average}ms\n상위:${
-                            data.pertange * 100
-                        }%`
-                    );
-                    */
                     });
             } else {
                 fetch(`/rank/${musicData.group}/${answer}`)
                     .then((response) => response.json())
                     .then((data) => {
                         rank = data;
-                        let sec = `${$_("sec")}`
+                        let sec = $_("sec");
                         graphData.labels = Array.from(
                             Array(5),
                             (_, x) =>
@@ -400,16 +382,13 @@
                         bind:group={kind}
                         value="album"
                     />{$_("album")}<br />
-                    <input
-                        type="checkbox"
-                        bind:group={kind}
-                        value="game"
-                    />{$_("game")}<br />
+                    <input type="checkbox" bind:group={kind} value="game" />{$_(
+                        "game"
+                    )}<br />
                     <br />
-                    <input
-                        type="checkbox"
-                        bind:checked={allkindchoices}
-                    />{$_("kindchoice")}
+                    <input type="checkbox" bind:checked={allkindchoices} />{$_(
+                        "kindchoice"
+                    )}
                     <br />
                     <button class="startbtn">{$_("gamestart")}</button>
                 </form>
@@ -426,11 +405,9 @@
                         bind:group={kind}
                         value="original"
                     />{$_("original")}<br />
-                    <input
-                        type="checkbox"
-                        bind:group={kind}
-                        value="unit"
-                    />{$_("unit")}<br />
+                    <input type="checkbox" bind:group={kind} value="unit" />{$_(
+                        "unit"
+                    )}<br />
                     <input
                         type="checkbox"
                         bind:group={kind}
@@ -441,16 +418,13 @@
                         bind:group={kind}
                         value="album"
                     />{$_("album")}<br />
-                    <input
-                        type="checkbox"
-                        bind:group={kind}
-                        value="game"
-                    />{$_("game")}<br />
+                    <input type="checkbox" bind:group={kind} value="game" />{$_(
+                        "game"
+                    )}<br />
                     <br />
-                    <input
-                        type="checkbox"
-                        bind:checked={allkindchoices}
-                    />{$_("kindchoice")}
+                    <input type="checkbox" bind:checked={allkindchoices} />{$_(
+                        "kindchoice"
+                    )}
                     <br />
                     <button class="startbtn">{$_("gamestart")}</button>
                 </form>
@@ -484,10 +458,9 @@
                         value="album"
                     />{$_("album")}<br />
                     <br />
-                    <input
-                        type="checkbox"
-                        bind:checked={allkindchoices}
-                    />{$_("kindchoice")}
+                    <input type="checkbox" bind:checked={allkindchoices} />{$_(
+                        "kindchoice"
+                    )}
                     <br />
                     <button class="startbtn">{$_("gamestart")}</button>
                 </form>
@@ -524,81 +497,22 @@
             </btn>
         </div>
     {:else if inQuestion}
-        <div class="images">
-            {#each { length: 5 } as _, i}
-                <div
-                    class="container"
-                    style="min-{isLandScape()
-                        ? `height: calc(var(--vh, 1vh)*${transValue[i]}`
-                        : `width: calc(var(--vw, 1vw)*${transValue[i]}`}"
-                >
-                    <!-- svelte-ignore a11y-click-events-have-key-events -->
-                    <button
-                        style="border: none; height: 100%; touch-action: none;"
-                        on:click={() => {
-                            Answer(i);
-                            OriginalPlayer.play();
-                        }}
-                    >
-                        <img
-                            class="question"
-                            on:mouseenter={() => {
-                                if (!isMobile) {
-                                    bright[i] = 1;
-                                    blur[i] = 0;
-                                    player_onCursor = 1;
-                                    transValue = [19, 19, 19, 19, 19].map(
-                                        (e, index) => (index == i ? 24 : e)
-                                    );
-                                }
-                            }}
-                            on:mouseleave={() => {
-                                if (!isMobile) {
-                                    bright[i] = 0.6;
-                                    blur[i] = 1;
-                                    player_onCursor = 0;
-                                    transValue = [20, 20, 20, 20, 20];
-                                }
-                            }}
-                            style="filter: brightness({player_onCursor == 0
-                                ? 1
-                                : bright[i]}) blur({player_onCursor == 0
-                                ? 0
-                                : blur[i]}px);"
-                            src={musicData.questions[i].path}
-                            alt={musicData.questions[i].name}
-                        />
-                        <h2 style="text-align: center">
-                            {musicData.questions[i].name}
-                        </h2>
-                    </button>
-                </div>
-            {/each}
-        </div>
+        <Select
+            onAnswer={(i) => {
+                Answer(i);
+                OriginalPlayer.play();
+            }}
+            questions={musicData.questions}
+        />
     {:else}
-        <div class="result" transition:slide={{ delay: 150, duration: 600 }}>
-            <div>
-                <h1
-                    style="background-color:#0078D7; color:white; font-size:64px;"
-                >
-                    {rank.rank == -1 ? $_("wrong") : `#${rank.rank}`}
-                </h1>
-                <h3
-                    style="padding-top:5px; font-size:24px;font-weight:400;margin-bottom:2rem"
-                >
-                    {rank.rank == -1 ? $_("correctis") : `/${rank.count}`}
-                </h3>
-                <h1 id="title">
-                    {musicData.name}
-                </h1>
-                <h4 id="ablumName">
-                    {musicData.album.name}
-                </h4>
-                <div class="chart">
-                    <Bar data={graphData} {options} />
-                </div>
-            </div>
-            <img class="album" src={musicData.album.path} alt="" />
+        <div transition:slide={{ delay: 150, duration: 600 }}>
+            <Result
+                {rank}
+                title={musicData.name}
+                album={musicData.album}
+                {graphData}
+                {options}
+            />
         </div>
     {/if}
 </body>
@@ -677,118 +591,9 @@
         width: calc(var(--vw, 1vw) * 100);
     }
 
-    .images {
-        height: calc(var(--vh, 1vh) * 100);
-    }
-
-    .container {
-        position: relative;
-        overflow: hidden;
-    }
-
-    .question {
-        box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
-        transition: all 0.1s linear;
-    }
-
-    .result {
-        width: 100%;
-        height: calc(var(--vh, 1vh) * 100);
-        display: flex;
-        flex-flow: row wrap; /* 세로화면에서도 row로 해야하는데, 표시할 컨텐츠[글씨/표]가 세로로 길기때문 */
-        align-items: center;
-    }
-
-    #ablumName,
-    #title {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        font-weight: 400;
-    }
-
-    .album {
-        filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
-        max-width: calc(var(--vw, 1vw) * 90);
-        max-height: calc(var(--vh, 1vh) * 90);
-    }
-
-    h2 {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        color: rgb(34, 34, 34);
-    }
-
     * {
         padding: 0;
         margin: 0;
         font-family: "Inter", sans-serif;
-    }
-
-    @media (orientation: portrait) {
-        /*세로*/
-
-        .images {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .question {
-            width: calc(var(--vw, 1vw) * 100);
-        }
-
-        .chart {
-            width: 100%;
-            min-height: 15%;
-        }
-
-        #ablumName,
-        #title {
-            min-width: 0;
-            max-width: calc(var(--vw, 1vw) * 90);
-        }
-
-        .album {
-            padding-top: 3%;
-        }
-
-        .result {
-            justify-content: center;
-        }
-    }
-
-    @media (orientation: landscape) {
-        /*가로*/
-        .result {
-            justify-content: space-evenly;
-        }
-
-        .images {
-            display: flex;
-        }
-
-        .question {
-            height: 100%;
-            position: absolute;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .chart {
-            width: 100%;
-            min-height: 15%;
-        }
-
-        #ablumName,
-        #title {
-            min-width: 0;
-            max-width: calc(var(--vw, 1vw) * 50);
-        }
-
-        .album {
-            padding-left: 3%;
-        }
     }
 </style>
