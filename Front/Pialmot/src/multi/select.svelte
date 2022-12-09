@@ -297,7 +297,11 @@
                     MIDIPlayer.play();
                 }}
             >
-                <img src="logo/Lovelive.png" alt="" />
+                <img
+                    style="width: 80%; height: 80%;"
+                    src="logo/Lovelive.png"
+                    alt=""
+                />
             </btn>
         </Linachanboard>
     {:else if inQuestion}
