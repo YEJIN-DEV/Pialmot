@@ -78,7 +78,7 @@ io.on('connection', (socket) => {
 
     socket.on('answer', (Isanswer, group, name) => {
         let room = Array.from(socket.rooms)[1]
-        fetch(`https://pialmot.lol/rank/${group}/${name}`, { agent: httpsAgent })
+        fetch(`https://127.0.0.1/rank/${group}/${name}`, { agent: httpsAgent })
             .then((response) => response.json())
             .then((data) => {
                 if (Isanswer) {
@@ -109,7 +109,7 @@ function nextQuestion(room: any) {
     if (roomInfo.get(room) == undefined) return;
     let { kind, group, allkindchoices } = roomInfo.get(room);
 
-    fetch(`https://pialmot.lol/music/${group}?kind=${kind.join("&kind=")}&original${allkindchoices ? "&allkindchoices" : ""}`, { agent: httpsAgent })
+    fetch(`https://127.0.0.1/music/${group}?kind=${kind.join("&kind=")}&original${allkindchoices ? "&allkindchoices" : ""}`, { agent: httpsAgent })
         .then((response) => response.json())
         .then((data) => {
             io.in(room).fetchSockets().then((sockets) => {
