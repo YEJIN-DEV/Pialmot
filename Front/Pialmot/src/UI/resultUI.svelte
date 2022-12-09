@@ -27,7 +27,7 @@
             <h1 id="title">
                 {title}
             </h1>
-            <h4 id="ablumName">
+            <h4 id="albumName">
                 {`${album.name}${multi ? " / 상대방을 기다리는중.." : ""}`}
             </h4>
             <div class="chart">
@@ -47,7 +47,7 @@
         align-items: center;
     }
 
-    #ablumName,
+    #albumName,
     #title {
         overflow: hidden;
         text-overflow: ellipsis;
@@ -82,7 +82,7 @@
             min-height: 15%;
         }
 
-        #ablumName,
+        #albumName,
         #title {
             min-width: 0;
             max-width: calc(var(--vw, 1vw) * 90);
@@ -108,7 +108,7 @@
             min-height: 15%;
         }
 
-        #ablumName,
+        #albumName,
         #title {
             min-width: 0;
             max-width: calc(var(--vw, 1vw) * 50);
