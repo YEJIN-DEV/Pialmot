@@ -23,7 +23,7 @@
             >
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <button
-                    style="border: none; height: 100%; touch-action: none;"
+                    style="border: none; height: 100%;"
                     on:click={() => onAnswer(i)}
                 >
                     <img

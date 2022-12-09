@@ -31,7 +31,6 @@
 </script>
 
 <svelte:head>
-    <meta name="viewport" content="width=device-width" />
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
     </style>
@@ -61,7 +60,7 @@
                 push("/select/nijigasaki");
             }}
         >
-            <img src="logo/Nijigasaki_{$_("filesuffix")}.png" alt="" />
+            <img src="logo/Nijigasaki_{$_('filesuffix')}.png" alt="" />
         </button>
         <button
             class="btnGroups"

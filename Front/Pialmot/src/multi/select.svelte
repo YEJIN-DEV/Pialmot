@@ -288,6 +288,12 @@
                 </table>
             </form>
         </Linachanboard>
+
+        <p style="visibility: hidden;">
+            원래는 필요가 없는데, 모바일 파이어폭스 v106에서 input가 강제로
+            확대되는 버그가 있더라. 이걸보는 당신 안녕안녕맨이야.
+        </p>
+        <!--(https://stackoverflow.com/questions/69495070/prevent-zooming-in-after-input-field-focus-in-firefox-on-mobile)-->
     {:else if firstFetch}
         <!-- svelte-ignore a11y-click-events-have-key-events -->
         <Linachanboard>
@@ -327,4 +333,11 @@
 </body>
 
 <style>
+    body {
+        height: 100vh;
+        overflow: hidden;
+    }
+    input:focus {
+        font-size: 16px !important;
+    }
 </style>
