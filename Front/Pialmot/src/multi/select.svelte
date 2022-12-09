@@ -164,10 +164,7 @@
         data.rank =
             username == undefined
                 ? -1
-                : 
-                getLocaleFromNavigator() == "ko"
-                    ? `${username}${jongsung(username) ? "이" : "가"} 맞췄습니다!`
-                    : $_("correct_answer");
+                : `${username}${jongsung(username) ? $_("jongsung_i") : $_("jongsung_ga")}${$_("correct_answer")}`;
         rank = data;
         let sec = $_("sec");
         graphData.labels = Array.from(

@@ -23,6 +23,8 @@
     "disconnect": "サーバーとWS接続切れ",
     "dup_nick": "重複したニックネームです",
     "data_lost": "選択データがなくなりました。リロードしないでください。",
+    "jongsung_i": "",
+    "jongsung_ga": "",
     "correct_answer": "の正解です！",
     "connection_lost": "サーバーとの接続が切断されました",
     "nick_placeholder": "ニックネームを入力してください！",
