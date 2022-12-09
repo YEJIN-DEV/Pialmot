@@ -33,6 +33,10 @@ io.of("/").adapter.on("delete-room", (room) => {
     roomInfo.delete(room);
 });
 
+io.of("/").adapter.on("leave-room", (room, id) => {
+    sendUserList(room);
+});
+
 io.on('connection', (socket) => {
     socket.on('join', (username, hash) => {
         io.in(hash).fetchSockets().then((sockets) => {

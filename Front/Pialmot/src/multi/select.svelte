@@ -167,7 +167,7 @@
                 : 
                 getLocaleFromNavigator() == "ko"
                     ? `${username}${jongsung(username) ? "이" : "가"} 맞췄습니다!`
-                    : $_("correct_answer");
+                    : `${username}${$_("correct_answer")}`;
         rank = data;
         let sec = $_("sec");
         graphData.labels = Array.from(
