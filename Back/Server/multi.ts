@@ -39,7 +39,7 @@ io.on('connection', (socket) => {
 
                 socket.data.host = sockets.length == 0 ? true : false;
                 socket.emit('join', socket.data.host);
-                sendUserList(hash, sockets);
+                sendUserList(hash);
             } else {
                 socket.emit('join', undefined);
             }
@@ -56,9 +56,7 @@ io.on('connection', (socket) => {
 
     socket.on('users', () => {
         let room = Array.from(socket.rooms)[1]
-        io.in(room).fetchSockets().then((sockets) => {
-            sendUserList(room, sockets);
-        });
+        sendUserList(room);
     });
 
     socket.on('init', (kind, group, allkindchoices) => {
@@ -117,10 +115,12 @@ function nextQuestion(room: any) {
 }
 
 
-function sendUserList(room: string, sockets: any[]) {
-    io.to(room).emit('users',
-        sockets.map((socket) => socket.data.username)
-    );
+function sendUserList(room: string) {
+    io.in(room).fetchSockets().then((sockets) => {
+        io.to(room).emit('users',
+            sockets.map((socket) => socket.data.username)
+        );
+    });
 }
 
 
