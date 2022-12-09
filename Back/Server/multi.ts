@@ -3,6 +3,9 @@ import https from 'https'
 import fetch from 'node-fetch'; //인증서인증좀 비활성화좀 해야되서..
 import * as socketio from 'socket.io';
 import fs from 'fs'
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const credentials = {
     key: fs.readFileSync('cert/private.key.pem'),
@@ -124,6 +127,6 @@ function sendUserList(room: string) {
 }
 
 
-server.listen(4004, () => {
+server.listen(4004, process.env.NODE_ENV === 'development' ? '0.0.0.0' : 'localhost', () => {
     console.log('Running at localhost:4004');
 });
