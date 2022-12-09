@@ -65,18 +65,6 @@
                         borderColor: "#FF6767",
                         borderWidth: 2,
                     },
-                    line2: {
-                        type: "line",
-                        label: {
-                            content: $_("you"),
-                            display: true,
-                            position: "end",
-                        },
-                        xMax: -1,
-                        xMin: -1,
-                        borderColor: "#000000",
-                        borderWidth: 2,
-                    },
                 },
             },
             legend: {
@@ -105,7 +93,7 @@
         pertange: -1,
     };
 
-    const socket = io();
+    const socket = io("https://pialmot.lol");
 
     socket.on("connect", () => {
         console.log($_("connect"));
@@ -164,8 +152,11 @@
         data.rank =
             username == undefined
                 ? -1
-                : `${username}${jongsung(username) ? $_("jongsung_i") : $_("jongsung_ga")}${$_("correct_answer")}`;
+                : `${username}${
+                      jongsung(username) ? $_("jongsung_i") : $_("jongsung_ga")
+                  }${$_("correct_answer")}`;
         rank = data;
+
         let sec = $_("sec");
         graphData.labels = Array.from(
             Array(5),
@@ -184,14 +175,10 @@
         }
         options.plugins.annotation.annotations.line1.xMin = meanX;
         options.plugins.annotation.annotations.line1.xMax = meanX;
-
-        options.plugins.annotation.annotations.line2.xMin = -1;
-        options.plugins.annotation.annotations.line2.xMax = -1;
-
         options.plugins.annotation.annotations.line1.label.content = `${$_(
             "mean"
         )}\n${(rank.average / 1000).toFixed(3)}`;
-
+        graphData.datasets[0].data = data.interval.count;
         inQuestion = false;
     });
 

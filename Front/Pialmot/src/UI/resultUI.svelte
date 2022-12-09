@@ -17,18 +17,26 @@
     <div class="result">
         <div>
             <h1 style="background-color:#0078D7; color:white; font-size:64px;">
-                {rank.rank == -1 ? $_("wrong") : `#${rank.rank}`}
+                {rank.rank == -1
+                    ? $_("wrong")
+                    : multi
+                    ? `${rank.rank}`
+                    : `#${rank.rank}`}
             </h1>
             <h3
                 style="padding-top:5px; font-size:24px;font-weight:400;margin-bottom:2rem"
             >
-                {rank.rank == -1 ? $_("correctis") : `/${rank.count}`}
+                {multi
+                    ? $_("waiting_others")
+                    : rank.rank == -1
+                    ? $_("correctis")
+                    : `/${rank.count}`}
             </h3>
             <h1 id="title">
                 {title}
             </h1>
             <h4 id="albumName">
-                {`${album.name}${multi ? $_("waiting_others") : ""}`}
+                {album.name}
             </h4>
             <div class="chart">
                 <Bar data={graphData} {options} />
