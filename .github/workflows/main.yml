@@ -24,4 +24,5 @@ jobs:
             cd ../../Back/Server/
             npm i
             tsc
-            pm2 restart 0
+            if pm2 list | grep -q 'index'; then pm2 reload index.js; else pm2 start index.js; fi
+            if pm2 list | grep -q 'multi'; then pm2 reload multi.js; else pm2 start multi.js; fi
