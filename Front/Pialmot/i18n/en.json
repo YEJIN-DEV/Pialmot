@@ -16,5 +16,20 @@
     "album": "Full Album",
     "game": "Game Single",
     "kindchoice": "Set the options from all categories",
-    "gamestart": "Game Start!"
+    "singleplay": "Start single play!",
+    "multiplay": "Start multiplayer mode!",
+    "persons": " Persons",
+    "connect": "WS Connect Successful",
+    "disconnect": "WS Disconnected",
+    "dup_nick": "Someone is already using this name!",
+    "data_lost": "Select data lost. Please do not refresh the page.",
+    "correct_answer": " got the answer!",
+    "connection_lost": "Connection Lost.",
+    "nick_placeholder": "Enter your nickname!",
+    "join": "Join",
+    "start_host": "Game Start!",
+    "share_joinurl": "Send the joining link to others!",
+    "waiting": "Please wait...",
+    "player": "Player",
+    "waiting_others": " / Waiting for others..."
 }

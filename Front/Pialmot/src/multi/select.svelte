@@ -40,7 +40,7 @@
     let graphData = {
         datasets: [
             {
-                label: "명",
+                label: $_("persons"),
                 data: [0, 0, 0, 0, 0],
                 borderColor: "#70675E",
                 borderWidth: 2,
@@ -56,7 +56,7 @@
                     line1: {
                         type: "line",
                         label: {
-                            content: "평균",
+                            content: $_("mean"),
                             display: true,
                             position: "start",
                         },
@@ -68,7 +68,7 @@
                     line2: {
                         type: "line",
                         label: {
-                            content: "아나타",
+                            content: $_("you"),
                             display: true,
                             position: "end",
                         },
@@ -108,7 +108,7 @@
     const socket = io();
 
     socket.on("connect", () => {
-        console.log("서버와 WS 연결 성공");
+        console.log($_("connect"));
     });
 
     socket.on("connect_error", (err) => {
@@ -118,7 +118,7 @@
 
     socket.on("disconnect", () => {
         if (!end) {
-            console.error("서버와 WS 연결 끊김");
+            console.error($_("disconnect"));
             error = true;
         }
     });
@@ -131,11 +131,11 @@
 
     socket.on("join", (iamHost) => {
         if (iamHost == undefined) {
-            alert("닉네임 중복 입니다.");
+            alert($_("dup_nick"));
         } else {
             IamHost = iamHost;
             if (IamHost && !$inited) {
-                alert("선택 데이터가 없어졌습니다. 새로고침을 하지마세요.");
+                alert($_("data_lost"));
                 socket.disconnect();
                 replace("/");
             }
@@ -164,7 +164,10 @@
         data.rank =
             username == undefined
                 ? -1
-                : `${username}${jongsung(username) ? "이" : "가"} 맞췄습니다!`;
+                : 
+                getLocaleFromNavigator() == "ko"
+                    ? `${username}${jongsung(username) ? "이" : "가"} 맞췄습니다!`
+                    : $_("correct_answer");
         rank = data;
         let sec = $_("sec");
         graphData.labels = Array.from(
@@ -242,12 +245,12 @@
 
 <body>
     {#if error}
-        <h1>서버와의 연결이 끊겼습니다.</h1>
+        <h1>{$_("connection_lost")}</h1>
     {:else if !started}
         <Linachanboard>
             <form onsubmit="return false;">
                 <input
-                    placeholder="닉네임을 입력해주세요!"
+                    placeholder={$_("nick_placeholder")}
                     bind:value={username}
                     disabled={joined}
                 />
@@ -255,25 +258,25 @@
                     <button
                         on:click={() => {
                             socket.emit("join", username, params.hash);
-                        }}>참여</button
+                        }}>{$_("join")}</button
                     >
                 {:else if IamHost}
                     <button
                         on:click={() => {
                             socket.emit("init", $kind, $group, $allkindchoices);
                             socket.emit("question");
-                        }}>시작하기!</button
+                        }}>{$_("start_host")}</button
                     >
                     <br />
                     <a href={window.location.href}
-                        >{window.location.href}<br /> 상대방에게 초대링크를 보내주세요!</a
+                        >{window.location.href}<br /> {$_("share_joinurl")}</a
                     >
                 {:else}
-                    <h1>대기해주세요.</h1>
+                    <h1>{$_("waiting")}</h1>
                 {/if}
                 <table>
                     <tr>
-                        <th>참여자</th>
+                        <th>{$_("player")}</th>
                     </tr>
                     {#each users as user}
                         <tr>

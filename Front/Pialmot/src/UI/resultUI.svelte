@@ -28,7 +28,7 @@
                 {title}
             </h1>
             <h4 id="albumName">
-                {`${album.name}${multi ? " / 상대방을 기다리는중.." : ""}`}
+                {`${album.name}${multi ? $_("waiting_others") : ""}`}
             </h4>
             <div class="chart">
                 <Bar data={graphData} {options} />

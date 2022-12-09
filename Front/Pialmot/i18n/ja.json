@@ -16,5 +16,20 @@
     "album": "アルバム",
     "game": "ゲーム挿入歌",
     "kindchoice": "選択肢を全分類から出題",
-    "gamestart": "ゲームスタート！"
+    "singleplay": "１人でスタート！",
+    "multiplay": "マルチでスタート！",
+    "persons": "人",
+    "connect": "サーバーとWS接続成功",
+    "disconnect": "サーバーとWS接続切れ",
+    "dup_nick": "重複したニックネームです",
+    "data_lost": "選択データがなくなりました。リロードしないでください。",
+    "correct_answer": "の正解です！",
+    "connection_lost": "サーバーとの接続が切断されました",
+    "nick_placeholder": "ニックネームを入力してください！",
+    "join": "参加",
+    "start_host": "はじめ！",
+    "share_joinurl": "他の人に招待リンクを共有してください！",
+    "waiting": "すこしお待ちください…",
+    "player": "プレーヤー",
+    "waiting_others": " / 他の人を待っています..."
 }

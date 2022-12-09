@@ -82,10 +82,10 @@
             )}
             <br />
             <button class="singlebtn" on:click={() => select(false)}
-                >{$_("gamestart")}</button
+                >{$_("singleplay")}</button
             >
             <button class="multibtn" on:click={() => select(true)}
-                >{"멀티플레이"}</button
+                >{$_("multiplay")}</button
             >
         </form>
     </Linachanboard>

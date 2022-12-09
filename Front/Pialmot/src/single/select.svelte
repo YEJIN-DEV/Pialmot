@@ -33,7 +33,7 @@
     let graphData = {
         datasets: [
             {
-                label: "명",
+                label: $_("persons"),
                 data: [0, 0, 0, 0, 0],
                 borderColor: "#70675E",
                 borderWidth: 2,
@@ -49,7 +49,7 @@
                     line1: {
                         type: "line",
                         label: {
-                            content: "평균",
+                            content: $_("mean"),
                             display: true,
                             position: "start",
                         },
@@ -61,7 +61,7 @@
                     line2: {
                         type: "line",
                         label: {
-                            content: "아나타",
+                            content: $_("you"),
                             display: true,
                             position: "end",
                         },
@@ -305,7 +305,7 @@
     });
 
     if (!$inited) {
-        alert("선택 데이터가 없어졌습니다. 새로고침을 하지마세요.");
+        alert($_("data_lost"));
         replace("/");
     } else {
         getRandMusic();
