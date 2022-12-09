@@ -4,8 +4,6 @@
     import Linachanboard from "../UI/linachanboard.svelte";
     import { kind, group, allkindchoices, inited } from "../KindStore";
     import { slide } from "svelte/transition";
-    import { Chart as ChartJS } from "chart.js";
-    import annotationPlugin from "chartjs-plugin-annotation";
     import "chart.js/auto";
     import { Stretch } from "svelte-loading-spinners";
     import { addMessages, init, getLocaleFromNavigator, _ } from "svelte-i18n";
@@ -27,9 +25,6 @@
         });
     }
 
-    ChartJS.register(annotationPlugin);
-
-    let isMobile = checkMobile();
     let graphData = {
         datasets: [
             {

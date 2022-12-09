@@ -1,6 +1,8 @@
 <script>
     import { Bar } from "svelte-chartjs";
     import { _ } from "svelte-i18n";
+    import { Chart as ChartJS } from "chart.js";
+    import annotationPlugin from "chartjs-plugin-annotation";
     export let rank;
     export let title;
     export let album = {
@@ -10,6 +12,8 @@
     export let graphData;
     export let options;
     export let multi = false;
+
+    ChartJS.register(annotationPlugin);
 </script>
 
 <body>
