@@ -2,18 +2,19 @@
     import Result from "../UI/resultUI.svelte";
     import Select from "../UI/selectUI.svelte";
     import Linachanboard from "../UI/linachanboard.svelte";
+    import { kind, group, allkindchoices, inited } from "../KindStore";
     import { slide } from "svelte/transition";
     import { Chart as ChartJS } from "chart.js";
     import annotationPlugin from "chartjs-plugin-annotation";
     import "chart.js/auto";
-    import { _ } from "svelte-i18n";
     import { Stretch } from "svelte-loading-spinners";
-    import { addMessages, init, getLocaleFromNavigator } from "svelte-i18n";
+    import { addMessages, init, getLocaleFromNavigator, _ } from "svelte-i18n";
     import { isLoading as i18nloading } from "svelte-i18n";
 
     import en from "../../i18n/en.json";
     import ko from "../../i18n/ko.json";
     import ja from "../../i18n/ja.json";
+    import { replace } from "svelte-spa-router";
 
     addMessages("en", en);
     addMessages("ko", ko);
@@ -25,7 +26,6 @@
             initialLocale: getLocaleFromNavigator(),
         });
     }
-    export let params = {}; // 라우터에서 넘어온 파라미터를 받아오기위해
 
     ChartJS.register(annotationPlugin);
 
@@ -106,29 +106,10 @@
         pertange: -1,
     };
 
-    let kind = [
-        "anime", // 애니 삽입곡
-        "original", // 오리지널
-        "single", // 싱글
-        "game", // 게임 삽입곡
-        "unit", // 유닛
-        "special", // 특전
-        "album", // 정규 앨범
-    ];
-    let allkindchoices = true;
-    let isKindSelect = true;
-
-    const groups = {
-        0: "us",
-        1: "aqours",
-        2: "nijigasaki",
-        3: "liella",
-    };
-
-    function getRandMusic(target, delay) {
+    function getRandMusic(delay) {
         fetch(
-            `/music/${target}?kind=${kind.join("&kind=")}&original${
-                allkindchoices ? "&allkindchoices" : ""
+            `/music/${$group}?kind=${$kind.join("&kind=")}&original${
+                $allkindchoices ? "&allkindchoices" : ""
             }`
         )
             .then((response) => response.json())
@@ -215,7 +196,7 @@
                         )}\n${(time / 1000).toFixed(3)}`;
                         graphData.datasets[0].data = data.interval.count;
                         inQuestion = false;
-                        getRandMusic(groups[musicData.group], 5000);
+                        getRandMusic(5000);
                     });
             } else {
                 fetch(`/rank/${musicData.group}/${answer}`)
@@ -254,7 +235,7 @@
                         )}\n${(rank.average / 1000).toFixed(3)}`;
 
                         inQuestion = false;
-                        getRandMusic(groups[musicData.group], 5000);
+                        getRandMusic(5000);
                     });
             }
         }
@@ -323,22 +304,11 @@
         }
     });
 
-    function kindSel() {
-        isKindSelect = false;
-        kind = kind.filter((item) => {
-            switch (params.group) {
-                case "us":
-                    break;
-                case "aqours":
-                    if (item == "original" || item == "single") return false;
-                case "nijigasaki":
-                    if (item == "single") return false;
-                case "liella":
-                    if (item == "unit" || item == "game") return false;
-            }
-            return true;
-        });
-        getRandMusic(params.group);
+    if (!$inited) {
+        alert("선택 데이터가 없어졌습니다. 새로고침을 하지마세요.");
+        replace("/");
+    } else {
+        getRandMusic();
     }
 </script>
 
@@ -351,45 +321,7 @@
 <svelte:window on:keydown|preventDefault={onKeyDown} />
 
 <body>
-    {#if isKindSelect}
-        <!-- svelte-ignore a11y-media-has-caption -->
-        <Linachanboard>
-            <form on:submit|preventDefault={kindSel}>
-                <h4>{$_("kindtitle")}</h4>
-                {#if params.group == "aqours"}
-                    {#each ["anime", "original", "single", "special", "album", "game"] as kindStr}
-                        <input
-                            type="checkbox"
-                            bind:group={kind}
-                            value={kindStr}
-                        />{$_(kindStr)}<br />
-                    {/each}
-                {:else if params.group == "nijigasaki"}
-                    {#each ["anime", "original", "unit", "special", "album", "game"] as kindStr}
-                        <input
-                            type="checkbox"
-                            bind:group={kind}
-                            value={kindStr}
-                        />{$_(kindStr)}<br />
-                    {/each}
-                {:else if params.group == "liella"}
-                    {#each ["anime", "original", "single", "special", "album"] as kindStr}
-                        <input
-                            type="checkbox"
-                            bind:group={kind}
-                            value={kindStr}
-                        />{$_(kindStr)}<br />
-                    {/each}
-                {/if}
-                <br />
-                <input type="checkbox" bind:checked={allkindchoices} />{$_(
-                    "kindchoice"
-                )}
-                <br />
-                <button class="startbtn">{$_("gamestart")}</button>
-            </form>
-        </Linachanboard>
-    {:else if loading && firstFetch}
+    {#if loading && firstFetch}
         <Linachanboard>
             <form>
                 <Stretch size="100" color="#FF3E00" unit="px" duration="1s" />
@@ -435,37 +367,6 @@
 
 <style>
     /* calc 함수들과 --vw랑 --vh는 viewport에 딱맞게 처리를 하기위해 있음.*/
-
-    .linachanboard form button {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-
-        background: var(--button-bg-color);
-        color: var(--button-color);
-
-        margin-top: 30px;
-        padding: 0.5rem 1rem;
-
-        font-family: "Noto Sans KR", sans-serif;
-        font-size: 1rem;
-        font-weight: 400;
-        text-align: center;
-        text-decoration: none;
-
-        border: none;
-        border-radius: 4px;
-
-        display: inline-block;
-        width: auto;
-
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-            0 2px 4px -1px rgba(0, 0, 0, 0.06);
-
-        cursor: pointer;
-
-        transition: 0.5s;
-    }
     body {
         text-align: center;
         margin: 0 auto;

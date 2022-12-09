@@ -9,6 +9,7 @@
     };
     export let graphData;
     export let options;
+    export let multi = false;
 </script>
 
 <body>
@@ -27,7 +28,7 @@
                 {title}
             </h1>
             <h4 id="ablumName">
-                {album.name}
+                {`${album.name}${multi ? " / 상대방을 기다리는중.." : ""}`}
             </h4>
             <div class="chart">
                 <Bar data={graphData} {options} />

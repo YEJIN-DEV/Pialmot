@@ -2,15 +2,16 @@
     import Result from "../UI/resultUI.svelte";
     import Select from "../UI/selectUI.svelte";
     import Linachanboard from "../UI/linachanboard.svelte";
+    import { kind, group, allkindchoices, inited } from "../KindStore";
     import { slide } from "svelte/transition";
     import { _ } from "svelte-i18n";
     import io from "socket.io-client";
     import { addMessages, init, getLocaleFromNavigator } from "svelte-i18n";
     import { isLoading as i18nloading } from "svelte-i18n";
-
     import en from "../../i18n/en.json";
     import ko from "../../i18n/ko.json";
     import ja from "../../i18n/ja.json";
+    import { replace } from "svelte-spa-router";
 
     addMessages("en", en);
     addMessages("ko", ko);
@@ -32,6 +33,7 @@
     let firstFetch = true;
     let IamHost = false;
     let joined = false;
+    let error = false;
     let OriginalPlayer = document.getElementById("original");
     let MIDIPlayer = document.getElementById("midi");
 
@@ -103,31 +105,46 @@
         pertange: -1,
     };
 
-    const socket = io("ws://112.164.62.89:4004");
+    const socket = io();
 
     socket.on("connect", () => {
         console.log("서버와 WS 연결 성공");
     });
 
+    socket.on("connect_error", (err) => {
+        console.log(`connect_error due to ${err.message}`);
+        error = true;
+    });
+
     socket.on("disconnect", () => {
         if (!end) {
             console.error("서버와 WS 연결 끊김");
+            error = true;
         }
     });
 
+    let users = [];
     socket.on("users", (data) => {
         console.log(data);
+        users = data;
     });
 
     socket.on("join", (iamHost) => {
-        IamHost = iamHost;
-        joined = true;
+        if (iamHost == undefined) {
+            alert("닉네임 중복 입니다.");
+        } else {
+            IamHost = iamHost;
+            if (IamHost && !$inited) {
+                alert("선택 데이터가 없어졌습니다. 새로고침을 하지마세요.");
+                socket.disconnect();
+                replace("/");
+            }
+            joined = true;
+        }
     });
 
     socket.on("question", (data) => {
         started = true;
-        firstFetch = false;
-        console.log(data);
 
         MIDIPlayer.src = data.midi;
         MIDIPlayer.load();
@@ -144,8 +161,10 @@
     });
 
     socket.on("answer", (username, data) => {
-        console.log(data);
-        data.rank = `${username}이.. 승리했습니다!`;
+        data.rank =
+            username == undefined
+                ? -1
+                : `${username}${jongsung(username) ? "이" : "가"} 맞췄습니다!`;
         rank = data;
         let sec = $_("sec");
         graphData.labels = Array.from(
@@ -186,7 +205,6 @@
     });
 
     function Answer(index) {
-        firstFetch = false;
         if (inQuestion) {
             let selected = musicData.questions[index].name;
             let answer = musicData.name;
@@ -211,12 +229,23 @@
             }
         }
     }
+
+    function jongsung(word) {
+        const lastLetter = word[word.length - 1];
+        const unicode = lastLetter.charCodeAt(0);
+        if (unicode < 44032 || unicode > 55203) return null;
+        return (unicode - 44032) % 28 != 0;
+    }
+
+    socket.emit("users", params.hash);
 </script>
 
 <body>
-    {#if !started}
+    {#if error}
+        <h1>서버와의 연결이 끊겼습니다.</h1>
+    {:else if !started}
         <Linachanboard>
-            <form>
+            <form onsubmit="return false;">
                 <input
                     placeholder="닉네임을 입력해주세요!"
                     bind:value={username}
@@ -231,13 +260,27 @@
                 {:else if IamHost}
                     <button
                         on:click={() => {
-                            socket.emit("users");
-                            socket.emit("question", "nijigasaki");
+                            socket.emit("init", $kind, $group, $allkindchoices);
+                            socket.emit("question");
                         }}>시작하기!</button
                     >
+                    <br />
+                    <a href={window.location.href}
+                        >{window.location.href}<br /> 상대방에게 초대링크를 보내주세요!</a
+                    >
                 {:else}
-                    <h1>대기하십쇼.</h1>
+                    <h1>대기해주세요.</h1>
                 {/if}
+                <table>
+                    <tr>
+                        <th>참여자</th>
+                    </tr>
+                    {#each users as user}
+                        <tr>
+                            <td>{user}</td>
+                        </tr>
+                    {/each}
+                </table>
             </form>
         </Linachanboard>
     {:else if firstFetch}
@@ -245,14 +288,11 @@
         <Linachanboard>
             <btn
                 on:click={() => {
+                    firstFetch = false;
                     MIDIPlayer.play();
                 }}
             >
-                <img
-                    style="width: 80%; height: 80%;"
-                    src="logo/Lovelive.png"
-                    alt=""
-                />
+                <img src="logo/Lovelive.png" alt="" />
             </btn>
         </Linachanboard>
     {:else if inQuestion}
@@ -271,6 +311,7 @@
                 album={musicData.album}
                 {graphData}
                 {options}
+                multi
             />
         </div>
     {/if}
