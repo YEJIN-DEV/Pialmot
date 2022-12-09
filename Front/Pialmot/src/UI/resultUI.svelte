@@ -9,6 +9,7 @@
     };
     export let graphData;
     export let options;
+    export let multi = false;
 </script>
 
 <body>
@@ -26,8 +27,8 @@
             <h1 id="title">
                 {title}
             </h1>
-            <h4 id="ablumName">
-                {album.name}
+            <h4 id="albumName">
+                {`${album.name}${multi ? $_("waiting_others") : ""}`}
             </h4>
             <div class="chart">
                 <Bar data={graphData} {options} />
@@ -46,7 +47,7 @@
         align-items: center;
     }
 
-    #ablumName,
+    #albumName,
     #title {
         overflow: hidden;
         text-overflow: ellipsis;
@@ -81,7 +82,7 @@
             min-height: 15%;
         }
 
-        #ablumName,
+        #albumName,
         #title {
             min-width: 0;
             max-width: calc(var(--vw, 1vw) * 90);
@@ -107,7 +108,7 @@
             min-height: 15%;
         }
 
-        #ablumName,
+        #albumName,
         #title {
             min-width: 0;
             max-width: calc(var(--vw, 1vw) * 50);
