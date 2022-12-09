@@ -180,6 +180,7 @@
         )}\n${(rank.average / 1000).toFixed(3)}`;
         graphData.datasets[0].data = data.interval.count;
         inQuestion = false;
+        OriginalPlayer.play();
     });
 
     socket.on("result", (data) => {
