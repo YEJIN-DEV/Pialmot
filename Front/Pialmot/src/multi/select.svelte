@@ -225,6 +225,23 @@
         return (unicode - 44032) % 28 != 0;
     }
 
+    function setScreenSize() {
+        let vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty("--vh", `${vh}px`);
+        let vw = window.innerWidth * 0.01;
+        document.documentElement.style.setProperty("--vw", `${vw}px`);
+    }
+    setScreenSize();
+    window.addEventListener("resize", setScreenSize);
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden") {
+            MIDIPlayer.pause();
+        } else {
+            MIDIPlayer.play();
+        }
+    });
+
     socket.emit("users", params.hash);
 </script>
 
