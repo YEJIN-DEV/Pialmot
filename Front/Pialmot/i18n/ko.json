@@ -23,6 +23,8 @@
     "disconnect": "서버와 WS 연결 끊김",
     "dup_nick": "중복된 닉네임입니다.",
     "data_lost": "선택 데이터가 없어졌습니다. 새로고침 하지 마십시오.",
+    "jongsung_i": "이 ",
+    "jongsung_ga": "가 ",
     "correct_answer": "맞췄습니다!",
     "connection_lost": "서버와의 연결이 끊겼습니다.",
     "nick_placeholder": "닉네임을 입력해주세요!",
@@ -31,5 +33,5 @@
     "share_joinurl": "상대방에게 초대 링크를 보내주세요!",
     "waiting": "대기해주세요...",
     "player": "참여자",
-    "waiting_others": " / 상대방을 기다리는 중..."
+    "waiting_others": "상대방을 기다리는 중..."
 }
