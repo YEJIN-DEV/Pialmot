@@ -32,6 +32,8 @@
                     if (item == "single") return false;
                 case "liella":
                     if (item == "unit" || item == "game") return false;
+                case "musical":
+                    if (!(item == "album")) return false;
             }
             return true;
         });
@@ -69,6 +71,14 @@
                 {/each}
             {:else if params.group == "liella"}
                 {#each ["anime", "original", "single", "special", "album"] as kindStr}
+                    <input
+                        type="checkbox"
+                        bind:group={$kind}
+                        value={kindStr}
+                    />{$_(kindStr)}<br />
+                {/each}
+            {:else if params.group == "musical"}
+                {#each ["album"] as kindStr}
                     <input
                         type="checkbox"
                         bind:group={$kind}

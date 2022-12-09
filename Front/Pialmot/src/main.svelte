@@ -70,6 +70,16 @@
         >
             <img src="logo/Liella.png" alt="" />
         </button>
+        <!--
+        <button
+            class="btnGroups"
+            on:click={() => {
+                push("/select/musical");
+            }}
+        >
+            <img src="logo/Musical.png" alt="" />
+        </button>
+        -->
     </div>
     <button
         on:click={() => {

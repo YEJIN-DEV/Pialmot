@@ -43,7 +43,8 @@ enum groups {
   us,
   aqours,
   nijigasaki,
-  liella
+  liella,
+  musical
 }
 const app = express()
 app.use(express.text())
@@ -75,6 +76,9 @@ app.get('/music/:group', function (req, res) {
       break
     case groups.liella:
       groupPath = 'Liella!'
+      break
+    case groups.musical:
+      groupPath = 'School Idol Musical'
       break
     default:
       res.status(400).send('해당하는 그룹이 존재하지 않습니다.')
@@ -342,6 +346,8 @@ function kindToFolder(kind: musicKind, group: groups): string | undefined {
           break
         case groups.liella:
           path = '[2022-2022] Albums'
+        case groups.musical:
+          path = '[2022-2022] Albums'
       }
       break
     case musicKind.game:
@@ -358,7 +364,6 @@ function kindToFolder(kind: musicKind, group: groups): string | undefined {
         case groups.liella:
           return undefined
       }
-      break
   }
   return path
 }
