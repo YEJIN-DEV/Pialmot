@@ -86,7 +86,7 @@ app.get('/music/:group', function (req, res) {
   }
 
   const kindPaths: { kind: musicKind; path: string }[] = []
-  if (req.query.kind == undefined) {
+  if (req.query.kind == undefined || req.query.kind == '') {
     res.status(400).send('종류가 없습니다.')
     return
   }
@@ -152,37 +152,46 @@ app.get('/music/:group', function (req, res) {
         path: result.album.path
       };
       res.json(result)
-    });
+    }).catch(_e => {
+      res.status(500).send('조건에 부합하는 음반을 찾을수없습니다.') //문제지
+      return
+    })
   }).catch(_e => {
+    res.status(500).send('조건에 부합하는 음반을 찾을수없습니다.') //정답
     return
   })
 
 
   async function makeQuestion(): Promise<void> {
-    let randkindPath: string | undefined
-    if (req.query.allkindchoices == undefined) {
-      randkindPath = kindPaths[getRandomInt(0, kindPaths.length)].path
-    } else {
-      randkindPath = kindToFolder(
-        getRandomInt(musicKind.anime, musicKind.album),
-        group
-      )
-    }
-    if (randkindPath !== undefined) {
-      let { musicFile, dir } = await randomMusic(groupPath, randkindPath)
-      let musicName = musicFile.substring(4, musicFile.length - 4) //정답과 비교용
-      musicFile = musicFile.substring(0, musicFile.length - 4) //확장자 제거
-
-      if (result.questions.findIndex(e => e.name == musicName) == -1 && musicName !== result.name) {
-        result.questions.push({
-          name: musicName,
-          path: '/cover/' + path1.join(groupPath, randkindPath!, dir, musicFile),
-        })
-        return Promise.resolve()
+    return new Promise((resolve, reject) => {
+      let randkindPath: string | undefined
+      if (req.query.allkindchoices == undefined) {
+        randkindPath = kindPaths[getRandomInt(0, kindPaths.length)].path
       } else {
-        return makeQuestion()
+        randkindPath = kindToFolder(
+          getRandomInt(musicKind.anime, musicKind.album),
+          group
+        )
       }
-    } else return makeQuestion()
+      if (randkindPath !== undefined) {
+        randomMusic(groupPath, randkindPath).then(({ musicFile, dir }) => {
+          let musicName = musicFile.substring(4, musicFile.length - 4) //정답과 비교용
+          musicFile = musicFile.substring(0, musicFile.length - 4) //확장자 제거
+
+          if (result.questions.findIndex(e => e.name == musicName) == -1 && musicName !== result.name) {
+            result.questions.push({
+              name: musicName,
+              path: '/cover/' + path1.join(groupPath, randkindPath!, dir, musicFile),
+            })
+            return resolve();
+          } else {
+            return makeQuestion().then(() => { resolve() })
+          }
+        }).catch(_e => {
+          return reject("조건에 부합하는 음반을 찾을수없습니다.");
+        });
+      } else makeQuestion().then(() => { resolve() })
+    });
   }
 })
 
@@ -346,6 +355,7 @@ function kindToFolder(kind: musicKind, group: groups): string | undefined {
           break
         case groups.liella:
           path = '[2022-2022] Albums'
+          break
         case groups.musical:
           path = '[2022-2022] Albums'
       }
@@ -377,11 +387,13 @@ async function randomMusic(
   const files = (await getFiles(path1.join(midiPath, groupPath, kindPath, dir))).filter((file) => file.endsWith('.mp3'))
   const musicFile = files[getRandomInt(0, files.length)]
 
-  if (musicFile == undefined) {
-    return randomMusic(groupPath, kindPath);
-  } else {
-    return { musicFile, dir }
-  }
+  return new Promise((resolve, reject) => {
+    if (musicFile == undefined) {
+      return reject();
+    } else {
+      return resolve({ musicFile, dir });
+    }
+  });
 }
 
 async function getCover(albumPath: string, musicName: string): Promise<Buffer> {

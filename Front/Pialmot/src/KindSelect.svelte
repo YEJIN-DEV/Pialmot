@@ -28,12 +28,16 @@
                     break;
                 case "aqours":
                     if (item == "original" || item == "single") return false;
+                    break;
                 case "nijigasaki":
                     if (item == "single") return false;
+                    break;
                 case "liella":
                     if (item == "unit" || item == "game") return false;
+                    break;
                 case "musical":
                     if (!(item == "album")) return false;
+                    break;
             }
             return true;
         });
