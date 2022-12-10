@@ -2,7 +2,14 @@
     import Result from "../UI/resultUI.svelte";
     import Select from "../UI/selectUI.svelte";
     import Linachanboard from "../UI/linachanboard.svelte";
-    import { kind, group, allkindchoices, inited } from "../KindStore";
+    import {
+        kind,
+        group,
+        allkindchoices,
+        inited,
+        inQuestion,
+        inPlay,
+    } from "../KindStore";
     import { slide } from "svelte/transition";
     import { _ } from "svelte-i18n";
     import io from "socket.io-client";
@@ -29,7 +36,6 @@
     let username = "";
     let end = false;
     let started = false;
-    let inQuestion = false;
     let firstFetch = true;
     let IamHost = false;
     let joined = false;
@@ -145,7 +151,7 @@
         before = new Date();
 
         musicData = data;
-        inQuestion = true;
+        $inQuestion = true;
     });
 
     socket.on("answer", (username, data) => {
@@ -179,7 +185,7 @@
             "mean"
         )}\n${(rank.average / 1000).toFixed(3)}`;
         graphData.datasets[0].data = data.interval.count;
-        inQuestion = false;
+        $inQuestion = false;
         OriginalPlayer.play();
     });
 
@@ -193,7 +199,7 @@
     });
 
     function Answer(index) {
-        if (inQuestion) {
+        if ($inQuestion) {
             let selected = musicData.questions[index].name;
             let answer = musicData.name;
             if (selected == answer) {
@@ -234,34 +240,6 @@
     setScreenSize();
     window.addEventListener("resize", setScreenSize);
 
-    document.addEventListener("visibilitychange", () => {
-        if (document.visibilityState === "hidden") {
-            MIDIPlayer.pause();
-        } else {
-            MIDIPlayer.play();
-        }
-    });
-
-    function onKeyDown(e) {
-        switch (e.key) {
-            case "1":
-                Answer(0);
-                break;
-            case "2":
-                Answer(1);
-                break;
-            case "3":
-                Answer(2);
-                break;
-            case "4":
-                Answer(3);
-                break;
-            case "5":
-                Answer(4);
-                break;
-        }
-    }
-
     socket.emit("users", params.hash);
 </script>
 
@@ -270,7 +248,6 @@
         @import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
     </style>
 </svelte:head>
-<svelte:window on:keydown|preventDefault={onKeyDown} />
 
 <body>
     {#if error}
@@ -328,6 +305,7 @@
                 on:click={() => {
                     firstFetch = false;
                     MIDIPlayer.play();
+                    $inPlay = true;
                 }}
             >
                 <img
@@ -337,7 +315,7 @@
                 />
             </btn>
         </Linachanboard>
-    {:else if inQuestion}
+    {:else if $inQuestion}
         <Select
             onAnswer={(i) => {
                 Answer(i);
@@ -345,7 +323,7 @@
             }}
             questions={musicData.questions}
         />
-    {:else if !inQuestion}
+    {:else if !$inQuestion}
         <div transition:slide={{ delay: 150, duration: 600 }}>
             <Result
                 {rank}
@@ -361,7 +339,11 @@
 
 <style>
     body {
-        height: 100vh;
+        height: calc(var(--vh, 1vh) * 100);
+        width: calc(var(--vw, 1vw) * 100);
+        text-align: center;
+        margin: 0 auto;
+        background-color: #f0eeec;
         overflow: hidden;
     }
     input:focus {
@@ -369,8 +351,6 @@
     }
 
     * {
-        padding: 0;
-        margin: 0;
         font-family: "Inter", sans-serif;
     }
 </style>

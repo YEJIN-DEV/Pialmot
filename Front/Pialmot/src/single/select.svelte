@@ -2,7 +2,14 @@
     import Result from "../UI/resultUI.svelte";
     import Select from "../UI/selectUI.svelte";
     import Linachanboard from "../UI/linachanboard.svelte";
-    import { kind, group, allkindchoices, inited } from "../KindStore";
+    import {
+        kind,
+        group,
+        allkindchoices,
+        inited,
+        inQuestion,
+        inPlay,
+    } from "../KindStore";
     import { slide } from "svelte/transition";
     import "chart.js/auto";
     import { Stretch } from "svelte-loading-spinners";
@@ -76,7 +83,6 @@
     let before = 0;
     let OriginalPlayer = document.getElementById("original");
     let MIDIPlayer = document.getElementById("midi");
-    let inQuestion = false;
     let loading = true;
     let fetchEnd = false;
     let firstFetch = true;
@@ -123,7 +129,7 @@
                     before = new Date();
 
                     musicData = data;
-                    inQuestion = true;
+                    $inQuestion = true;
                     loading = false;
                     fetchEnd = true;
                 }, delay ?? 0);
@@ -132,7 +138,7 @@
 
     function Answer(index) {
         firstFetch = false;
-        if (inQuestion) {
+        if ($inQuestion) {
             let selected = musicData.questions[index].name;
             let answer = musicData.name;
             if (selected == answer) {
@@ -190,7 +196,7 @@
                             "you"
                         )}\n${(time / 1000).toFixed(3)}`;
                         graphData.datasets[0].data = data.interval.count;
-                        inQuestion = false;
+                        $inQuestion = false;
                         getRandMusic(5000);
                     });
             } else {
@@ -229,7 +235,7 @@
                             "mean"
                         )}\n${(rank.average / 1000).toFixed(3)}`;
 
-                        inQuestion = false;
+                        $inQuestion = false;
                         getRandMusic(5000);
                     });
             }
@@ -275,14 +281,6 @@
     setScreenSize();
     window.addEventListener("resize", setScreenSize);
 
-    document.addEventListener("visibilitychange", () => {
-        if (document.visibilityState === "hidden") {
-            MIDIPlayer.pause();
-        } else {
-            MIDIPlayer.play();
-        }
-    });
-
     if (!$inited) {
         alert($_("data_lost"));
         replace("/");
@@ -312,6 +310,7 @@
                 on:click={() => {
                     loading = false;
                     fetchEnd = false;
+                    $inPlay = true;
                     MIDIPlayer.play();
                 }}
             >
@@ -322,7 +321,7 @@
                 />
             </btn>
         </Linachanboard>
-    {:else if inQuestion}
+    {:else if $inQuestion}
         <Select
             onAnswer={(i) => {
                 Answer(i);
