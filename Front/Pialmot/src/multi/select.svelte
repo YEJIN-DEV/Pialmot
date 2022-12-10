@@ -242,8 +242,35 @@
         }
     });
 
+    function onKeyDown(e) {
+        switch (e.key) {
+            case "1":
+                Answer(0);
+                break;
+            case "2":
+                Answer(1);
+                break;
+            case "3":
+                Answer(2);
+                break;
+            case "4":
+                Answer(3);
+                break;
+            case "5":
+                Answer(4);
+                break;
+        }
+    }
+
     socket.emit("users", params.hash);
 </script>
+
+<svelte:head>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
+    </style>
+</svelte:head>
+<svelte:window on:keydown|preventDefault={onKeyDown} />
 
 <body>
     {#if error}
@@ -339,5 +366,11 @@
     }
     input:focus {
         font-size: 16px !important;
+    }
+
+    * {
+        padding: 0;
+        margin: 0;
+        font-family: "Inter", sans-serif;
     }
 </style>
