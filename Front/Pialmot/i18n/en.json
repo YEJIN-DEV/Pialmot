@@ -28,9 +28,10 @@
     "correct_answer": "got the answer!",
     "connection_lost": "Connection Lost.",
     "nick_placeholder": "Enter your nickname!",
+    "copied": "Copied!",
     "join": "Join",
     "start_host": "Game Start!",
-    "share_joinurl": "Send the joining link to others!",
+    "share_joinurl": "Send the joining link to others! (Click to copy)",
     "waiting": "Please wait...",
     "player": "Player",
     "waiting_others": "Waiting for others..."

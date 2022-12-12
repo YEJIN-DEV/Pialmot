@@ -28,9 +28,10 @@
     "correct_answer": "の正解です！",
     "connection_lost": "サーバーとの接続が切断されました",
     "nick_placeholder": "ニックネームを入力してください！",
+    "copied": "クリップボードにコピーしました！",
     "join": "参加",
     "start_host": "はじめ！",
-    "share_joinurl": "他の人に招待リンクを共有してください！",
+    "share_joinurl": "他の人に招待リンクを共有してください！ (クリックでコピー)",
     "waiting": "すこしお待ちください…",
     "player": "プレーヤー",
     "waiting_others": "他の人を待っています..."

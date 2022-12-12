@@ -28,9 +28,10 @@
     "correct_answer": "맞췄습니다!",
     "connection_lost": "서버와의 연결이 끊겼습니다.",
     "nick_placeholder": "닉네임을 입력해주세요!",
+    "copied": "복사되었습니다!",
     "join": "참여",
     "start_host": "시작하기!",
-    "share_joinurl": "상대방에게 초대 링크를 보내주세요!",
+    "share_joinurl": "상대방에게 초대 링크를 보내주세요! (클릭하면 복사됩니다.)",
     "waiting": "대기해주세요...",
     "player": "참여자",
     "waiting_others": "상대방을 기다리는 중..."

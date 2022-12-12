@@ -274,9 +274,17 @@
                         }}>{$_("start_host")}</button
                     >
                     <br />
-                    <a href={window.location.href}
-                        >{window.location.href}<br /> {$_("share_joinurl")}</a
+                    <button
+                        on:click={() => {
+                            navigator.clipboard.writeText(window.location.href);
+                            alert($_("copied"));
+                        }}
                     >
+                        <a href={window.location.href}
+                            >{window.location.href}<br />
+                            {$_("share_joinurl")}</a
+                        >
+                    </button>
                 {:else}
                     <h1>{$_("waiting")}</h1>
                 {/if}
