@@ -1,4 +1,6 @@
 <script>
+    import { rotation } from "../SharedStore";
+
     let bright = [0.6, 0.6, 0.6, 0.6, 0.6];
     let blur = [1, 1, 1, 1, 1];
     let player_onCursor = 0;
@@ -6,10 +8,6 @@
 
     export let onAnswer = (i) => {};
     export let questions = [];
-
-    function isLandScape() {
-        return window.matchMedia("screen and (orientation:portrait)").matches;
-    }
 </script>
 
 <body>
@@ -17,7 +15,7 @@
         {#each { length: 5 } as _, i}
             <div
                 class="container"
-                style="min-{isLandScape()
+                style="min-{$rotation
                     ? `height: calc(var(--vh, 1vh)*${transValue[i]}`
                     : `width: calc(var(--vw, 1vw)*${transValue[i]}`}"
             >

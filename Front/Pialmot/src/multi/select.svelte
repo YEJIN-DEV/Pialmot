@@ -9,7 +9,7 @@
         inited,
         inQuestion,
         inPlay,
-    } from "../KindStore";
+    } from "../SharedStore";
     import { slide } from "svelte/transition";
     import { _ } from "svelte-i18n";
     import io from "socket.io-client";
@@ -230,15 +230,6 @@
         if (unicode < 44032 || unicode > 55203) return null;
         return (unicode - 44032) % 28 != 0;
     }
-
-    function setScreenSize() {
-        let vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty("--vh", `${vh}px`);
-        let vw = window.innerWidth * 0.01;
-        document.documentElement.style.setProperty("--vw", `${vw}px`);
-    }
-    setScreenSize();
-    window.addEventListener("resize", setScreenSize);
 
     socket.emit("users", params.hash);
 </script>

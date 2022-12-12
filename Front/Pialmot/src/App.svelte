@@ -9,7 +9,8 @@
         inited,
         inQuestion,
         inPlay,
-    } from "./KindStore";
+        rotation,
+    } from "./SharedStore";
 
     function routeEvent(event) {
         if (event.detail.location === "/") {
@@ -31,6 +32,7 @@
 
             $inQuestion = false;
             $inPlay = false;
+            $rotation = isLandScape();
         }
     }
 
@@ -61,6 +63,26 @@
             OriginalPlayer.pause();
         }
     }
+
+    function setScreenSize() {
+        let vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty("--vh", `${vh}px`);
+        let vw = window.innerWidth * 0.01;
+        document.documentElement.style.setProperty("--vw", `${vw}px`);
+    }
+    setScreenSize();
+    window.addEventListener("resize", setScreenSize);
+
+    function isLandScape() {
+        return window.matchMedia("screen and (orientation:portrait)").matches;
+    }
+
+    window.addEventListener("orientationchange", (event) => {
+        setTimeout(() => {
+            $rotation = isLandScape();
+        }, 100 /*프레임워크 버그때문에 딜레이가 필수*/);
+    });
+    $rotation = isLandScape();
 </script>
 
 <Router {routes} on:routeLoading={routeEvent} />

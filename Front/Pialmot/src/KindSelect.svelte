@@ -1,6 +1,6 @@
 <script>
     import Linachanboard from "./UI/linachanboard.svelte";
-    import { kind, group, allkindchoices, inited } from "./KindStore";
+    import { kind, group, allkindchoices, inited } from "./SharedStore";
     import { addMessages, init, getLocaleFromNavigator, _ } from "svelte-i18n";
     import { isLoading as i18nloading } from "svelte-i18n";
     export let params = {}; // 라우터에서 넘어온 파라미터를 받아오기위해

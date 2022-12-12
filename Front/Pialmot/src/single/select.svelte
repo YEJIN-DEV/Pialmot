@@ -9,7 +9,7 @@
         inited,
         inQuestion,
         inPlay,
-    } from "../KindStore";
+    } from "../SharedStore";
     import { slide } from "svelte/transition";
     import "chart.js/auto";
     import { Stretch } from "svelte-loading-spinners";
@@ -86,7 +86,6 @@
     let loading = true;
     let fetchEnd = false;
     let firstFetch = true;
-    let rotation = isLandScape();
     let musicData = {
         answer: "None",
         album: { data: "" },
@@ -261,25 +260,6 @@
                 break;
         }
     }
-
-    function isLandScape() {
-        return window.matchMedia("screen and (orientation:portrait)").matches;
-    }
-
-    window.addEventListener("orientationchange", (event) => {
-        setTimeout(() => {
-            rotation = isLandScape();
-        }, 100 /*프레임워크 버그때문에 딜레이가 필수*/);
-    });
-
-    function setScreenSize() {
-        let vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty("--vh", `${vh}px`);
-        let vw = window.innerWidth * 0.01;
-        document.documentElement.style.setProperty("--vw", `${vw}px`);
-    }
-    setScreenSize();
-    window.addEventListener("resize", setScreenSize);
 
     if (!$inited) {
         alert($_("data_lost"));

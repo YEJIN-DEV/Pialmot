@@ -14,3 +14,4 @@ export const allkindchoices = writable(true);
 export const inited = writable(false);
 export const inQuestion = writable(false);
 export const inPlay = writable(false); //게임 시작 버튼(럽라버튼)이 눌렸는지
+export const rotation = writable(false);
