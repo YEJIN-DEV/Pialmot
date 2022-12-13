@@ -32,6 +32,7 @@
     "join": "참여",
     "start_host": "시작하기!",
     "share_joinurl": "상대방에게 초대 링크를 보내주세요! (클릭하면 복사됩니다.)",
+    "nick_length": "닉네임은 2자 이상 10자 이하로 입력해주세요.",
     "waiting": "대기해주세요...",
     "player": "참여자",
     "waiting_others": "상대방을 기다리는 중..."

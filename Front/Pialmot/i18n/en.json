@@ -32,6 +32,7 @@
     "join": "Join",
     "start_host": "Game Start!",
     "share_joinurl": "Send the joining link to others! (Click to copy)",
+    "nick_length": "Nickname must be 1~10 characters long.",
     "waiting": "Please wait...",
     "player": "Player",
     "waiting_others": "Waiting for others..."

@@ -20,7 +20,7 @@
     <!--slide 애니메이션을 여기에 넣지말것. 다음어 보여질 화면을 여기서 렌더링 할수가없음-->
     <div class="result">
         <div>
-            <h1 style="background-color:#0078D7; color:white; font-size:64px;">
+            <h1 id="guide">
                 {rank.rank == -1
                     ? $_("wrong")
                     : multi
@@ -59,6 +59,14 @@
         align-items: center;
     }
 
+    #guide {
+        background-color: #0078d7;
+        color: white;
+        font-size: 40px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-break: keep-all;
+    }
     #albumName,
     #title {
         overflow: hidden;
@@ -94,6 +102,10 @@
             min-height: 15%;
         }
 
+        #guide {
+            min-width: 0;
+            max-width: calc(var(--vw, 1vw) * 90);
+        }
         #albumName,
         #title {
             min-width: 0;
@@ -120,6 +132,10 @@
             min-height: 15%;
         }
 
+        #guide {
+            min-width: 0;
+            max-width: calc(var(--vw, 1vw) * 50);
+        }
         #albumName,
         #title {
             min-width: 0;

@@ -254,7 +254,11 @@
                 {#if !joined}
                     <button
                         on:click={() => {
-                            socket.emit("join", username, params.hash);
+                            if (username.length > 0 && username.length <= 10) {
+                                socket.emit("join", username, params.hash);
+                            } else {
+                                alert($_("nick_length"));
+                            }
                         }}>{$_("join")}</button
                     >
                 {:else if IamHost}
