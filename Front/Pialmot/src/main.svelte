@@ -128,7 +128,7 @@
         justify-content: center;
 
         height: calc(var(--vh, 1vh) * 100);
-        width: calc(var(--vw, 1vw) * 100);
+        width: calc(var(--vw, 1vw) * 80);
     }
 
     button {
