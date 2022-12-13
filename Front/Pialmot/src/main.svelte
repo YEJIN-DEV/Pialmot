@@ -35,43 +35,47 @@
             <source src="main.mp4" />
         </video>
     </div>
-    <div class="text">
-        <h1 style="color:white; font-size:64px;">{$_("title")}</h1>
-        <h3 style="color:white">{$_("edtion")}</h3>
-        <button
-            class="btnGroups"
-            on:click={() => {
-                push("/select/aqours");
-            }}
-        >
-            <img src="logo/Aqours.png" alt="" />
-        </button>
-        <button
-            class="btnGroups"
-            on:click={() => {
-                push("/select/nijigasaki");
-            }}
-        >
-            <img src="logo/Nijigasaki_{$_('filesuffix')}.png" alt="" />
-        </button>
-        <button
-            class="btnGroups"
-            on:click={() => {
-                push("/select/liella");
-            }}
-        >
-            <img src="logo/Liella.png" alt="" />
-        </button>
-        <!--
-        <button
-            class="btnGroups"
-            on:click={() => {
-                push("/select/musical");
-            }}
-        >
-            <img src="logo/Musical.png" alt="" />
-        </button>
-        -->
+    <div class="contents">
+        <div class="text">
+            <h1 style="color:white; font-size:64px;">{$_("title")}</h1>
+            <h3 style="color:white">{$_("edtion")}</h3>
+        </div>
+        <div class="buttons">
+            <button
+                class="btnGroups"
+                on:click={() => {
+                    push("/select/aqours");
+                }}
+            >
+                <img src="logo/Aqours.png" alt="" />
+            </button>
+            <button
+                class="btnGroups"
+                on:click={() => {
+                    push("/select/nijigasaki");
+                }}
+            >
+                <img src="logo/Nijigasaki_{$_('filesuffix')}.png" alt="" />
+            </button>
+            <button
+                class="btnGroups"
+                on:click={() => {
+                    push("/select/liella");
+                }}
+            >
+                <img src="logo/Liella.png" alt="" />
+            </button>
+            <!--
+            <button
+                class="btnGroups"
+                on:click={() => {
+                    push("/select/musical");
+                }}
+            >
+                <img src="logo/Musical.png" alt="" />
+            </button>
+             -->
+        </div>
     </div>
     <button
         on:click={() => {
@@ -113,12 +117,18 @@
         transform: translate(-50%, -50%);
     }
 
-    .text {
+    .contents {
         position: absolute;
-        top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
+        transform: translate(-50%, 0%);
         text-align: center;
+
+        display: flex;
+        flex-flow: column wrap;
+        justify-content: center;
+
+        height: calc(var(--vh, 1vh) * 100);
+        width: calc(var(--vw, 1vw) * 100);
     }
 
     button {
@@ -131,8 +141,15 @@
         margin: 1rem;
     }
 
+    .buttons {
+        display: flex;
+        flex-flow: column wrap;
+        justify-content: center;
+    }
+
     .btnGroups {
         transition: all 0.1s linear;
+        min-height: 0;
     }
 
     .btnGroups:hover {
@@ -143,5 +160,21 @@
         padding: 0;
         margin: 0;
         font-family: "Inter", sans-serif;
+    }
+
+    @media (orientation: portrait) {
+        /*세로*/
+        .buttons {
+            margin-left: 0;
+        }
+    }
+
+    @media (orientation: landscape) {
+        /*가로*/
+        .buttons {
+            margin-left: 1%;
+
+            height: calc(var(--vh, 1vh) * 95);
+        }
     }
 </style>
