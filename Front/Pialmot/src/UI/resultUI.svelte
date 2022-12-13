@@ -62,7 +62,6 @@
     #guide {
         background-color: #0078d7;
         color: white;
-        font-size: 40px;
         overflow: hidden;
         text-overflow: ellipsis;
         word-break: keep-all;
@@ -144,6 +143,20 @@
 
         .album {
             padding-left: 3%;
+        }
+    }
+
+    @media (max-width: 600px) {
+        /*모바일*/
+        #guide {
+            font-size: 2rem;
+        }
+    }
+
+    @media (min-width: 600px) {
+        /*태블릿 이상*/
+        #guide {
+            font-size: 3rem;
         }
     }
 </style>
