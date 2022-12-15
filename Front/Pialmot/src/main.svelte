@@ -88,6 +88,9 @@
             style="height:2.5rem;width:2.5rem"
         />
     </button>
+    <footer>
+        <p style="font-size: 3pt;">2센쿠</p>
+    </footer>
 </body>
 
 <style>
@@ -156,6 +159,13 @@
         transform: scale(1.2);
     }
 
+    footer {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translate(-50%, 0%);
+        text-align: center;
+    }
     * {
         padding: 0;
         margin: 0;
