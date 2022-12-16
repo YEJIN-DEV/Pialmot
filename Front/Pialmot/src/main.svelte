@@ -3,6 +3,7 @@
     import { _ } from "svelte-i18n";
     import { addMessages, init, getLocaleFromNavigator } from "svelte-i18n";
     import { isLoading as i18nloading } from "svelte-i18n";
+    import { ga } from "@beyonk/svelte-google-analytics";
 
     import en from "../i18n/en.json";
     import ko from "../i18n/ko.json";
@@ -20,6 +21,7 @@
     }
 
     let mute = true;
+    ga.addEvent("screen_view", { screen_name: "home" });
 </script>
 
 <svelte:head>

@@ -3,6 +3,7 @@
     import { kind, group, allkindchoices, inited } from "./SharedStore";
     import { addMessages, init, getLocaleFromNavigator, _ } from "svelte-i18n";
     import { isLoading as i18nloading } from "svelte-i18n";
+    import { ga } from "@beyonk/svelte-google-analytics";
     export let params = {}; // 라우터에서 넘어온 파라미터를 받아오기위해
 
     import en from "../i18n/en.json";
@@ -43,6 +44,15 @@
         });
         $group = params.group;
         $inited = true;
+        ga.addEvent("screen_view", {
+            screen_name: "select",
+        });
+        ga.setUserProperties({
+            single: !multi,
+            groups: $group,
+            kind: $kind,
+        });
+
         if (multi) {
             replace(
                 `/multi/select/${(Math.random() + 1).toString(36).substring(2)}`

@@ -15,10 +15,12 @@
     import io from "socket.io-client";
     import { addMessages, init, getLocaleFromNavigator } from "svelte-i18n";
     import { isLoading as i18nloading } from "svelte-i18n";
+    import { ga } from "@beyonk/svelte-google-analytics";
+    import { replace } from "svelte-spa-router";
+
     import en from "../../i18n/en.json";
     import ko from "../../i18n/ko.json";
     import ja from "../../i18n/ja.json";
-    import { replace } from "svelte-spa-router";
 
     addMessages("en", en);
     addMessages("ko", ko);
@@ -138,6 +140,7 @@
     });
 
     socket.on("question", (data) => {
+        ga.games.levelStart("multi");
         started = true;
 
         MIDIPlayer.src = data.midi;
@@ -221,6 +224,7 @@
                     params.hash
                 );
             }
+            ga.games.levelEnd("multi", selected == answer);
         }
     }
 

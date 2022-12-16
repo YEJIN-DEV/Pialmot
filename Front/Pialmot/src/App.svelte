@@ -2,6 +2,8 @@
     import Router from "svelte-spa-router";
     import { location } from "svelte-spa-router";
     import routes from "./routes";
+    import { GoogleAnalytics } from "@beyonk/svelte-google-analytics";
+
     import {
         kind,
         group,
@@ -85,4 +87,10 @@
     $rotation = isLandScape();
 </script>
 
+<GoogleAnalytics
+    properties={["G-0N05PNKG2P"]}
+    configurations={{
+        "G-0N05PNKG2P": { send_page_view: false },
+    }}
+/>
 <Router {routes} on:routeLoading={routeEvent} />

@@ -15,11 +15,12 @@
     import { Stretch } from "svelte-loading-spinners";
     import { addMessages, init, getLocaleFromNavigator, _ } from "svelte-i18n";
     import { isLoading as i18nloading } from "svelte-i18n";
+    import { ga } from "@beyonk/svelte-google-analytics";
+    import { replace } from "svelte-spa-router";
 
     import en from "../../i18n/en.json";
     import ko from "../../i18n/ko.json";
     import ja from "../../i18n/ja.json";
-    import { replace } from "svelte-spa-router";
 
     addMessages("en", en);
     addMessages("ko", ko);
@@ -115,6 +116,7 @@
             .then((response) => response.json())
             .then((data) => {
                 setTimeout(() => {
+                    ga.games.levelStart("single");
                     loading = true;
 
                     MIDIPlayer.src = data.midi;
@@ -238,6 +240,8 @@
                         getRandMusic(5000);
                     });
             }
+
+            ga.games.levelEnd("single", selected == answer);
         }
     }
 
