@@ -158,29 +158,37 @@
                         graphData.labels = Array.from(
                             Array(5),
                             (_, x) =>
-                                `~ ${(
-                                    ((x + 1) * data.interval.IQR) /
-                                    1000
-                                ).toFixed(2)}${sec}`
+                                `~ ${(data.interval.quantile[x] / 1000).toFixed(
+                                    2
+                                )}${sec}`
                         );
 
                         let meanX = -1;
                         let youX = -1;
-                        for (let i = 0; i < 5; i++) {
+                        for (let i = 0; i < 4; i++) {
                             if (
-                                i * data.interval.IQR <= rank.average &&
-                                rank.average <= (i + 1) * data.interval.IQR
+                                data.interval.quantile[i] <= rank.average &&
+                                rank.average <= data.interval.quantile[i + 1]
                             ) {
                                 meanX = i;
                             }
 
                             if (
-                                i * data.interval.IQR <= time &&
-                                time <= (i + 1) * data.interval.IQR
+                                data.interval.quantile[i] <= time &&
+                                time <= data.interval.quantile[i + 1]
                             ) {
                                 youX = i;
                             }
                         }
+
+                        meanX +=
+                            (rank.average - data.interval.quantile[meanX]) /
+                            (data.interval.quantile[meanX + 1] -
+                                data.interval.quantile[meanX]);
+                        youX +=
+                            (time - data.interval.quantile[youX]) /
+                            (data.interval.quantile[youX + 1] -
+                                data.interval.quantile[youX]);
                         options.plugins.annotation.annotations.line1.xMin =
                             meanX;
                         options.plugins.annotation.annotations.line1.xMax =
@@ -209,21 +217,25 @@
                         graphData.labels = Array.from(
                             Array(5),
                             (_, x) =>
-                                `~ ${(
-                                    ((x + 1) * data.interval.IQR) /
-                                    1000
-                                ).toFixed(2)}${sec}`
+                                `~ ${(data.interval.quantile[x] / 1000).toFixed(
+                                    2
+                                )}${sec}`
                         );
 
                         let meanX = -1;
-                        for (let i = 0; i < 5; i++) {
+                        for (let i = 0; i < 4; i++) {
                             if (
-                                i * data.interval.IQR <= rank.average &&
-                                rank.average <= (i + 1) * data.interval.IQR
+                                data.interval.quantile[i] <= rank.average &&
+                                rank.average <= data.interval.quantile[i + 1]
                             ) {
                                 meanX = i;
                             }
                         }
+                        meanX +=
+                            (rank.average - data.interval.quantile[meanX]) /
+                            (data.interval.quantile[meanX + 1] -
+                                data.interval.quantile[meanX]);
+
                         options.plugins.annotation.annotations.line1.xMin =
                             meanX;
                         options.plugins.annotation.annotations.line1.xMax =
@@ -235,6 +247,7 @@
                         options.plugins.annotation.annotations.line1.label.content = `${$_(
                             "mean"
                         )}\n${(rank.average / 1000).toFixed(3)}`;
+                        graphData.datasets[0].data = data.interval.count;
 
                         $inQuestion = false;
                         getRandMusic(5000);

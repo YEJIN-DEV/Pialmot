@@ -223,26 +223,30 @@ function rankDataToJson(group: groups, music: string, time?: number) {
     rank[group][music] = rank[group][music].sort((a, b) => a - b)
   }
 
-  let IQR =
+  const IQR =
     rank[group][music].length > 0
       ? ss.interquartileRange(rank[group][music])
       : 0
-  let intervalData = [0, 0, 0, 0, 0]
+  const Q1 = rank[group][music].length > 0
+    ? ss.quantile(rank[group][music], 0.25) : 0
+  const Q3 = rank[group][music].length > 0
+    ? ss.quantile(rank[group][music], 0.75) : 0
 
+  const noOutlierData = rank[group][music].filter(
+    elem => Q1 - 1.5 * IQR <= elem && elem <= Q3 + 1.5 * IQR
+  );
+
+  let intervalData = [0, 0, 0, 0, 0]
   if (rank[group][music].length > 0) {
     intervalData = []
     for (let i = 0; i < 5; i++) {
       intervalData.push(
-        rank[group][music].filter(
-          elem => IQR * i <= elem && elem <= IQR * (i + 1)
+        noOutlierData.filter(
+          elem => ss.quantile(noOutlierData, i / 5) <= elem && elem <= ss.quantile(noOutlierData, (i + 1) / 5)
         ).length
       )
     }
   }
-
-  let noOutlierData = rank[group][music].filter(
-    elem => elem <= IQR * 5
-  );
 
   return JSON.stringify({
     rank: time == undefined ? -1 : rank[group][music].indexOf(time) + 1,
@@ -256,7 +260,8 @@ function rankDataToJson(group: groups, music: string, time?: number) {
         ? ss.standardDeviation(noOutlierData)
         : -1,
     interval: {
-      IQR,
+      quantile: noOutlierData.length > 0
+        ? Array.from({ length: 5 }, (_, i) => ss.quantile(rank[group][music], i / 5)) : [-1, -1, -1, -1, -1],
       count: intervalData
     },
     count: rank[group][music].length,
