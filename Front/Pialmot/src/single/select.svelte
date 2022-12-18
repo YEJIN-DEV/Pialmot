@@ -142,10 +142,10 @@
         if ($inQuestion) {
             let selected = musicData.questions[index].name;
             let answer = musicData.name;
+            OriginalPlayer.currentTime = MIDIPlayer.currentTime;
             if (selected == answer) {
                 let after = new Date();
                 let time = after - before;
-                OriginalPlayer.currentTime = MIDIPlayer.currentTime;
 
                 fetch(`/rank/${musicData.group}/${answer}`, {
                     method: "POST",

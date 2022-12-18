@@ -208,9 +208,8 @@
         if ($inQuestion) {
             let selected = musicData.questions[index].name;
             let answer = musicData.name;
+            OriginalPlayer.currentTime = MIDIPlayer.currentTime;
             if (selected == answer) {
-                OriginalPlayer.currentTime = MIDIPlayer.currentTime;
-
                 socket.emit(
                     "answer",
                     true,
